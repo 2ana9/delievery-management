@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "p_categories")
-public class Category {
+public class Category extends Timestamped  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
