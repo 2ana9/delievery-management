@@ -1,4 +1,4 @@
-package constant;
+package com.ana29.deliverymanagement.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
