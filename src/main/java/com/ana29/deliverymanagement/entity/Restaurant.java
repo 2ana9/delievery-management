@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Table(name = "p_restaurants")
+@Table(name = "p_restaurant")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 class Restaurant extends Timestamped {
     @Id
@@ -25,12 +25,4 @@ class Restaurant extends Timestamped {
 
     @Column(length = 100, nullable = false)
     private String operatingHours;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "category_id", nullable = false)
-//    private Category category;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "area_code_id", nullable = false)
-//    private AreaCode areaCode;
 }

@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.entity;
 
+import com.ana29.deliverymanagement.constant.OrderStatusEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Table(name = "p_orders")
+@Table(name = "p_order")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 class Order extends Timestamped{
     @Id
@@ -36,19 +37,6 @@ class Order extends Timestamped{
     @Column(length = 255, nullable = false)
     private int price;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "category_id")
-//    private Category category;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "area_code_id")
-//    private AreaCode areaCode;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    private User user;
-
-//    @OneToMany
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @Column(nullable = false)
+    private UUID payment_id;
 }

@@ -1,4 +1,4 @@
-package com.ana29.deliverymanagement.entity;
+package com.ana29.deliverymanagement.constant;
 
 import lombok.Getter;
 
