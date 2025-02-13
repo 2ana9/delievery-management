@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "p_menus")
-public class Menu {
+public class Menu extends Timestamped  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

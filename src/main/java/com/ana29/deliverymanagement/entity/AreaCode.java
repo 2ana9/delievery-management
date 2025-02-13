@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "p_area_codes")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AreaCode {
+@NoArgsConstructor
+public class AreaCode extends Timestamped {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)

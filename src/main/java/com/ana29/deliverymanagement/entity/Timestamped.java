@@ -19,6 +19,7 @@ public abstract class Timestamped {
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
     @CreatedBy
@@ -27,6 +28,7 @@ public abstract class Timestamped {
 
     @LastModifiedDate
     @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
 
     @LastModifiedBy
@@ -34,6 +36,7 @@ public abstract class Timestamped {
     private String updatedBy;
 
     @Column(name = "deleted_at")
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime deletedAt;
 
     @Column(name = "deleted_by", length = 50)

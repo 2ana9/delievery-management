@@ -12,7 +12,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name ="p_useraddress")
-public class UserAddress {
+public class UserAddress extends Timestamped  {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "useraddress_id", columnDefinition = "uuid")

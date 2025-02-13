@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "p_reviews")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Review {
+public class Review extends Timestamped  {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
