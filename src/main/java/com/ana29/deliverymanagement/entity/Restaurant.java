@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @Table(name = "p_restaurants")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-class Restaurant {
+class Restaurant extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "restaurant_id", columnDefinition = "uuid")

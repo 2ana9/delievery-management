@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @Table(name = "p_orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-class Order {
+class Order extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_id", columnDefinition = "uuid")
@@ -27,6 +27,15 @@ class Order {
     @Column(length = 100, nullable = false)
     private String operatingHours;
 
+    @Column(length = 100, nullable = false)
+    private String orderRequest;
+
+    @Column(length = 255, nullable = false)
+    private String address;
+
+    @Column(length = 255, nullable = false)
+    private int price;
+
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "category_id")
 //    private Category category;
@@ -39,4 +48,7 @@ class Order {
 //    @JoinColumn(name = "user_id")
 //    private User user;
 
+//    @OneToMany
+//    @JoinColumn(name = "user_id")
+//    private User user;
 }
