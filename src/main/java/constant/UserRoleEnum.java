@@ -1,4 +1,4 @@
-package c.a.d.constant;
+package constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
