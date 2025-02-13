@@ -14,11 +14,11 @@ import java.util.UUID;
 @Table(name ="p_useraddress")
 public class UserAddress {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "useraddress_id", columnDefinition = "uuid")
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false) //length default 255여서 추가 x
     private String address;
 
     //외래키의경우 엔티티 작성완료 후 추가예정
