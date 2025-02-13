@@ -24,7 +24,7 @@ public class AreaCode extends Timestamped {
 
 	@Column(length = 10, nullable = false)
 	private String code;
-
+//주석추가
 	@Column(nullable = false)
 	private String cityName;
 }
