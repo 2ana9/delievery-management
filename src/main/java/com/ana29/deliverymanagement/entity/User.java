@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.entity;
 
+import com.ana29.deliverymanagement.constant.UserRoleEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
