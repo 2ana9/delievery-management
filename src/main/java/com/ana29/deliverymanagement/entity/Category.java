@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @Setter
@@ -15,7 +17,7 @@ public class Category extends Timestamped  {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "category_id", nullable = false)
-    private Long id;
+    private UUID id;
 
     @Column(name = "food_type", nullable = false, length = 50)
     private String food_type;
