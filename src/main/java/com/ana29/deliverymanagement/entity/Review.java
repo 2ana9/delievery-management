@@ -1,14 +1,8 @@
 package com.ana29.deliverymanagement.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+
 import java.util.UUID;
 
 import lombok.*;
@@ -35,15 +29,18 @@ public class Review extends Timestamped  {
 	@Column(nullable = false, columnDefinition = "integer check (rating between 1 and 5)")
 	private Integer rating;
 
-/*	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
+	@JsonIgnore  // 이 필드는 JSON으로 직렬화되지 않음
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "order_id")
+	@JsonIgnore  // 이 필드는 JSON으로 직렬화되지 않음
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_id", nullable = false)
 	private Order order;
 
+	@JsonIgnore  // 이 필드는 JSON으로 직렬화되지 않음
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "restaurant_id")
-	private Restaurant restaurant;*/
+	@JoinColumn(name = "restaurant_id", nullable = false)
+	private Restaurant restaurant;
 }
