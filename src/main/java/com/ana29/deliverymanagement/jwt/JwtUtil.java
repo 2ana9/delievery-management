@@ -1,7 +1,9 @@
 package com.ana29.deliverymanagement.jwt;
 
 
+import com.ana29.deliverymanagement.constant.jwt.JwtConfigEnum;
 import com.ana29.deliverymanagement.constant.UserRoleEnum;
+import com.ana29.deliverymanagement.constant.jwt.JwtErrorMessage;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -19,13 +21,13 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     // Header KEY 값
-    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String AUTHORIZATION_HEADER = JwtConfigEnum.AUTHORIZATION_HEADER.getGetJwtConfig();
     // 사용자 권한 값의 KEY
-    public static final String AUTHORIZATION_KEY = "auth";
+    public static final String AUTHORIZATION_KEY = JwtConfigEnum.AUTHORIZATION_KEY.getGetJwtConfig();
     // Token 식별자
-    public static final String BEARER_PREFIX = "Bearer ";
+    public static final String BEARER_PREFIX = JwtConfigEnum.BEARER_PREFIX.getGetJwtConfig();
     // 토큰 만료시간
-    private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
+    private final long TOKEN_TIME = Long.parseLong(JwtConfigEnum.TOKEN_TIME.getGetJwtConfig()); // 60분
 
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
     private String secretKey;
@@ -69,13 +71,11 @@ public class JwtUtil {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
-            log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
-        } catch (ExpiredJwtException e) {
-            log.error("Expired JWT token, 만료된 JWT token 입니다.");
-        } catch (UnsupportedJwtException e) {
-            log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
+            log.error(JwtErrorMessage.Invalid.getGetJwtErrorMessage());
+        } catch (ExpiredJwtException | UnsupportedJwtException e) {
+            log.error(JwtErrorMessage.ExpiredAndUnsupported.getGetJwtErrorMessage());
         } catch (IllegalArgumentException e) {
-            log.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+            log.error(JwtErrorMessage.Empty.getGetJwtErrorMessage());
         }
         return false;
     }
