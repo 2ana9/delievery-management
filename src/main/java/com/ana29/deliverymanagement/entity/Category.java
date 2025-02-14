@@ -28,6 +28,6 @@ public class Category extends Timestamped{
 
 
     public Category(CategoryRequestDto requestDto) {
-        this.foodType = requestDto.getFood_type();
+        this.foodType = requestDto.getFoodType();
     }
 }
