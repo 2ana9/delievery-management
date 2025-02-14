@@ -21,13 +21,14 @@ public class UserAddress extends Timestamped {
     private String address;
 
     @Column(nullable = false)
-    private Boolean currentAddress = false;
+//    @Builder.Default
+    private Boolean isDeleted = false;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne
-    @JoinColumn(name = "area_id")
-    private Area area;
+//    @OneToOne
+//    @JoinColumn(name = "area_id")
+//    private Area area;
 }
