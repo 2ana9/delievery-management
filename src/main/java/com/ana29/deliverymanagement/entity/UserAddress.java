@@ -8,29 +8,26 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Table(name ="p_useraddress")
 public class UserAddress extends Timestamped {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "useraddress_id", columnDefinition = "uuid")
     private UUID id;
 
-    @Column(nullable = false) //length default 255여서 추가 x
+    @Column(nullable = false)
     private String address;
 
     @Column(nullable = false)
-    private Boolean isDeleted = false;
+    private Boolean currentAddress = false;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-//    @OneToOne
-//    @JoinColumn(name = "area_id")
-//    private Area area;
-
-
+    @OneToOne
+    @JoinColumn(name = "area_id")
+    private Area area;
 }
