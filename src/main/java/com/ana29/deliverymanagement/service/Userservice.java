@@ -1,13 +1,17 @@
 package com.ana29.deliverymanagement.service;
 
 import com.ana29.deliverymanagement.config.admin.AdminConfig;
+import com.ana29.deliverymanagement.config.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.constant.SignupConfig;
 import com.ana29.deliverymanagement.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.dto.SignupRequestDto;
 import com.ana29.deliverymanagement.entity.User;
+import com.ana29.deliverymanagement.jwt.JwtUtil;
 import com.ana29.deliverymanagement.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -23,6 +27,7 @@ public class Userservice {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AdminConfig adminConfig;
+    private final JwtUtil jwtUtil;
 
     public String signup(SignupRequestDto requestDto, BindingResult bindingResult) {
 //        에러 발생 시 기존 회원가입 url 리다이렉트 하는 global handler 필요
@@ -71,7 +76,19 @@ public class Userservice {
 
         userRepository.save(user);
 
-        return "redirect:/api/users/sign-in";
+        return "/api/users/sign-in";
+    }
+    public String signOut(HttpServletRequest request) {
+        String token = jwtUtil.getJwtFromHeader(request);
+        log.info("Sign Out Token Value   : " + token);
+
+        if (token != null && !token.isEmpty()) {
+            TokenBlacklist.addToken(token);
+        } else {
+            throw new IllegalArgumentException("Token is Empty, 유효하지 않은 접근입니다.");
+        }
+        SecurityContextHolder.clearContext();
+        return "/api/users/sign-in";
     }
 
     /**
@@ -193,4 +210,5 @@ public class Userservice {
         }
         return currentAddress;
     }
+
 }

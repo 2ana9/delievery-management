@@ -1,6 +1,7 @@
 package com.ana29.deliverymanagement.security;
 
 import com.ana29.deliverymanagement.constant.UserRoleEnum;
+import com.ana29.deliverymanagement.constant.jwt.JwtConfigEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ana29.deliverymanagement.dto.LoginRequestDto;
 import com.ana29.deliverymanagement.jwt.JwtUtil;
@@ -56,7 +57,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
         String token = jwtUtil.createToken(username, role);
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+        response.addHeader(JwtConfigEnum.AUTHORIZATION_HEADER.getGetJwtConfig(), token);
     }
 
     @Override

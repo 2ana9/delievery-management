@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.security;
 
+import com.ana29.deliverymanagement.config.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.constant.jwt.JwtErrorMessage;
 import com.ana29.deliverymanagement.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -8,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -30,18 +32,38 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+//        /api/users/sign-in 의 Get 접속은 검증하지 않음
+        if ("GET".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+        String path = request.getRequestURI();
+        // 로그인/로그아웃 엔드포인트는 검증하지 않음
+        return path.equals("/api/users/sign-in");
+    }
 
-        String tokenValue = jwtUtil.getJwtFromHeader(req);
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if (StringUtils.hasText(tokenValue)) {
+        String token = jwtUtil.getJwtFromHeader(request);
+        //토큰 블랙리스트 검증
+        if (token != null && !token.isEmpty()) {
+            log.info("BLACKLIST TEST : " + token);
+            if (TokenBlacklist.isTokenBlacklisted(token)) {
+                log.info("BLACKLIST VALID");
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                return;
+            }
+        }
+        log.info("NOT BLACKLIST VALID");
+        if (StringUtils.hasText(token)) {
 
-            if (!jwtUtil.validateToken(tokenValue)) {
+            if (!jwtUtil.validateToken(token)) {
                 log.error(JwtErrorMessage.Error.getGetJwtErrorMessage());
                 return;
             }
 
-            Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
+            Claims info = jwtUtil.getUserInfoFromToken(token);
 
             try {
                 setAuthentication(info.getSubject());
@@ -51,7 +73,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
         }
 
-        filterChain.doFilter(req, res);
+        filterChain.doFilter(request, response);
     }
 
     // 인증 처리

@@ -1,8 +1,10 @@
 package com.ana29.deliverymanagement.controller;
 
 
+import com.ana29.deliverymanagement.config.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.dto.SignupRequestDto;
 import com.ana29.deliverymanagement.service.Userservice;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -21,6 +23,7 @@ import java.util.List;
 public class UserController {
 
     private final Userservice userService;
+    private String ifSuccessRedirectUrl;
     @GetMapping("/sign-up")
     public String signUpPage(){
         log.info("connet Test : /sign-up (Get Method)");
@@ -30,8 +33,9 @@ public class UserController {
     @PostMapping("/sign-up")
     public String signUp(@RequestBody @Valid SignupRequestDto requestDto, BindingResult bindingResult){
         log.info("connet Test : /sign-up (Post Method)");
-        String ifSuccessRedirectUrl = userService.signup(requestDto, bindingResult);
-        return ifSuccessRedirectUrl;
+        ifSuccessRedirectUrl = userService.signup(requestDto, bindingResult);
+        log.info("Method Complete Test : /sign-up (Post Method)");
+        return "redirect:" + ifSuccessRedirectUrl;
     }
 
     @GetMapping("/sign-in")
@@ -42,9 +46,13 @@ public class UserController {
     public String signIn(){
         return "login";
     }
-    @PostMapping("/sign-out")
-    public void signOut(){
 
+    @PostMapping("/sign-out")
+    public String signOut(HttpServletRequest request){
+        log.info("connet Test : /sign-out (Post Method)");
+        ifSuccessRedirectUrl = userService.signOut(request);
+        log.info("TOKEN BLACKLIST VALUE : " + TokenBlacklist.getBlacklistedTokens().toString());
+        return "redirect:" + ifSuccessRedirectUrl;
     }
 
     @GetMapping("/me")
