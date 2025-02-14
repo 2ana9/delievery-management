@@ -21,7 +21,10 @@ import java.util.List;
 public class UserController {
 
     private final Userservice userService;
-
+    @GetMapping("/sign-up")
+    public String signUpPage(){
+        return "sign-up";
+    }
     @PostMapping("/sign-up")
     public void signUp(@Valid SignupRequestDto requestDto, BindingResult bindingResult){
         userService.signup(requestDto, bindingResult);
