@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
 @Builder
 @Table(name = "p_categories")
-public class Category extends Timestamped  {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
