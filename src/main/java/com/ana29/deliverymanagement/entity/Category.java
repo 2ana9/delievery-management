@@ -1,21 +1,23 @@
 package com.ana29.deliverymanagement.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
+@Builder
 @Table(name = "p_categories")
 public class Category extends Timestamped  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "category_id", nullable = false)
-    private Long id;
+    private UUID id;
 
     @Column(name = "food_type", nullable = false, length = 50)
     private String food_type;
