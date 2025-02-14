@@ -7,15 +7,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 
 @Entity
-@Table(name = "p_area_codes")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AreaCode {
+@AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
+@Builder
+@Table(name = "p_area_codes")
+public class AreaCode extends Timestamped {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -24,7 +26,7 @@ public class AreaCode {
 
 	@Column(length = 10, nullable = false)
 	private String code;
-
+//주석추가
 	@Column(nullable = false)
 	private String cityName;
 }

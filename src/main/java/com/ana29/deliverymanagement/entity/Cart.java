@@ -1,12 +1,18 @@
 package com.ana29.deliverymanagement.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
+@Builder
 @Table(name = "p_carts")
 public class Cart extends Timestamped{
     @Id

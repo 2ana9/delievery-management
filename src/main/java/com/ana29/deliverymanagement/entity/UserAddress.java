@@ -1,18 +1,19 @@
 package com.ana29.deliverymanagement.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
+import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
+@Builder
 @Table(name ="p_useraddress")
-public class UserAddress {
+public class UserAddress extends Timestamped {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "useraddress_id", columnDefinition = "uuid")
@@ -21,7 +22,16 @@ public class UserAddress {
     @Column(nullable = false) //length default 255여서 추가 x
     private String address;
 
-    //외래키의경우 엔티티 작성완료 후 추가예정
+    @Column(nullable = false)
+    private Boolean isDeleted = false;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+//    @OneToOne
+//    @JoinColumn(name = "area_id")
+//    private Area area;
 
 
 }
