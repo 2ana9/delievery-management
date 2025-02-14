@@ -1,8 +1,9 @@
 package security;
 
+import com.ana29.deliverymanagement.constant.UserRoleEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ana29.deliverymanagement.dto.LoginRequestDto;
-import com.ana29.deliverymanagement.entity.UserRoleEnum;
+import com.ana29.deliverymanagement.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;

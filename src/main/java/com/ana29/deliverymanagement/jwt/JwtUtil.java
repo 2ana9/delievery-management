@@ -1,7 +1,7 @@
 package com.ana29.deliverymanagement.jwt;
 
 
-import com.ana29.deliverymanagement.entity.UserRoleEnum;
+import com.ana29.deliverymanagement.constant.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
