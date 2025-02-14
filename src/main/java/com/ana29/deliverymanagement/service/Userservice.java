@@ -25,6 +25,7 @@ public class Userservice {
     private final AdminConfig adminConfig;
 
     public String signup(SignupRequestDto requestDto, BindingResult bindingResult) {
+//        에러 발생 시 기존 회원가입 url 리다이렉트 하는 global handler 필요
         // 1. 바인딩 에러 체크 (컨트롤러에서 @Valid를 사용했을 때의 추가 검증)
         checkFieldErrors(bindingResult);
 
@@ -36,11 +37,13 @@ public class Userservice {
         validateEmail(requestDto.getEmail());
         checkEmailDuplicate(requestDto.getEmail());
 
-        // 4. 닉네임 정규식 검사 (중복 검사는 필요 시 별도 구현)
+        // 4. 닉네임 정규식 검사
         validateNickname(requestDto.getNickname());
+        checkNicknameDuplicate(requestDto.getNickname());
 
-        // 5. 전화번호 정규식 검사 (중복 검사는 필요 시 별도 구현)
+        // 5. 전화번호 정규식 검사
         validatePhone(requestDto.getPhone());
+        checkPhoneDuplicate(requestDto.getPhone());
 
         // 6. 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
@@ -127,6 +130,13 @@ public class Userservice {
         }
     }
 
+    private void checkNicknameDuplicate(String nickname){
+        Optional<User> checkNickname = userRepository.findByNickname(nickname);
+        if (checkNickname.isPresent()){
+            throw new IllegalArgumentException("중복된 닉네임 입니다.");
+        }
+    }
+
     /** 🔹 전화번호 정규식 검사 */
     private void validatePhone(String phone) {
         if (phone == null || phone.isBlank()) {
@@ -134,6 +144,12 @@ public class Userservice {
         }
         if (!SignupConfig.PHONE_PATTERN.getPattern().matcher(phone).matches()) {
             throw new IllegalArgumentException("전화번호는 010-XXXX-XXXX 또는 010XXXXXXXX 형식이어야 합니다.");
+        }
+    }
+    private void checkPhoneDuplicate(String phone){
+        Optional<User> checkPhone = userRepository.findByPhone(phone);
+        if (checkPhone.isPresent()){
+            throw new IllegalArgumentException("중복된 전화번호 입니다.");
         }
     }
 
