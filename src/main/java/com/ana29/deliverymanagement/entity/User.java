@@ -34,4 +34,5 @@ public class User extends Timestamped {
 
     @Column(length = 255, nullable = false)
     private String currentAddress; // 대표 주소
+
 }
