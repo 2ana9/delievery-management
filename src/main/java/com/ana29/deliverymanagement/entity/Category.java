@@ -23,6 +23,7 @@ public class Category extends Timestamped{
     private String food_type;
 
     @Column(name = "is_deleted",nullable = false)
+    @Builder.Default
     private boolean is_deleted =false;
 
 
