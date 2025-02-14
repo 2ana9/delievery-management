@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -21,25 +22,32 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
+//      default로 post 옵션만 적용됨
         setFilterProcessesUrl("/api/users/sign-in");
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
-            LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
-
-            return getAuthenticationManager().authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            requestDto.getId(),
-                            requestDto.getPassword(),
-                            null
-                    )
-            );
+            // POST 방식일때만 동작
+//           ObjectMapper의 valueType이 매핑이 안 될시 No content to map due to end-of-input 에러 호출
+//            Get 방식은 body가 비어 있으므로 LoginRequestDto 매핑이 null로 되어 위 에러 발생
+            if ("POST".equalsIgnoreCase(request.getMethod())) {
+                LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
+                log.info(requestDto.getId());
+                return getAuthenticationManager().authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                requestDto.getId(),
+                                requestDto.getPassword(),
+                                null
+                        )
+                );
+            }
         } catch (IOException e) {
             log.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
+        return null;
     }
 
     @Override

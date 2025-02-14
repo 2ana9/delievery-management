@@ -23,12 +23,15 @@ public class UserController {
     private final Userservice userService;
     @GetMapping("/sign-up")
     public String signUpPage(){
+        log.info("connet Test : /sign-up (Get Method)");
+//        타임리프 의존성이 없으면 템플릿 파일 밑의 signup.html 을 찾지 못해 403에러 발생함
         return "signup";
     }
     @PostMapping("/sign-up")
-    public void signUp(@RequestBody @Valid SignupRequestDto requestDto, BindingResult bindingResult){
-        log.info("connet test");
-        userService.signup(requestDto, bindingResult);
+    public String signUp(@RequestBody @Valid SignupRequestDto requestDto, BindingResult bindingResult){
+        log.info("connet Test : /sign-up (Post Method)");
+        String ifSuccessRedirectUrl = userService.signup(requestDto, bindingResult);
+        return ifSuccessRedirectUrl;
     }
 
     @GetMapping("/sign-in")
@@ -36,8 +39,8 @@ public class UserController {
         return "login";
     }
     @PostMapping("/sign-in")
-    public void signIn(){
-
+    public String signIn(){
+        return "login";
     }
     @PostMapping("/sign-out")
     public void signOut(){

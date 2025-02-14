@@ -64,10 +64,10 @@ public class Userservice {
                 .role(role)
                 .currentAddress(currentAddress)
                 .build();
-        System.out.println("user id= " + user.getId());
-        System.out.println("user phone= " + user.getPhone());
-        System.out.println("user role= " + user.getRole());
-        System.out.println("admin token= " + requestDto.getAdminToken());
+        log.info("user id= " + user.getId());
+        log.info("user phone= " + user.getPhone());
+        log.info("user role= " + user.getRole());
+        log.info("admin token= " + requestDto.getAdminToken());
 
         userRepository.save(user);
 
