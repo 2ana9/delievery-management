@@ -2,13 +2,13 @@ package com.ana29.deliverymanagement.service;
 
 import com.ana29.deliverymanagement.config.admin.AdminConfig;
 import com.ana29.deliverymanagement.constant.SignupConfig;
+import com.ana29.deliverymanagement.constant.UserRoleEnum;
+import com.ana29.deliverymanagement.dto.SignupRequestDto;
 import com.ana29.deliverymanagement.entity.User;
 import com.ana29.deliverymanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.ana29.deliverymanagement.constant.UserRoleEnum;
-import com.ana29.deliverymanagement.dto.SignupRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -64,12 +64,19 @@ public class Userservice {
                 .role(role)
                 .currentAddress(currentAddress)
                 .build();
+        System.out.println("user id= " + user.getId());
+        System.out.println("user phone= " + user.getPhone());
+        System.out.println("user role= " + user.getRole());
+        System.out.println("admin token= " + requestDto.getAdminToken());
+
         userRepository.save(user);
 
         return "redirect:/api/users/sign-in";
     }
 
-    /** 🔹 바인딩 에러 체크 */
+    /**
+     * 🔹 바인딩 에러 체크
+     */
     private void checkFieldErrors(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder("입력 오류: ");
@@ -84,17 +91,22 @@ public class Userservice {
         }
     }
 
-    /** 🔹 사용자명(아이디) 정규식 검사 */
+
+    /**
+     * 🔹 사용자명(아이디) 정규식 검사
+     */
     private void validateUsername(String username) {
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("사용자명을 입력해야 합니다.");
         }
         if (!SignupConfig.USERNAME_PATTERN.getPattern().matcher(username).matches()) {
-            throw new IllegalArgumentException("사용자명은 4~10자의 영문과 숫자만 가능합니다.");
+            throw new IllegalArgumentException("사용자명은 1~50자의 영문과 숫자만 가능합니다.");
         }
     }
 
-    /** 🔹 중복된 사용자명(아이디) 체크 */
+    /**
+     * 🔹 중복된 사용자명(아이디) 체크
+     */
     private void checkUsernameDuplicate(String username) {
         Optional<User> checkUsername = userRepository.findById(username);
         if (checkUsername.isPresent()) {
@@ -102,7 +114,9 @@ public class Userservice {
         }
     }
 
-    /** 🔹 이메일 정규식 검사 */
+    /**
+     * 🔹 이메일 정규식 검사
+     */
     private void validateEmail(String email) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("이메일을 입력해야 합니다.");
@@ -112,7 +126,9 @@ public class Userservice {
         }
     }
 
-    /** 🔹 중복된 이메일 체크 */
+    /**
+     * 🔹 중복된 이메일 체크
+     */
     private void checkEmailDuplicate(String email) {
         Optional<User> checkEmail = userRepository.findByEmail(email);
         if (checkEmail.isPresent()) {
@@ -120,7 +136,9 @@ public class Userservice {
         }
     }
 
-    /** 🔹 닉네임 정규식 검사 */
+    /**
+     * 🔹 닉네임 정규식 검사
+     */
     private void validateNickname(String nickname) {
         if (nickname == null || nickname.isBlank()) {
             throw new IllegalArgumentException("닉네임을 입력해야 합니다.");
@@ -130,14 +148,16 @@ public class Userservice {
         }
     }
 
-    private void checkNicknameDuplicate(String nickname){
+    private void checkNicknameDuplicate(String nickname) {
         Optional<User> checkNickname = userRepository.findByNickname(nickname);
-        if (checkNickname.isPresent()){
+        if (checkNickname.isPresent()) {
             throw new IllegalArgumentException("중복된 닉네임 입니다.");
         }
     }
 
-    /** 🔹 전화번호 정규식 검사 */
+    /**
+     * 🔹 전화번호 정규식 검사
+     */
     private void validatePhone(String phone) {
         if (phone == null || phone.isBlank()) {
             throw new IllegalArgumentException("전화번호를 입력해야 합니다.");
@@ -146,23 +166,26 @@ public class Userservice {
             throw new IllegalArgumentException("전화번호는 010-XXXX-XXXX 또는 010XXXXXXXX 형식이어야 합니다.");
         }
     }
-    private void checkPhoneDuplicate(String phone){
+
+    private void checkPhoneDuplicate(String phone) {
         Optional<User> checkPhone = userRepository.findByPhone(phone);
-        if (checkPhone.isPresent()){
+        if (checkPhone.isPresent()) {
             throw new IllegalArgumentException("중복된 전화번호 입니다.");
         }
     }
 
-    /** 🔹 사용자 역할 확인 (관리자 요청인 경우 관리자 키 검증) */
+    /**
+     * 🔹 사용자 역할 확인 (관리자 요청인 경우 관리자 키 검증)
+     */
     private UserRoleEnum checkUserRole(SignupRequestDto requestDto) {
-        if (requestDto.isAdmin()) {
-            if (!adminConfig.getAdminSignupKey().equals(requestDto.getAdminToken())) {
-                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
-            }
+        if (adminConfig.getAdminSignupKey().equals(requestDto.getAdminToken())) {
             return UserRoleEnum.ADMIN;
+//                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
+        } else {
+            return UserRoleEnum.USER;
         }
-        return UserRoleEnum.USER;
     }
+
 
     private String checkCurrentAddress(String currentAddress) {
         if (currentAddress == null || currentAddress.trim().isEmpty()) {
