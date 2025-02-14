@@ -1,19 +1,22 @@
 package com.ana29.deliverymanagement.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
 @Entity
-@Getter
-@Setter
 @Table(name ="p_useraddress")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserAddress extends Timestamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID) //그대로 작성하기!
     @Column(name = "useraddress_id", columnDefinition = "uuid")
     private UUID id;
 
