@@ -23,9 +23,8 @@ public class UserController {
     private final Userservice userService;
 
     @PostMapping("/sign-up")
-    public String signUp(@Valid SignupRequestDto requestDto, BindingResult bindingResult){
+    public void signUp(@Valid SignupRequestDto requestDto, BindingResult bindingResult){
         userService.signup(requestDto, bindingResult);
-        return "redirect:/api/users/sign-in";
     }
 
     @GetMapping("/sign-in")
