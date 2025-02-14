@@ -1,6 +1,7 @@
 package com.ana29.deliverymanagement.jwt;
 
 
+import com.ana29.deliverymanagement.constant.jwt.JwtConfigEnum;
 import com.ana29.deliverymanagement.constant.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -19,13 +20,13 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     // Header KEY 값
-    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String AUTHORIZATION_HEADER = JwtConfigEnum.AUTHORIZATION_HEADER.getGetJwtConfig();
     // 사용자 권한 값의 KEY
-    public static final String AUTHORIZATION_KEY = "auth";
+    public static final String AUTHORIZATION_KEY = JwtConfigEnum.AUTHORIZATION_KEY.getGetJwtConfig();
     // Token 식별자
-    public static final String BEARER_PREFIX = "Bearer ";
+    public static final String BEARER_PREFIX = JwtConfigEnum.BEARER_PREFIX.getGetJwtConfig();
     // 토큰 만료시간
-    private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
+    private final long TOKEN_TIME = Long.parseLong(JwtConfigEnum.TOKEN_TIME.getGetJwtConfig()); // 60분
 
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
     private String secretKey;
