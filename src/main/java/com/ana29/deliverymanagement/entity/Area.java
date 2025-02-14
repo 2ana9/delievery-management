@@ -27,4 +27,7 @@ public class Area extends Timestamped {
 
 	@Column(nullable = false)
 	private String cityName;
+
+	@Column
+	private String parentId;
 }
