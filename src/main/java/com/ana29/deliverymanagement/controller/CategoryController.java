@@ -17,8 +17,18 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping("/categories")
-    public CategoryResponseDto createCategory(@RequestBody CategoryRequestDto requestDto) {
+    public CategoryResponseDto createCategory(@RequestBody CategoryRequestDto requestDto){
         return categoryService.createCategory(requestDto);
     }
+
+//    @PostMapping("/categories")
+//    public CategoryResponseDto createCategory(@RequestBody CategoryRequestDto requestDto, @AuthenticationPrincipal User user) throws AccessDeniedException {
+//        UserRoleEnum userRole = user.getRole();
+//        if (userRole != UserRoleEnum.ADMIN) {
+//            throw new AccessDeniedException("관리자 접근이 필요합니다.");
+//        }
+//        return categoryService.createCategory(requestDto);
+//    }
+
 
 }
