@@ -34,8 +34,4 @@ public class User extends Timestamped {
 
     @Column(length = 255, nullable = false)
     private String currentAddress; // 대표 주소
-
-    @OneToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
 }

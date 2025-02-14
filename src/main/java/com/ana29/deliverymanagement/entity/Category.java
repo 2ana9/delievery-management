@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.entity;
 
+import com.ana29.deliverymanagement.dto.CategoryRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,8 +11,8 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
 @Builder
-@Table(name = "p_categories")
-public class Category {
+@Table(name = "p_category")
+public class Category extends Timestamped{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -19,7 +20,14 @@ public class Category {
     private UUID id;
 
     @Column(name = "food_type", nullable = false, length = 50)
-    private String food_type;
+    private String foodType;
+
+    @Column(name = "is_deleted",nullable = false)
+    @Builder.Default
+    private boolean isDeleted =false;
 
 
+    public Category(CategoryRequestDto requestDto) {
+        this.foodType = requestDto.getFood_type();
+    }
 }
