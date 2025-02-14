@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CategoryController {
 
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @PostMapping("/categories")
-    public void createCategory(@RequestBody CategoryRequestDto requestDto) {
-        categoryService.createCategory(requestDto);
+    public CategoryResponseDto createCategory(@RequestBody CategoryRequestDto requestDto) {
+        return categoryService.createCategory(requestDto);
     }
 
 }
