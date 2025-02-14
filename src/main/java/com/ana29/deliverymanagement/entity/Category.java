@@ -20,14 +20,14 @@ public class Category extends Timestamped{
     private UUID id;
 
     @Column(name = "food_type", nullable = false, length = 50)
-    private String food_type;
+    private String foodType;
 
     @Column(name = "is_deleted",nullable = false)
     @Builder.Default
-    private boolean is_deleted =false;
+    private boolean isDeleted =false;
 
 
     public Category(CategoryRequestDto requestDto) {
-        this.food_type = requestDto.getFood_type();
+        this.foodType = requestDto.getFood_type();
     }
 }
