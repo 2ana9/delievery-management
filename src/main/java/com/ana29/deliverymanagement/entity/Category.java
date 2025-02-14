@@ -30,4 +30,8 @@ public class Category extends Timestamped{
     public Category(CategoryRequestDto requestDto) {
         this.foodType = requestDto.getFoodType();
     }
+
+    public void update(CategoryRequestDto requestDto) {
+        this.foodType = requestDto.getFoodType();
+    }
 }
