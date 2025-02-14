@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryRequestDto {
-    private String food_type;
-    private boolean is_deleted; //삭제진행시 사용
+    private String foodType;
+    private boolean isDeleted; //삭제진행시 사용
 }

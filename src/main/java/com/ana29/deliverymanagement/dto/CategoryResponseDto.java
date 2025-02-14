@@ -10,12 +10,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CategoryResponseDto {
     private UUID id;
-    private String food_type;
-    private boolean is_deleted;
+    private String foodType;
+    private boolean isDeleted;
 
     public CategoryResponseDto(Category category) {
         this.id = category.getId();
-        this.food_type = category.getFood_type();
-        this.is_deleted = category.is_deleted();//boolean 타입은 get메서드 자동생성x
+        this.foodType = category.getFoodType();
+        this.isDeleted = category.isDeleted();
     }
 }
