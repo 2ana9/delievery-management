@@ -5,7 +5,7 @@ import com.ana29.deliverymanagement.entity.Area;
 import com.ana29.deliverymanagement.repository.AreaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import security.UserDetailsImpl;
+import com.ana29.deliverymanagement.security.UserDetailsImpl;
 
 @Service
 @RequiredArgsConstructor

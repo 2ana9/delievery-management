@@ -24,16 +24,7 @@ public class UserController {
 
     @PostMapping("/sign-up")
     public String signUp(@Valid SignupRequestDto requestDto, BindingResult bindingResult){
-        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-        if (!fieldErrors.isEmpty()) {
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                log.error(fieldError.getField() + " 필드 : " + fieldError.getDefaultMessage());
-            }
-            return "redirect:/api/users/sign-up";
-        }
-
-        userService.signup(requestDto);
-
+        userService.signup(requestDto, bindingResult);
         return "redirect:/api/users/sign-in";
     }
 
