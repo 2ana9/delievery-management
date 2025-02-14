@@ -22,6 +22,7 @@ public class UserAddress extends Timestamped {
     private String address;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isDeleted = false;
 
     @ManyToOne
