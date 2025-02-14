@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.security;
 
+import com.ana29.deliverymanagement.constant.jwt.JwtErrorMessage;
 import com.ana29.deliverymanagement.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -36,7 +37,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(tokenValue)) {
 
             if (!jwtUtil.validateToken(tokenValue)) {
-                log.error("Token Error");
+                log.error(JwtErrorMessage.Error.getGetJwtErrorMessage());
                 return;
             }
 

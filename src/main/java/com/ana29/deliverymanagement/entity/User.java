@@ -13,7 +13,7 @@ import lombok.*;
 @Table(name = "p_users")
 public class User extends Timestamped {
     @Id
-    @Column(length = 10, nullable = false)
+    @Column(length = 50, nullable = false)
     private String Id; // 유저 ID (Primary Key)
 
     @Column(length = 50, nullable = false)
@@ -32,7 +32,7 @@ public class User extends Timestamped {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-    @Column(length = 255, nullable = false)
+    @Column(length = 255, nullable = true)
     private String currentAddress; // 대표 주소
 
 }
