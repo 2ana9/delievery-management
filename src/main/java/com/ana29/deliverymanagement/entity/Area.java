@@ -15,17 +15,19 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
 @Builder
-@Table(name = "p_area_codes")
-public class AreaCode extends Timestamped {
-
+@Table(name = "p_area")
+public class Area extends Timestamped {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "area_code_id", columnDefinition = "uuid")
+	@Column(name = "area_id", columnDefinition = "uuid")
 	private UUID id;
 
 	@Column(length = 10, nullable = false)
 	private String code;
-//주석추가
+
 	@Column(nullable = false)
 	private String cityName;
+
+	@Column
+	private String parentId;
 }
