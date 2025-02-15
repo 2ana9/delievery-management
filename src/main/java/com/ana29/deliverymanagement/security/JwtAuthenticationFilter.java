@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //        setFilterProcessesUrl를 주석 처리하면, 해당 필터는 기본값 또는 보안 설정에서 지정한 로그인 처리 URL을 사용하게 됩니다.
 //        기본적으로 UsernamePasswordAuthenticationFilter의 기본 로그인 처리 URL은 /login이지만, Spring Security의 SecurityFilterChain에서
 //        formLogin() 설정을 통해 로그인 페이지 및 처리 URL을 커스터마이징한 경우, 해당 설정값이 자동으로 필터에 반영됩니다.//
-//        setFilterProcessesUrl("/api/users/sign-in");
+        setFilterProcessesUrl("/api/users/sign-in");
     }
 
     @Override

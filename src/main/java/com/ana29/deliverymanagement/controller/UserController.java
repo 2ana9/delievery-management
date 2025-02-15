@@ -37,6 +37,7 @@ public class UserController {
     private final Userservice userService;
     private final KakaoService kakaoService;
     private String ifSuccessRedirectUrl;
+
     @GetMapping("/sign-up")
     public String signUpPage(){
         log.info("connet Test : /sign-up (Get Method)");
@@ -86,23 +87,24 @@ public class UserController {
         return "redirect:" + ifSuccessRedirectUrl;
     }
 
-    @PostMapping("/user-info")
+    @PostMapping("/me")
     @ResponseBody
     public List<UserInfoDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.getUserInfo(userDetails);
     }
 
-    @PatchMapping("/modify-user-info")
+    @PatchMapping("/me")
     @ResponseBody
     public List<UserInfoDto> modifyUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                             @RequestBody @Valid UpdateUserRequestDto updateDto){
         return userService.modifyUserInfo(userDetails, updateDto);
     }
 
-    @DeleteMapping("/delete-user")
-    public void deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    @DeleteMapping("/me")
+    public String deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
                            @RequestBody @Valid UpdateUserRequestDto updateDto){
         userService.deleteUser(userDetails, updateDto);
+        return "redirect:/api/users/sign-in";
 
     }
 
