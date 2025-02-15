@@ -4,6 +4,6 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public record CreatePaymentRequestDto (@NotNull UUID orderId,
-									   String paymentType) {
+									   @NotNull String paymentType) {
 
 }
