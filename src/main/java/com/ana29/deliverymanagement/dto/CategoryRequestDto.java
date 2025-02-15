@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class KakaoUserInfoDto {
-    private Long id;
-    private String nickname;
-    private String email;
+public class CategoryRequestDto {
+    private String foodType;
+    private boolean isDeleted; //삭제진행시 사용
 }

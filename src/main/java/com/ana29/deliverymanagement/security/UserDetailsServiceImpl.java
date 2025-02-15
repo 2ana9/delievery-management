@@ -1,4 +1,4 @@
-package security;
+package com.ana29.deliverymanagement.security;
 
 import com.ana29.deliverymanagement.entity.User;
 import com.ana29.deliverymanagement.repository.UserRepository;
