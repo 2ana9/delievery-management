@@ -3,9 +3,12 @@ package com.ana29.deliverymanagement.controller;
 
 import com.ana29.deliverymanagement.config.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.constant.UserRoleEnum;
+import com.ana29.deliverymanagement.constant.jwt.JwtConfigEnum;
 import com.ana29.deliverymanagement.dto.SignupRequestDto;
 import com.ana29.deliverymanagement.dto.UserInfoDto;
+import com.ana29.deliverymanagement.jwt.JwtUtil;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
+import com.ana29.deliverymanagement.service.KakaoService;
 import com.ana29.deliverymanagement.service.Userservice;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.Cookie;
@@ -30,6 +33,7 @@ import java.util.List;
 public class UserController {
 
     private final Userservice userService;
+    private final KakaoService kakaoService;
     private String ifSuccessRedirectUrl;
     @GetMapping("/sign-up")
     public String signUpPage(){
@@ -85,15 +89,18 @@ public class UserController {
         return userService.getUserInfo(userDetails);
     }
 
-//    @GetMapping("/user/kakao/callback")
-//    public String kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
-//        String token = kakaoService.kakaoLogin(code);
-//
-//        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token);
-//        cookie.setPath("/");
-//        response.addCookie(cookie);
-//
-//        return "redirect:/";
-//    }
+    @GetMapping("/kakao/callback")
+    public String kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+        log.info("kakaoLogin Controller Method");
+        String token = kakaoService.kakaoLogin(code).substring(Integer.parseInt(JwtConfigEnum.BEARER_PREFIX_COUNT.getGetJwtConfig()));
+        log.info("kakao token : " + token);
+        Cookie cookie = new Cookie(JwtConfigEnum.AUTHORIZATION_HEADER.getGetJwtConfig(), token);
+        log.info("kakao cookie : " + cookie);
+
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return "redirect:/sign-in";
+    }
 
 }
