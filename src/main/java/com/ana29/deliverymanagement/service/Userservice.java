@@ -5,6 +5,7 @@ import com.ana29.deliverymanagement.config.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.constant.SignupConfig;
 import com.ana29.deliverymanagement.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.dto.SignupRequestDto;
+import com.ana29.deliverymanagement.dto.UpdateUserRequestDto;
 import com.ana29.deliverymanagement.dto.UserInfoDto;
 import com.ana29.deliverymanagement.entity.User;
 import com.ana29.deliverymanagement.jwt.JwtUtil;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
@@ -120,7 +122,42 @@ public class Userservice {
     }
 
 
+    /**
+     * JWT를 통해 인증된 사용자(UserDetailsImpl)를 기반으로,
+     * 추가로 전달된 업데이트 DTO의 정보로 회원 정보를 수정한 후,
+     * 수정된 정보를 UserInfoDto로 반환합니다.
+     */
 
+
+    @Transactional
+    public List<UserInfoDto> modifyUserInfo(UserDetailsImpl userDetails, UpdateUserRequestDto updateDto) {
+        // JWT로부터 현재 로그인한 사용자 엔티티 가져오기
+        User user = userDetails.getUser();
+
+//        setter 사용 지양
+
+        // 업데이트 DTO의 정보로 필드 수정
+        user.setNickname(updateDto.getNickname());
+        user.setEmail(updateDto.getEmail());
+        user.setPhone(updateDto.getPhone());
+        if (updateDto.getCurrentAddress() != null) {
+            user.setCurrentAddress(updateDto.getCurrentAddress());
+        }
+
+        // DB에 변경 사항 저장
+        userRepository.save(user);
+
+        // 수정된 회원 정보를 DTO로 변환하여 반환 (여기서는 단일 객체를 리스트로 감싸서 반환)
+        boolean isAdmin = (user.getRole() == UserRoleEnum.ADMIN);
+        UserInfoDto updatedInfo = new UserInfoDto(user.getId(), user.getNickname(), user.getEmail(), user.getPhone(), isAdmin);
+        return List.of(updatedInfo);
+    }
+
+    @Transactional
+    public void deleteUser(UserDetailsImpl userDetails, UpdateUserRequestDto updateDto) {
+        User user = userDetails.getUser();
+        userRepository.delete(user);
+    }
 
     /**
      * 🔹 바인딩 에러 체크
@@ -241,6 +278,7 @@ public class Userservice {
         }
         return currentAddress;
     }
+
 
 
 }
