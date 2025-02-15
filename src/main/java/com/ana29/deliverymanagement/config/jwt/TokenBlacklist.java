@@ -17,7 +17,7 @@ public class TokenBlacklist {
     // 토큰을 블랙리스트에 추가하는 메소드 (현재 시간 + 유지시간으로 설정)
     public static void addToken(String token) {
         long expirationTime = System.currentTimeMillis()
-                + Long.parseLong(JwtConfigEnum.BLACK_TOKEN_TIME.getGetJwtConfig());
+                + Long.parseLong(JwtConfigEnum.BLACK_TOKEN_TIME.getGetJwtConfig().trim());
         BLACKLIST.put(token, expirationTime);
     }
 

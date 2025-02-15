@@ -30,7 +30,6 @@
 //
 //    private final PasswordEncoder passwordEncoder;
 //    private final UserRepository userRepository;
-//    private final RestTemplate restTemplate;
 //    private final JwtUtil jwtUtil;
 //
 //    public String kakaoLogin(String code) throws JsonProcessingException {
@@ -44,9 +43,7 @@
 //        User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
 //
 ////        4. JWT 토큰 반환
-//        String createToken = jwtUtil.createToken(kakaoUser.getUsername(), kakaoUser.getRole());
-//
-//        return createToken;
+//        return jwtUtil.createToken(kakaoUser.getId(), kakaoUser.getRole());
 //    }
 //
 //    private String getToken(String code) throws JsonProcessingException {
@@ -124,7 +121,7 @@
 //    private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
 //        // DB 에 중복된 Kakao Id 가 있는지 확인
 //        Long kakaoId = kakaoUserInfo.getId();
-//        User kakaoUser = userRepository.findByKakaoId(kakaoId).orElse(null);
+//        User kakaoUser = userRepository.findById(kakaoId).orElse(null);
 //
 //        if (kakaoUser == null) {
 //            // 카카오 사용자 email 동일한 email 가진 회원이 있는지 확인
