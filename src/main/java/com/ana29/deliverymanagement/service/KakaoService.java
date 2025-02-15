@@ -8,6 +8,7 @@ import com.ana29.deliverymanagement.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j(topic = "KAKAO Login")
@@ -20,12 +21,18 @@ public class KakaoService {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
+    @Value("${kakao.client-id}")
+    private String kakaoClientId;
+
+    @Value("${kakao.redirect-url}")
+    private String kakaoRedirectUri;
+
     public String kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         KakaoTokenResponse tokenResponse = kakaoClient.getToken(
                 "authorization_code",
-                "c5c4adf0709a7a49c7eb1c856a68bf22",
-                "http://localhost:8080/api/user/kakao/callback",
+                kakaoClientId,
+                kakaoRedirectUri,
                 code
         );
         String accessToken = tokenResponse.getAccessToken();

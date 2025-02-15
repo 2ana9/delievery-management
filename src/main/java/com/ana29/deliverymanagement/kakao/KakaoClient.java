@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 // 🔹 카카오 API 연동을 위한 FeignClient 정의
-@Component
 @FeignClient(name = "KakaoClient", url = "https://kauth.kakao.com")
 public interface KakaoClient {
 
