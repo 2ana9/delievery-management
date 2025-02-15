@@ -29,7 +29,5 @@ public class Menu {
     private String content;
 
     @Column(name = "retaurant_id", nullable = false)
-    private Long retaurant_id;
-
-
+    private UUID restaurantId;
 }
