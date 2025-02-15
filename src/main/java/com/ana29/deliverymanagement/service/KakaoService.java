@@ -28,6 +28,9 @@ public class KakaoService {
     private String kakaoRedirectUri;
 
     public String kakaoLogin(String code) throws JsonProcessingException {
+
+        log.info("kakaoLogin Service Method");
+
         // 1. "인가 코드"로 "액세스 토큰" 요청
         KakaoTokenResponse tokenResponse = kakaoClient.getToken(
                 "authorization_code",
@@ -40,24 +43,41 @@ public class KakaoService {
         // 2. 토큰으로 카카오 API 호출하여 사용자 정보 가져오기
         KakaoUserInfoDto kakaoUserInfo = kakaoUserClient.getKakaoUserInfo("Bearer " + accessToken);
 
-        // 3. 필요시 회원가입 처리
-        User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
+        log.info(String.valueOf(kakaoUserInfo.getId()));
+        log.info(String.valueOf(kakaoUserInfo.getNickname()));
+        log.info(String.valueOf(kakaoUserInfo.getEmail()));
 
+        // 3. 필요시 회원가입 처리
+//        User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
+
+//        3-1. 임시 테스트 데이터 생성
+        User kakaoUser = User.builder()
+                .Id(String.valueOf(kakaoUserInfo.getId()) + "kakao")
+                .nickname(kakaoUserInfo.getNickname() + "kakao")
+                .email(kakaoUserInfo.getEmail())
+                .password("kakao1234")
+                .phone("010-1111-1111")
+                .role(UserRoleEnum.USER)
+                .build();
+//            3-2. 임시 데이터 저장 테스트
+        userRepository.save(kakaoUser);
+
+        log.info("kakaoUser : " + kakaoUser.toString());
         // 4. JWT 토큰 생성하여 반환
         return jwtUtil.createToken(kakaoUser.getId(), kakaoUser.getRole());
     }
 
-    private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
-        return userRepository.findById(String.valueOf(kakaoUserInfo.getId()))
-                .orElseGet(() -> {
-                    User newUser = new User(
-                            String.valueOf(kakaoUserInfo.getId()),
-                            kakaoUserInfo.getNickname(),
-                            kakaoUserInfo.getEmail(),
-                            "",
-                            UserRoleEnum.USER
-                    );
-                    return userRepository.save(newUser);
-                });
-    }
+//    private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
+//        return userRepository.findById(String.valueOf(kakaoUserInfo.getId()))
+//                .orElseGet(() -> {
+//                    User newUser = new User (
+//                            String.valueOf(kakaoUserInfo.getId()),
+//                            kakaoUserInfo.getNickname(),
+//                            kakaoUserInfo.getEmail(),
+//                            "",
+//                            UserRoleEnum.USER
+//                    );
+//                    return userRepository.save(newUser);
+//                });
+//    }
 }
