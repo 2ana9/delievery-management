@@ -1,6 +1,7 @@
 package com.ana29.deliverymanagement.service;
 
 import com.ana29.deliverymanagement.dto.CreateOrderRequestDto;
+import com.ana29.deliverymanagement.dto.CreateOrderResponseDto;
 import com.ana29.deliverymanagement.entity.Menu;
 import com.ana29.deliverymanagement.entity.Order;
 import com.ana29.deliverymanagement.entity.User;
@@ -18,7 +19,7 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 	private final UserRepository userRepository;
 
-	public void createOrder(CreateOrderRequestDto requestDto, String userId) {
+	public CreateOrderResponseDto createOrder(CreateOrderRequestDto requestDto, String userId) {
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new RuntimeException("User not found"));
@@ -33,6 +34,8 @@ public class OrderService {
 			.orderRequest(requestDto.orderRequest())
 			.build();
 
-		orderRepository.save(order);
+		Order savedOrder = orderRepository.save(order);
+
+		return new CreateOrderResponseDto(savedOrder.getId(), savedOrder.getTotalAmount());
 	}
 }
