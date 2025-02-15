@@ -21,13 +21,6 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     // Header KEY 값
-    public static final String AUTHORIZATION_HEADER = JwtConfigEnum.AUTHORIZATION_HEADER.getGetJwtConfig();
-    // 사용자 권한 값의 KEY
-    public static final String AUTHORIZATION_KEY = JwtConfigEnum.AUTHORIZATION_KEY.getGetJwtConfig();
-    // Token 식별자
-    public static final String BEARER_PREFIX = JwtConfigEnum.BEARER_PREFIX.getGetJwtConfig();
-    // 토큰 만료시간
-    private final long TOKEN_TIME = Long.parseLong(JwtConfigEnum.TOKEN_TIME.getGetJwtConfig()); // 60분
 
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
     private String secretKey;
@@ -44,25 +37,28 @@ public class JwtUtil {
     public String createToken(String username, UserRoleEnum role) {
         Date date = new Date();
 
-        return (BEARER_PREFIX +
+        return (JwtConfigEnum.BEARER_PREFIX.getGetJwtConfig() +
                 Jwts.builder()
                         .setSubject(username) // 사용자 식별자값(ID)
-                        .claim(AUTHORIZATION_KEY, role) // 사용자 권한
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
+                        .claim(JwtConfigEnum.AUTHORIZATION_HEADER.getGetJwtConfig(), role) // 사용자 권한
+                        .setExpiration(new Date(date.getTime() + Long.parseLong(JwtConfigEnum.TOKEN_TIME.getGetJwtConfig()))) // 만료 시간
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact())
-                .substring(7);
+                        .compact());
+//                .substring(Integer.parseInt(JwtConfigEnum.BEARER_PREFIX_COUNT.getGetJwtConfig()));
         // BEARER_PREFIX : "bearer " 토큰 앞 7글자 제거
     }
 
     // header 에서 JWT 가져오기
     public String getJwtFromHeader(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(7);
+        String bearerToken = request.getHeader(JwtConfigEnum.AUTHORIZATION_HEADER.getGetJwtConfig());
+        log.info("BEARER TOKEN VALUE : " + bearerToken);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(JwtConfigEnum.BEARER_PREFIX.getGetJwtConfig())) {
+            log.info("getJwtFromHeader Has Prefix : " + bearerToken);
+            return bearerToken.substring(Integer.parseInt(JwtConfigEnum.BEARER_PREFIX_COUNT.getGetJwtConfig()));
         }
-        return null;
+        log.info("getJwtFromHeader No Prefix : " + bearerToken);
+        return bearerToken;
     }
 
     // 토큰 검증

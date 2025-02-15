@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.security;
 
+import com.ana29.deliverymanagement.config.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.constant.jwt.JwtErrorMessage;
 import com.ana29.deliverymanagement.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -8,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -17,6 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.TreeMap;
 
 @Slf4j(topic = "JWT 검증 및 인가")
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -30,18 +33,44 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+//        /api/users/sign-in 의 Get 접속은 검증하지 않음
+        if ("GET".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+        String path = request.getRequestURI();
+        // 로그인/로그아웃 엔드포인트는 검증하지 않음
+        // sign-in의 POST 방식도 검증해야 하나?
+        // shouldNotFilter가 없으면 'sign-out' 메소드 후 리다이렉트 되는 'sing-in' (GET) 에서
+        // JWT 검증을 하게 됨. sign-out 메소드는 토큰 블랙리스트를 등록하므로
+        // sign-in 페이지에서 블랙리스트에 걸려 401 권한 에러.
+        return path.equals("/api/users/sign-in");
+//        return true;
+    }
 
-        String tokenValue = jwtUtil.getJwtFromHeader(req);
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if (StringUtils.hasText(tokenValue)) {
+        String token = jwtUtil.getJwtFromHeader(request);
+        //토큰 블랙리스트 검증
+        if (token != null && !token.isEmpty()) {
+            log.info("BLACKLIST TEST : " + token);
+            if (TokenBlacklist.isTokenBlacklisted(token)) {
+                log.info("BLACKLIST VALID");
+                log.info("BLACKLIST INfO : " + TokenBlacklist.getBlacklistedTokens().toString());
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                return;
+            }
+        }
+        log.info("NOT BLACKLIST VALID");
+        if (StringUtils.hasText(token)) {
 
-            if (!jwtUtil.validateToken(tokenValue)) {
+            if (!jwtUtil.validateToken(token)) {
                 log.error(JwtErrorMessage.Error.getGetJwtErrorMessage());
                 return;
             }
 
-            Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
+            Claims info = jwtUtil.getUserInfoFromToken(token);
 
             try {
                 setAuthentication(info.getSubject());
@@ -51,7 +80,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
         }
 
-        filterChain.doFilter(req, res);
+        filterChain.doFilter(request, response);
     }
 
     // 인증 처리

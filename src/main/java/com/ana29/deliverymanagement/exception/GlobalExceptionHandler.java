@@ -23,9 +23,10 @@ public class GlobalExceptionHandler {
         // 회원가입 URL에서 발생한 예외인 경우
         if (request.getRequestURI().contains("/api/users/sign-up")) {
             HttpHeaders headers = new HttpHeaders();
-            // 에러 메시지를 쿼리 파라미터로 전달 (예: ?error=메시지)
-            String redirectUrl = "/api/users/sign-up?error=" + ex.getMessage();
-            headers.setLocation(URI.create(redirectUrl));
+            // 에러 메시지를 URL 인코딩하여 쿼리 파라미터로 전달 (예: ?error=메시지)
+//            인코딩 없을 시 url을 해석하지 못하여 403 에러
+            String encodedErrorMessage = URLEncoder.encode(ex.getMessage(), StandardCharsets.UTF_8);
+            String redirectUrl = "/api/users/sign-up?error=" + encodedErrorMessage;
             // 302 FOUND 상태와 함께 리다이렉션 헤더를 반환
             return new ResponseEntity<>(headers, HttpStatus.FOUND);
         }

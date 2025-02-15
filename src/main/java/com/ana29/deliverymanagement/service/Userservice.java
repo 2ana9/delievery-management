@@ -1,19 +1,29 @@
 package com.ana29.deliverymanagement.service;
 
 import com.ana29.deliverymanagement.config.admin.AdminConfig;
+import com.ana29.deliverymanagement.config.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.constant.SignupConfig;
 import com.ana29.deliverymanagement.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.dto.SignupRequestDto;
+import com.ana29.deliverymanagement.dto.UserInfoDto;
 import com.ana29.deliverymanagement.entity.User;
+import com.ana29.deliverymanagement.jwt.JwtUtil;
 import com.ana29.deliverymanagement.repository.UserRepository;
+import com.ana29.deliverymanagement.security.UserDetailsImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,6 +33,7 @@ public class Userservice {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AdminConfig adminConfig;
+    private final JwtUtil jwtUtil;
 
     public String signup(SignupRequestDto requestDto, BindingResult bindingResult) {
 //        에러 발생 시 기존 회원가입 url 리다이렉트 하는 global handler 필요
@@ -71,8 +82,45 @@ public class Userservice {
 
         userRepository.save(user);
 
-        return "redirect:/api/users/sign-in";
+        return "/api/users/sign-in";
     }
+    public String signOut(HttpServletRequest request) {
+        String token = jwtUtil.getJwtFromHeader(request);
+        log.info("Sign Out Token Value   : " + token);
+
+        if (token != null && !token.isEmpty()) {
+            TokenBlacklist.addToken(token);
+        } else {
+            throw new IllegalArgumentException("Token is Empty, 유효하지 않은 접근입니다.");
+        }
+        SecurityContextHolder.clearContext();
+        return "/api/users/sign-in";
+    }
+
+    public List<UserInfoDto> getUserInfo(UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        boolean isAdmin = (user.getRole() == UserRoleEnum.ADMIN);
+
+        List<UserInfoDto> userInfoDtoList = new ArrayList<>();
+
+        if (isAdmin) {
+            // Admin이면 모든 유저 정보를 가져옴 (페이징 적용)
+            List<User> userList = userRepository.findAll(PageRequest.of(0, 10)).getContent();
+
+            // User -> UserInfoDto 변환하여 리스트에 추가
+            userInfoDtoList = userList.stream()
+                    .map(u -> new UserInfoDto(u.getId(), u.getNickname(), u.getEmail(), u.getPhone(), true))
+                    .collect(Collectors.toList());
+        } else {
+            // 일반 사용자는 자신의 정보만 반환
+            userInfoDtoList.add(new UserInfoDto(user.getId(), user.getNickname(), user.getEmail(), user.getPhone(), false));
+        }
+
+        return userInfoDtoList;
+    }
+
+
+
 
     /**
      * 🔹 바인딩 에러 체크
@@ -193,4 +241,6 @@ public class Userservice {
         }
         return currentAddress;
     }
+
+
 }
