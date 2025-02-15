@@ -13,21 +13,38 @@ import lombok.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Table(name = "p_area")
-public class Area extends Timestamped {
+public class Area {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "area_id", columnDefinition = "uuid")
 	private UUID id;
 
+	@Column(length = 20, nullable = false)
+	private String city;	//예) 서울특별시
+
+	@Column(length = 20, nullable = false)
+	private String district;	//예) 종로구
+
+	//지번 주소 (법정동)
+	@Column(length = 50, nullable = false)
+	private String town;	//예) 청운동
+
 	@Column(length = 10, nullable = false)
-	private String code;
+	private String lot_main_no;	//지번 본번 예) (50)
 
-	@Column(nullable = false)
-	private String cityName;
+	@Column(length = 10, nullable = false)
+	private String lot_sub_no;	//지번 부번 예) (6)
 
-	@Column
-	private String parentId;
+	//도로명 주소
+	@Column(length = 50, nullable = false)
+	private String road_name;	//자하문로
+
+	@Column(length = 10, nullable = false)
+	private String building_main_no;	//건물 본번 예) (115)
+
+	@Column(length = 10, nullable = false)
+	private String building_sub_no;	//건물 부번 예) (14)
 }
