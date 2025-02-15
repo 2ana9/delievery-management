@@ -36,6 +36,6 @@ public class OrderService {
 
 		Order savedOrder = orderRepository.save(order);
 
-		return new CreateOrderResponseDto(savedOrder.getId(), savedOrder.getTotalAmount());
+		return new CreateOrderResponseDto(savedOrder.getId(), savedOrder.getTotalPrice());
 	}
 }
