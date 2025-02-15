@@ -22,45 +22,36 @@ public class PaymentService {
 	private final PaymentProcessor paymentProcessor;
 	private final OrderRepository orderRepository;
 
+	//결제 생성 및 처리
 	@Transactional
 	public PaymentResultDto createPayment(CreatePaymentRequestDto requestDto, String userId) {
+		Order order = validateOrder(requestDto, userId);
 
-		//주문 정보 가져오기
-		Order order = orderRepository.findById(requestDto.orderId())
-			.orElseThrow(() -> new RuntimeException("Order not found"));
-
-		//유저의 주문인지 확인
-		if(!order.getUser().getId().equals(userId)){
-			throw new RuntimeException("Order does not belong to user");
-		}
-
-		//결제 수단
 		PaymentTypeEnum paymentType = PaymentTypeEnum.valueOf(requestDto.paymentType());
+		PaymentResultDto resultDto = processPayment(order, paymentType);
+		paymentRepository.save(Payment.from(order, paymentType, resultDto));
+		return resultDto;
+	}
 
-		//결제 요청 DTO 생성
-		PaymentRequestDto paymentRequestDto =
-			new PaymentRequestDto(order.getTotalPrice(), paymentType);
+	//결제 처리 및 주문상태 업데이트
+	private PaymentResultDto processPayment(Order order, PaymentTypeEnum paymentType) {
+		PaymentResultDto resultDto = paymentProcessor.processPayment(
+			new PaymentRequestDto(order.getTotalPrice(), paymentType));
 
-		//결제 처리
-		PaymentResultDto resultDto = paymentProcessor.processPayment(paymentRequestDto);
-
-		// 결제 성공 여부 확인
 		if (resultDto.isSuccess()) {
 			order.updateStatus(OrderStatusEnum.PAID);
 		}
-
-		// 결제 정보 저장
-		paymentRepository.save(
-			Payment.builder()
-				.totalPrice(order.getTotalPrice())
-				.order(order)
-				.paymentType(paymentType)
-				.paymentStatus(resultDto.isSuccess() ? PaymentStatusEnum.COMPLETED : PaymentStatusEnum.FAILED)
-				.externalPaymentId(resultDto.externalPaymentId())
-				.errorMessage(resultDto.errorMessage())
-				.build()
-		);
-
 		return resultDto;
+	}
+
+	//주문 정보 검증 : 주문이 존재하는지, 요청한 사용자의 주문인지 확인
+	private Order validateOrder(CreatePaymentRequestDto requestDto, String userId) {
+		Order order = orderRepository.findById(requestDto.orderId())
+			.orElseThrow(() -> new RuntimeException("Order not found"));
+
+		if (!order.getUser().getId().equals(userId)) {
+			throw new RuntimeException("Order does not belong to user");
+		}
+		return order;
 	}
 }

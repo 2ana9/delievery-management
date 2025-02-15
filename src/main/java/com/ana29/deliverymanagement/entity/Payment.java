@@ -2,6 +2,7 @@ package com.ana29.deliverymanagement.entity;
 
 import com.ana29.deliverymanagement.constant.PaymentStatusEnum;
 import com.ana29.deliverymanagement.constant.PaymentTypeEnum;
+import com.ana29.deliverymanagement.dto.PaymentResultDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -52,4 +53,16 @@ public class Payment extends Timestamped {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id", nullable = false)
 	private Order order;
+
+	public static Payment from(Order order, PaymentTypeEnum type, PaymentResultDto result) {
+		return Payment.builder()
+			.totalPrice(order.getTotalPrice())
+			.order(order)
+			.paymentType(type)
+			.paymentStatus(
+				result.isSuccess() ? PaymentStatusEnum.COMPLETED : PaymentStatusEnum.FAILED)
+			.externalPaymentId(result.externalPaymentId())
+			.errorMessage(result.errorMessage())
+			.build();
+	}
 }
