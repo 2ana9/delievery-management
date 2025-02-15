@@ -100,7 +100,7 @@ public class UserController {
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        return "redirect:/sign-in";
+        return "redirect:/api/users/sign-in";
     }
 
 }
