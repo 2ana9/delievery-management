@@ -46,6 +46,15 @@ public class CategoryController {
 
 
     //음식 카테고리 삭제
+    @DeleteMapping("categories/{id}")
+    public CategoryResponseDto deleteCategory(@PathVariable UUID id,
+                                              @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
+        UserRoleEnum userRole = userDetails.getUser().getRole();
+        if (userRole != UserRoleEnum.ADMIN) {
+            throw new AccessDeniedException("관리자 접근이 필요합니다.");
+        }
+        return categoryService.deleteCategory(id);
+    };
 
 
 

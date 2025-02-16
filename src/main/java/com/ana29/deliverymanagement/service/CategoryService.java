@@ -31,7 +31,11 @@ public class CategoryService {
         return new CategoryResponseDto(category);
     }
 
-    public void deleteCategory(UUID id) {
-
+    public CategoryResponseDto deleteCategory(UUID id) {
+        Category category = categoryRepository.findById(id).orElseThrow(()->
+                new IllegalArgumentException("Category not found"));
+        category.setIsDeleted(true);
+        categoryRepository.save(category);
+        return new CategoryResponseDto(category);
     };
 }
