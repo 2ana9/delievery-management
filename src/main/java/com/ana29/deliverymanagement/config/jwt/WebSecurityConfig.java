@@ -66,8 +66,10 @@ public class WebSecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
                         .requestMatchers("/api/users/**").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
-                        .requestMatchers("/api/area/**").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
-                        .requestMatchers("/api/reviews").permitAll()
+
+//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")  // 관리자 전용 API 보호
+//                        .requestMatchers("/api/users/**").authenticated()  // 일반 유저 API는 JWT 필요
+//                        .requestMatchers("/api/reviews").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
@@ -75,7 +77,6 @@ public class WebSecurityConfig {
 //                formLogin
 //                        .loginPage("/api/users/sign-in").permitAll()
 //        );
-//        FormLogin 기능과 JWT 기능이 겹치면 무한루프
 
         // 필터 관리
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);

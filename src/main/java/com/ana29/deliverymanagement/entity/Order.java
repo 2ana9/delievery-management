@@ -4,8 +4,8 @@ import com.ana29.deliverymanagement.constant.OrderStatusEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.UUID;
+
 
 @Entity
 @Getter
@@ -19,35 +19,26 @@ public class Order extends Timestamped{
     @Column(name = "order_id", columnDefinition = "uuid")
     private UUID id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private OrderStatusEnum orderStatus;
-
-    @Column(length = 100)
-    private String content;
-
-    @Column(length = 100, nullable = false)
-    private String operatingHours;
-
-    @Column(length = 100, nullable = false)
-    private String orderRequest;
-
-    @Column(length = 255, nullable = false)
-    private String address;
-
-    @Column(length = 255, nullable = false)
-    private int price;
-
-    @Column(nullable = false)
-    private UUID payment_id;
-
-    @JsonIgnore  // 이 필드는 JSON으로 직렬화되지 않음
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @JsonIgnore  // 이 필드는 JSON으로 직렬화되지 않음
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id", nullable = false)
-    private Restaurant restaurant;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_id", nullable = false)
+    private Menu menu;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private OrderStatusEnum orderStatus = OrderStatusEnum.PENDING;
+
+    @Column(nullable = false)
+    private Integer quantity;
+
+    @Column(length = 100)
+    private String orderRequest;
+
+    public Long getTotalAmount() {
+        return this.menu.getPrice() * quantity;
+    }
 }

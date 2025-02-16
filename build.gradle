@@ -23,6 +23,11 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    set('springCloudVersion', "2024.0.0")
+}
+
+
 dependencies {
 
     // JWT
@@ -30,12 +35,14 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
-// json
-    implementation 'org.json:json:20230227'
-
+//   json
+    implementation 'org.json:json:20231013'
+//    validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-
+//    thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+//    feignClient
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -49,6 +56,12 @@ dependencies {
 
     //elasticsearch
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 tasks.named('test') {
