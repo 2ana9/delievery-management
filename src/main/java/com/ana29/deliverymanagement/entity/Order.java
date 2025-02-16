@@ -1,11 +1,24 @@
 package com.ana29.deliverymanagement.entity;
 
 import com.ana29.deliverymanagement.constant.OrderStatusEnum;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 
 @Entity
 @Getter
@@ -13,41 +26,40 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
 @Builder
 @Table(name = "p_order")
-public class Order extends Timestamped{
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "order_id", columnDefinition = "uuid")
-    private UUID id;
+public class Order extends Timestamped {
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private OrderStatusEnum orderStatus;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "order_id", columnDefinition = "uuid")
+	private UUID id;
 
-    @Column(length = 100)
-    private String content;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
-    @Column(length = 100, nullable = false)
-    private String operatingHours;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "menu_id", nullable = false)
+	private Menu menu;
 
-    @Column(length = 100, nullable = false)
-    private String orderRequest;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	@Builder.Default
+	private OrderStatusEnum orderStatus = OrderStatusEnum.PENDING;
 
-    @Column(length = 255, nullable = false)
-    private String address;
+	@Column(nullable = false)
+	private Integer quantity;
 
-    @Column(length = 255, nullable = false)
-    private int price;
+	@Column(length = 100)
+	private String orderRequest;
 
-    @Column(nullable = false)
-    private UUID payment_id;
+	public Long getTotalPrice() {
+		return this.menu.getPrice() * quantity;
+	}
 
-    @JsonIgnore  // 이 필드는 JSON으로 직렬화되지 않음
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @JsonIgnore  // 이 필드는 JSON으로 직렬화되지 않음
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id", nullable = false)
-    private Restaurant restaurant;
+	public void updateStatus(OrderStatusEnum newStatus) {
+		if(!this.orderStatus.canChangeTo(newStatus)){
+			throw new RuntimeException("Order status cannot be changed");
+		}
+		this.orderStatus = newStatus;
+	}
 }

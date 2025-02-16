@@ -1,19 +1,31 @@
 package com.ana29.deliverymanagement.service;
 
 import com.ana29.deliverymanagement.config.admin.AdminConfig;
+import com.ana29.deliverymanagement.config.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.constant.SignupConfig;
 import com.ana29.deliverymanagement.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.dto.SignupRequestDto;
+import com.ana29.deliverymanagement.dto.UpdateUserRequestDto;
+import com.ana29.deliverymanagement.dto.UserInfoDto;
 import com.ana29.deliverymanagement.entity.User;
+import com.ana29.deliverymanagement.jwt.JwtUtil;
 import com.ana29.deliverymanagement.repository.UserRepository;
+import com.ana29.deliverymanagement.security.UserDetailsImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,6 +35,7 @@ public class Userservice {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AdminConfig adminConfig;
+    private final JwtUtil jwtUtil;
 
     public String signup(SignupRequestDto requestDto, BindingResult bindingResult) {
 //        에러 발생 시 기존 회원가입 url 리다이렉트 하는 global handler 필요
@@ -71,7 +84,79 @@ public class Userservice {
 
         userRepository.save(user);
 
-        return "redirect:/api/users/sign-in";
+        return "/api/users/sign-in";
+    }
+    public String signOut(HttpServletRequest request) {
+        String token = jwtUtil.getJwtFromHeader(request);
+        log.info("Sign Out Token Value   : " + token);
+
+        if (token != null && !token.isEmpty()) {
+            TokenBlacklist.addToken(token);
+        } else {
+            throw new IllegalArgumentException("Token is Empty, 유효하지 않은 접근입니다.");
+        }
+        SecurityContextHolder.clearContext();
+        return "/api/users/sign-in";
+    }
+
+    public List<UserInfoDto> getUserInfo(UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        boolean isAdmin = (user.getRole() == UserRoleEnum.ADMIN);
+
+        List<UserInfoDto> userInfoDtoList = new ArrayList<>();
+
+        if (isAdmin) {
+            // Admin이면 모든 유저 정보를 가져옴 (페이징 적용)
+            List<User> userList = userRepository.findAll(PageRequest.of(0, 10)).getContent();
+
+            // User -> UserInfoDto 변환하여 리스트에 추가
+            userInfoDtoList = userList.stream()
+                    .map(u -> new UserInfoDto(u.getId(), u.getNickname(), u.getEmail(), u.getPhone(), true))
+                    .collect(Collectors.toList());
+        } else {
+            // 일반 사용자는 자신의 정보만 반환
+            userInfoDtoList.add(new UserInfoDto(user.getId(), user.getNickname(), user.getEmail(), user.getPhone(), false));
+        }
+
+        return userInfoDtoList;
+    }
+
+
+    /**
+     * JWT를 통해 인증된 사용자(UserDetailsImpl)를 기반으로,
+     * 추가로 전달된 업데이트 DTO의 정보로 회원 정보를 수정한 후,
+     * 수정된 정보를 UserInfoDto로 반환합니다.
+     */
+
+
+    @Transactional
+    public List<UserInfoDto> modifyUserInfo(UserDetailsImpl userDetails, UpdateUserRequestDto updateDto) {
+        // JWT로부터 현재 로그인한 사용자 엔티티 가져오기
+        User user = userDetails.getUser();
+
+//        setter 사용 지양
+
+        // 업데이트 DTO의 정보로 필드 수정
+        user.setNickname(updateDto.getNickname());
+        user.setEmail(updateDto.getEmail());
+        user.setPhone(updateDto.getPhone());
+        if (updateDto.getCurrentAddress() != null) {
+            user.setCurrentAddress(updateDto.getCurrentAddress());
+        }
+
+        // DB에 변경 사항 저장
+        userRepository.save(user);
+
+        // 수정된 회원 정보를 DTO로 변환하여 반환 (여기서는 단일 객체를 리스트로 감싸서 반환)
+        boolean isAdmin = (user.getRole() == UserRoleEnum.ADMIN);
+        UserInfoDto updatedInfo = new UserInfoDto(user.getId(), user.getNickname(), user.getEmail(), user.getPhone(), isAdmin);
+        return List.of(updatedInfo);
+    }
+
+    @Transactional
+    public void deleteUser(UserDetailsImpl userDetails, UpdateUserRequestDto updateDto) {
+        User user = userDetails.getUser();
+        userRepository.delete(user);
     }
 
     /**
@@ -193,4 +278,7 @@ public class Userservice {
         }
         return currentAddress;
     }
+
+
+
 }
