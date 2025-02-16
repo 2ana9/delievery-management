@@ -30,4 +30,8 @@ public class CategoryService {
 
         return new CategoryResponseDto(category);
     }
+
+    public void deleteCategory(UUID id) {
+
+    };
 }
