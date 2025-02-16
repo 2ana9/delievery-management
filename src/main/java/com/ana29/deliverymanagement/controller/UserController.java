@@ -5,6 +5,7 @@ import com.ana29.deliverymanagement.config.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.constant.jwt.JwtConfigEnum;
 import com.ana29.deliverymanagement.dto.SignupRequestDto;
+import com.ana29.deliverymanagement.dto.UpdateUserRequestDto;
 import com.ana29.deliverymanagement.dto.UserInfoDto;
 import com.ana29.deliverymanagement.jwt.JwtUtil;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
@@ -20,6 +21,7 @@ import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +37,7 @@ public class UserController {
     private final Userservice userService;
     private final KakaoService kakaoService;
     private String ifSuccessRedirectUrl;
+
     @GetMapping("/sign-up")
     public String signUpPage(){
         log.info("connet Test : /sign-up (Get Method)");
@@ -49,6 +52,22 @@ public class UserController {
         log.info("Method Complete Test : /sign-up (Post Method)");
         return "redirect:" + ifSuccessRedirectUrl;
     }
+//    유저가 로그인을 하면 로그인하기 전 페이지로 돌아가도록 하고 싶다.
+//    생각해보면 크게 두 가지 경우가 있을수 있다.
+//
+//    유저가 직접 로그인 버튼을 클릭해서 로그인폼으로 이동 후 로그인 성공
+//    유저가 권한이 없는 경로에 접근해서 스프링 시큐리티가 인터셉트 한 후에 로그인 페이지 요청으로 바꿔 서블릿에 전달
+//    @GetMapping("/sign-in")
+//    @ResponseBody
+//    public String signInPage(Model model, HttpServletRequest request){
+//        model.addAttribute("menu", "login");
+//        String prevPage = request.getHeader("Referer");
+//        log.info("loginForm prevPage = {}", prevPage);
+//        if(prevPage != null && !prevPage.contains("/login")) {
+//            request.getSession().setAttribute("prevPage", prevPage);
+//        }
+//        return "login test";
+//    }
 
     @GetMapping("/sign-in")
     public String signInPage(){
@@ -68,25 +87,25 @@ public class UserController {
         return "redirect:" + ifSuccessRedirectUrl;
     }
 
-    @GetMapping("/me")
-    @ResponseBody
-    public void getUser(@AuthenticationPrincipal UserDetailsImpl userDetails){
-
-    }
-
-    @PatchMapping("/me")
-    public void modifyUser(){
-
-    }
-
-    @DeleteMapping("/me")
-    public void deleteUser(){
-
-    }
-    @PostMapping("/user-info")
+    @PostMapping("/me")
     @ResponseBody
     public List<UserInfoDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.getUserInfo(userDetails);
+    }
+
+    @PatchMapping("/me")
+    @ResponseBody
+    public List<UserInfoDto> modifyUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                            @RequestBody @Valid UpdateUserRequestDto updateDto){
+        return userService.modifyUserInfo(userDetails, updateDto);
+    }
+
+    @DeleteMapping("/me")
+    public String deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                           @RequestBody @Valid UpdateUserRequestDto updateDto){
+        userService.deleteUser(userDetails, updateDto);
+        return "redirect:/api/users/sign-in";
+
     }
 
     @GetMapping("/kakao/callback")
@@ -100,7 +119,7 @@ public class UserController {
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        return "redirect:/sign-in";
+        return "redirect:/api/users/sign-in";
     }
 
 }

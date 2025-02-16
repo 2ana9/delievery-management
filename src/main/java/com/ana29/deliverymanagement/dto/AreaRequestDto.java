@@ -6,6 +6,5 @@ import lombok.Setter;
 @Setter
 @Getter
 public class AreaRequestDto {
-    private String code;
-    private String cityName;
+    private String search;
 }

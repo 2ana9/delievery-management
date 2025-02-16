@@ -50,10 +50,3 @@ INSERT INTO p_menus (menu_id, name, price, content, retaurant_id)
 SELECT '770e8400-e29b-41d4-a716-446655440003', '불고기 피자', 18000, '달콤한 불고기와 치즈', '550e8400-e29b-41d4-a716-446655440001'
 WHERE NOT EXISTS (SELECT 1 FROM p_menus WHERE menu_id = '770e8400-e29b-41d4-a716-446655440003');
 
-INSERT INTO p_menus (menu_id, name, price, content, retaurant_id)
-SELECT '770e8400-e29b-41d4-a716-446655440004', '연어초밥', 12000, '신선한 연어와 와사비', '550e8400-e29b-41d4-a716-446655440002'
-WHERE NOT EXISTS (SELECT 1 FROM p_menus WHERE menu_id = '770e8400-e29b-41d4-a716-446655440004');
-
-INSERT INTO p_menus (menu_id, name, price, content, retaurant_id)
-SELECT '770e8400-e29b-41d4-a716-446655440005', '참치초밥', 13000, '고급 참치와 간장', '550e8400-e29b-41d4-a716-446655440002'
-WHERE NOT EXISTS (SELECT 1 FROM p_menus WHERE menu_id = '770e8400-e29b-41d4-a716-446655440005');
