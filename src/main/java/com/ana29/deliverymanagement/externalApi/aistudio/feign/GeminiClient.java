@@ -1,5 +1,7 @@
 package com.ana29.deliverymanagement.externalApi.aistudio.feign;
 
+import com.ana29.deliverymanagement.externalApi.aistudio.GeminiRequestDto;
+import com.ana29.deliverymanagement.externalApi.aistudio.GeminiResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +21,7 @@ public interface GeminiClient {
      */
     @PostMapping(value = "/v1beta/models/gemini-1.5-flash:generateContent",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    GeminiResponse generateContent(@RequestParam("key") String apiKey,
-                                   @RequestBody GeminiRequest request);
+    GeminiResponseDto generateContent(@RequestParam("key") String apiKey,
+                                      @RequestBody GeminiRequestDto request);
 }
 
