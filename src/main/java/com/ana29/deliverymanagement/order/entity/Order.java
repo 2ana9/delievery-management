@@ -1,8 +1,8 @@
 package com.ana29.deliverymanagement.order.entity;
 
 import com.ana29.deliverymanagement.global.constant.OrderStatusEnum;
-import com.ana29.deliverymanagement.restaurant.entity.Menu;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
+import com.ana29.deliverymanagement.restaurant.entity.Menu;
 import com.ana29.deliverymanagement.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -44,6 +45,9 @@ public class Order extends Timestamped {
 	@JoinColumn(name = "menu_id", nullable = false)
 	private Menu menu;
 
+	@Column(nullable = false)
+	private Long totalPrice;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	@Builder.Default
@@ -55,14 +59,26 @@ public class Order extends Timestamped {
 	@Column(length = 100)
 	private String orderRequest;
 
-	public Long getTotalPrice() {
-		return this.menu.getPrice() * quantity;
-	}
+	@Column(nullable = false)
+	@Builder.Default
+	private boolean isDeleted = false;
+
+	@OneToOne(mappedBy = "order")
+	private Payment payment;
 
 	public void updateStatus(OrderStatusEnum newStatus) {
 		if(!this.orderStatus.canChangeTo(newStatus)){
 			throw new RuntimeException("Order status cannot be changed");
 		}
 		this.orderStatus = newStatus;
+	}
+
+	public void delete(String deletedBy){
+		super.delete(deletedBy);
+		this.isDeleted = true;
+	}
+
+	public boolean isOwner(String userId){
+		return this.user.getId().equals(userId);
 	}
 }
