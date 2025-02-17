@@ -28,6 +28,7 @@ public class Menu {
     @Column(name = "content", nullable = false, length = 100)
     private String content;
 
-    @Column(name = "retaurant_id", nullable = false)
-    private UUID restaurantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
 }

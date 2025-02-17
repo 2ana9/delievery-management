@@ -34,19 +34,11 @@ SELECT 'f72ac5d3-9f1c-44f2-b676-8c02a211ac2b', '파스타 파라다이스', '신
 WHERE NOT EXISTS (SELECT 1 FROM p_restaurant WHERE restaurant_id = 'f72ac5d3-9f1c-44f2-b676-8c02a211ac2b');
 
 -- 메뉴 데이터 삽입
-INSERT INTO p_menus (menu_id, name, price, content, retaurant_id)
-SELECT '770e8400-e29b-41d4-a716-446655440000', '비빔밥', 10000, '신선한 야채와 고소한 고추장', '550e8400-e29b-41d4-a716-446655440000'
+INSERT INTO p_menus (menu_id, name, price, content, restaurant_id)
+SELECT '770e8400-e29b-41d4-a716-446655440000', '비빔밥', 10000, '신선한 야채와 고소한 고추장', '92e8d27b-d604-4be3-b0ea-b9b55f365e09'
 WHERE NOT EXISTS (SELECT 1 FROM p_menus WHERE menu_id = '770e8400-e29b-41d4-a716-446655440000');
 
-INSERT INTO p_menus (menu_id, name, price, content, retaurant_id)
-SELECT '770e8400-e29b-41d4-a716-446655440001', '김치찌개', 9000, '얼큰한 국물과 두부', '550e8400-e29b-41d4-a716-446655440000'
+INSERT INTO p_menus (menu_id, name, price, content, restaurant_id)
+SELECT '770e8400-e29b-41d4-a716-446655440001', '김치찌개', 9000, '얼큰한 국물과 두부', '92e8d27b-d604-4be3-b0ea-b9b55f365e09'
 WHERE NOT EXISTS (SELECT 1 FROM p_menus WHERE menu_id = '770e8400-e29b-41d4-a716-446655440001');
-
-INSERT INTO p_menus (menu_id, name, price, content, retaurant_id)
-SELECT '770e8400-e29b-41d4-a716-446655440002', '마르게리따 피자', 15000, '토마토와 바질이 조화로운 피자', '550e8400-e29b-41d4-a716-446655440001'
-WHERE NOT EXISTS (SELECT 1 FROM p_menus WHERE menu_id = '770e8400-e29b-41d4-a716-446655440002');
-
-INSERT INTO p_menus (menu_id, name, price, content, retaurant_id)
-SELECT '770e8400-e29b-41d4-a716-446655440003', '불고기 피자', 18000, '달콤한 불고기와 치즈', '550e8400-e29b-41d4-a716-446655440001'
-WHERE NOT EXISTS (SELECT 1 FROM p_menus WHERE menu_id = '770e8400-e29b-41d4-a716-446655440003');
 

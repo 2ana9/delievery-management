@@ -11,6 +11,6 @@ public class DummyPaymentProcessorImpl implements PaymentProcessor {
 
 	@Override
 	public PaymentResultDto processPayment(PaymentRequestDto requestDto) {
-		return PaymentResultDto.success(UUID.randomUUID());
+		return PaymentResultDto.success(UUID.randomUUID(), requestDto.paymentType());
 	}
 }
