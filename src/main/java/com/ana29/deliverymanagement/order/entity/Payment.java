@@ -2,8 +2,8 @@ package com.ana29.deliverymanagement.order.entity;
 
 import com.ana29.deliverymanagement.global.constant.PaymentStatusEnum;
 import com.ana29.deliverymanagement.global.constant.PaymentTypeEnum;
-import com.ana29.deliverymanagement.order.dto.PaymentResultDto;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
+import com.ana29.deliverymanagement.order.dto.PaymentResultDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,7 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -51,15 +51,15 @@ public class Payment extends Timestamped {
 	@Column
 	private UUID externalPaymentId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id", nullable = false)
 	private Order order;
 
-	public static Payment from(Order order, PaymentTypeEnum type, PaymentResultDto result) {
+	public static Payment from(Order order, PaymentResultDto result) {
 		return Payment.builder()
 			.totalPrice(order.getTotalPrice())
 			.order(order)
-			.paymentType(type)
+			.paymentType(result.paymentTypeEnum())
 			.paymentStatus(
 				result.isSuccess() ? PaymentStatusEnum.COMPLETED : PaymentStatusEnum.FAILED)
 			.externalPaymentId(result.externalPaymentId())
