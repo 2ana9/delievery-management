@@ -1,8 +1,8 @@
 package com.ana29.deliverymanagement.security;
 
-import com.ana29.deliverymanagement.config.jwt.TokenBlacklist;
-import com.ana29.deliverymanagement.constant.jwt.JwtErrorMessage;
-import com.ana29.deliverymanagement.jwt.JwtUtil;
+import com.ana29.deliverymanagement.global.config.jwt.TokenBlacklist;
+import com.ana29.deliverymanagement.global.constant.jwt.JwtErrorMessage;
+import com.ana29.deliverymanagement.user.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,7 +19,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.TreeMap;
 
 @Slf4j(topic = "JWT 검증 및 인가")
 public class JwtAuthorizationFilter extends OncePerRequestFilter {

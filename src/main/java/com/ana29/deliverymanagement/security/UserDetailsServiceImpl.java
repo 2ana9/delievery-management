@@ -1,7 +1,7 @@
 package com.ana29.deliverymanagement.security;
 
-import com.ana29.deliverymanagement.entity.User;
-import com.ana29.deliverymanagement.repository.UserRepository;
+import com.ana29.deliverymanagement.user.entity.User;
+import com.ana29.deliverymanagement.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

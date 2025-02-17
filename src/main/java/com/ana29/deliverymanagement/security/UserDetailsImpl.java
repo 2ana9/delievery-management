@@ -1,7 +1,7 @@
 package com.ana29.deliverymanagement.security;
 
-import com.ana29.deliverymanagement.entity.User;
-import com.ana29.deliverymanagement.constant.UserRoleEnum;
+import com.ana29.deliverymanagement.user.entity.User;
+import com.ana29.deliverymanagement.global.constant.UserRoleEnum;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
