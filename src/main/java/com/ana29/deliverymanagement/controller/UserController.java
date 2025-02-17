@@ -2,12 +2,10 @@ package com.ana29.deliverymanagement.controller;
 
 
 import com.ana29.deliverymanagement.config.jwt.TokenBlacklist;
-import com.ana29.deliverymanagement.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.constant.jwt.JwtConfigEnum;
 import com.ana29.deliverymanagement.dto.SignupRequestDto;
-import com.ana29.deliverymanagement.dto.UpdateUserRequestDto;
+import com.ana29.deliverymanagement.dto.UpdateRequestDto;
 import com.ana29.deliverymanagement.dto.UserInfoDto;
-import com.ana29.deliverymanagement.jwt.JwtUtil;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.service.KakaoService;
 import com.ana29.deliverymanagement.service.Userservice;
@@ -17,13 +15,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,10 +39,10 @@ public class UserController {
         return "signup";
     }
     @PostMapping("/sign-up")
-    public String signUp(@RequestBody @Valid SignupRequestDto requestDto, BindingResult bindingResult){
+    public String signUp(@RequestBody @Valid SignupRequestDto requestDto){
         log.info("connet Test : /sign-up (Post Method)");
 //        /api/users/sign-in
-        ifSuccessRedirectUrl = userService.signup(requestDto, bindingResult);
+        ifSuccessRedirectUrl = userService.signup(requestDto);
         log.info("Method Complete Test : /sign-up (Post Method)");
         return "redirect:" + ifSuccessRedirectUrl;
     }
@@ -96,13 +90,13 @@ public class UserController {
     @PatchMapping("/me")
     @ResponseBody
     public List<UserInfoDto> modifyUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                            @RequestBody @Valid UpdateUserRequestDto updateDto){
+                                            @RequestBody @Valid UpdateRequestDto updateDto){
         return userService.modifyUserInfo(userDetails, updateDto);
     }
 
     @DeleteMapping("/me")
     public String deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                           @RequestBody @Valid UpdateUserRequestDto updateDto){
+                           @RequestBody @Valid UpdateRequestDto updateDto){
         userService.deleteUser(userDetails, updateDto);
         return "redirect:/api/users/sign-in";
 

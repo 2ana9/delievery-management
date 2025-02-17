@@ -1,14 +1,14 @@
 package com.ana29.deliverymanagement.kakao;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class KakaoUserInfoDto {
     private Long id;
 
@@ -27,12 +27,14 @@ public class KakaoUserInfoDto {
     }
 
     @Getter
+    @Setter
     @NoArgsConstructor
     public static class Properties {
         private String nickname;
     }
 
     @Getter
+    @Setter
     @NoArgsConstructor
     public static class KakaoAccount {
         private String email;

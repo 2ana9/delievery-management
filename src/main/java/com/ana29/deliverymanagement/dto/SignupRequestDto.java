@@ -1,13 +1,12 @@
 package com.ana29.deliverymanagement.dto;
 
-import com.ana29.deliverymanagement.config.admin.AdminConfig;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 public class SignupRequestDto {
 
     @NotBlank

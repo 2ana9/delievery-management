@@ -5,7 +5,7 @@ import com.ana29.deliverymanagement.config.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.constant.SignupConfig;
 import com.ana29.deliverymanagement.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.dto.SignupRequestDto;
-import com.ana29.deliverymanagement.dto.UpdateUserRequestDto;
+import com.ana29.deliverymanagement.dto.UpdateRequestDto;
 import com.ana29.deliverymanagement.dto.UserInfoDto;
 import com.ana29.deliverymanagement.entity.User;
 import com.ana29.deliverymanagement.jwt.JwtUtil;
@@ -37,10 +37,10 @@ public class Userservice {
     private final AdminConfig adminConfig;
     private final JwtUtil jwtUtil;
 
-    public String signup(SignupRequestDto requestDto, BindingResult bindingResult) {
+    public String signup(SignupRequestDto requestDto) {
 //        에러 발생 시 기존 회원가입 url 리다이렉트 하는 global handler 필요
         // 1. 바인딩 에러 체크 (컨트롤러에서 @Valid를 사용했을 때의 추가 검증)
-        checkFieldErrors(bindingResult);
+//        checkFieldErrors(bindingResult);
 
         // 2. 사용자명 검증 및 중복 체크
         validateUsername(requestDto.getId());
@@ -130,7 +130,7 @@ public class Userservice {
 
 
     @Transactional
-    public List<UserInfoDto> modifyUserInfo(UserDetailsImpl userDetails, UpdateUserRequestDto updateDto) {
+    public List<UserInfoDto> modifyUserInfo(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
         // JWT로부터 현재 로그인한 사용자 엔티티 가져오기
         User user = userDetails.getUser();
 
@@ -154,7 +154,7 @@ public class Userservice {
     }
 
     @Transactional
-    public void deleteUser(UserDetailsImpl userDetails, UpdateUserRequestDto updateDto) {
+    public void deleteUser(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
         User user = userDetails.getUser();
         userRepository.delete(user);
     }
