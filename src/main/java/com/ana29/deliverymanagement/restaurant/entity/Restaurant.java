@@ -28,7 +28,7 @@ public class Restaurant extends Timestamped {
     private String operatingHours;
 
 //    @OneToMany
-//    @JoinColumn(name = "categoryId")
+//    @JoinColumn(name = "category_id")
 //    private List<Category> alists = new ArrayList<>();
 
 
