@@ -30,4 +30,14 @@ public class Category extends Timestamped{
     public Category(CategoryRequestDto requestDto) {
         this.foodType = requestDto.getFoodType();
     }
+
+    public void update(CategoryRequestDto requestDto) {
+        this.foodType = requestDto.getFoodType();
+    }
+
+    // 명시적으로 Setter 메서드 추가
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
 }

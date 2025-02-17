@@ -1,6 +1,6 @@
 ---
 name: Bug
-about: "\b어떤 버그가 발생했는지 알려주세요!"
+about: "어떤 버그가 발생했는지 알려주세요!"
 title: "[Bug]"
 labels: ''
 assignees: ''

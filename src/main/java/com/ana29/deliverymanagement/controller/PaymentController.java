@@ -1,9 +1,9 @@
 package com.ana29.deliverymanagement.controller;
 
-import com.ana29.deliverymanagement.dto.CreateOrderRequestDto;
-import com.ana29.deliverymanagement.dto.CreateOrderResponseDto;
+import com.ana29.deliverymanagement.dto.CreatePaymentRequestDto;
+import com.ana29.deliverymanagement.dto.PaymentResultDto;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
-import com.ana29.deliverymanagement.service.OrderService;
+import com.ana29.deliverymanagement.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,19 +15,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/payments")
 @RequiredArgsConstructor
-public class OrderController {
+public class PaymentController {
 
-	private final OrderService orderService;
+	private final PaymentService paymentService;
 
 	@PostMapping
-	public ResponseEntity<CreateOrderResponseDto> createOrder(
-		@RequestBody @Valid CreateOrderRequestDto requestDto,
+	public ResponseEntity<PaymentResultDto> createPayment(@RequestBody @Valid CreatePaymentRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-		CreateOrderResponseDto responseDto =
-			orderService.createOrder(requestDto, userDetails.getUsername());
-		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+		PaymentResultDto resultDto = paymentService.createPayment(requestDto, userDetails.getUsername());
+		return new ResponseEntity<>(resultDto, HttpStatus.CREATED);
 	}
 }
