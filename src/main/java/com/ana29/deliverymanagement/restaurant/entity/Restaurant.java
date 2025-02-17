@@ -1,6 +1,7 @@
 package com.ana29.deliverymanagement.restaurant.entity;
 
 import com.ana29.deliverymanagement.global.entity.Timestamped;
+import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,6 +27,12 @@ public class Restaurant extends Timestamped {
 
     @Column(length = 100, nullable = false)
     private String operatingHours;
+
+    public void update(RestaurantRequestDto restaurantRequestDto) {
+        this.name = restaurantRequestDto.getName();
+        this.content = restaurantRequestDto.getContent();
+        this.operatingHours = restaurantRequestDto.getOperatingHours();
+    }
 
 //    @OneToMany
 //    @JoinColumn(name = "category_id")
