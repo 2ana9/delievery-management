@@ -7,6 +7,7 @@ import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.restaurant.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,7 @@ public class CategoryController {
 
     //음식 카테고리 추가
     @PostMapping("/categories")
+    @ResponseStatus(HttpStatus.CREATED)
     public CategoryResponseDto createCategory(@RequestBody CategoryRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         checkUserAccess(userDetails);
         return categoryService.createCategory(requestDto);
@@ -29,6 +31,7 @@ public class CategoryController {
 
     //음식 카테고리 수정
     @PutMapping("/categories/{id}") //카테고리 이름수정
+    @ResponseStatus(HttpStatus.OK)
     public CategoryResponseDto updateCategory(@PathVariable UUID id,
                                               @RequestBody CategoryRequestDto requestDto,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails)throws AccessDeniedException {

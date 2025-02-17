@@ -6,6 +6,7 @@ import com.ana29.deliverymanagement.restaurant.dto.RestaurantResponseDto;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.restaurant.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ public class RestaurantController {
 
     //가게 추가 메소드(관리자)
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public RestaurantResponseDto createRestaurant(@RequestBody RestaurantRequestDto restaurantRequestDto,
                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         checkUserAccess(userDetails);
@@ -29,6 +31,7 @@ public class RestaurantController {
 
     //가게 수정 메소드(관리자,가게사장)
     @PutMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
     public RestaurantResponseDto updateRestaurant(@PathVariable UUID id, @RequestBody RestaurantRequestDto restaurantRequestDto
             , @AuthenticationPrincipal UserDetailsImpl userDetails)throws AccessDeniedException{
         //수정은 관리자도 가능하고 가게사장도 가능하게 구현
