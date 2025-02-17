@@ -3,13 +3,12 @@ package com.ana29.deliverymanagement.security;
 import com.ana29.deliverymanagement.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.constant.jwt.JwtConfigEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ana29.deliverymanagement.dto.LoginRequestDto;
+import com.ana29.deliverymanagement.dto.SigninRequestDto;
 import com.ana29.deliverymanagement.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -38,7 +37,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //            Get 방식은 body가 비어 있으므로 LoginRequestDto 매핑이 null로 되어 위 에러 발생
             if ("POST".equalsIgnoreCase(request.getMethod())) {
                 log.info("attemptAuthentication method ");
-                LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
+                SigninRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), SigninRequestDto.class);
                 log.info(requestDto.getId());
                 return getAuthenticationManager().authenticate(
                         new UsernamePasswordAuthenticationToken(
