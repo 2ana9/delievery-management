@@ -1,4 +1,4 @@
-package com.ana29.deliverymanagement.restaurant.dto;
+package com.ana29.deliverymanagement.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

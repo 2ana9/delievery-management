@@ -1,10 +1,10 @@
-package com.ana29.deliverymanagement.restaurant.controller;
+package com.ana29.deliverymanagement.controller;
 
 import com.ana29.deliverymanagement.constant.UserRoleEnum;
-import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
-import com.ana29.deliverymanagement.restaurant.dto.RestaurantResponseDto;
+import com.ana29.deliverymanagement.dto.RestaurantRequestDto;
+import com.ana29.deliverymanagement.dto.RestaurantResponseDto;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
-import com.ana29.deliverymanagement.restaurant.service.RestaurantService;
+import com.ana29.deliverymanagement.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;

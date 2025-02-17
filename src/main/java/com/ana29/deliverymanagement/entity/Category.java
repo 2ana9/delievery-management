@@ -1,8 +1,6 @@
-package com.ana29.deliverymanagement.category.entity;
+package com.ana29.deliverymanagement.entity;
 
-import com.ana29.deliverymanagement.category.dto.CategoryRequestDto;
-import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
-import com.ana29.deliverymanagement.entity.Timestamped;
+import com.ana29.deliverymanagement.dto.CategoryRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 

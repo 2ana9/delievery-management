@@ -1,6 +1,5 @@
 package com.ana29.deliverymanagement.entity;
 
-import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 

@@ -1,10 +1,10 @@
-package com.ana29.deliverymanagement.category.controller;
+package com.ana29.deliverymanagement.controller;
 
 import com.ana29.deliverymanagement.constant.UserRoleEnum;
-import com.ana29.deliverymanagement.category.dto.CategoryRequestDto;
-import com.ana29.deliverymanagement.category.dto.CategoryResponseDto;
+import com.ana29.deliverymanagement.dto.CategoryRequestDto;
+import com.ana29.deliverymanagement.dto.CategoryResponseDto;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
-import com.ana29.deliverymanagement.category.service.CategoryService;
+import com.ana29.deliverymanagement.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

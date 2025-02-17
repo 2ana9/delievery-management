@@ -1,6 +1,6 @@
-package com.ana29.deliverymanagement.category.repository;
+package com.ana29.deliverymanagement.repository;
 
-import com.ana29.deliverymanagement.category.entity.Category;
+import com.ana29.deliverymanagement.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

@@ -1,6 +1,6 @@
-package com.ana29.deliverymanagement.restaurant.dto;
+package com.ana29.deliverymanagement.dto;
 
-import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
+import com.ana29.deliverymanagement.entity.Restaurant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

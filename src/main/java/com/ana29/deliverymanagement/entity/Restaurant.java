@@ -1,6 +1,5 @@
-package com.ana29.deliverymanagement.restaurant.entity;
+package com.ana29.deliverymanagement.entity;
 
-import com.ana29.deliverymanagement.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
 
