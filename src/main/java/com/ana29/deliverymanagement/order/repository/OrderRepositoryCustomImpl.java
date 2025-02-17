@@ -2,7 +2,7 @@ package com.ana29.deliverymanagement.order.repository;
 
 import com.ana29.deliverymanagement.global.constant.OrderStatusEnum;
 import com.ana29.deliverymanagement.order.entity.Order;
-import com.ana29.deliverymanagement.entity.QOrder;
+import com.ana29.deliverymanagement.order.entity.QOrder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,6 @@ package com.ana29.deliverymanagement.user.service;
 
 import com.ana29.deliverymanagement.global.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.user.entity.User;
-import com.ana29.deliverymanagement.kakao.*;
 import com.ana29.deliverymanagement.user.jwt.JwtUtil;
 import com.ana29.deliverymanagement.user.kakao.KakaoClient;
 import com.ana29.deliverymanagement.user.kakao.KakaoTokenResponse;
