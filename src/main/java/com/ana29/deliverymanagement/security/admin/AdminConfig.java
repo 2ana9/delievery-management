@@ -1,4 +1,4 @@
-package com.ana29.deliverymanagement.global.config.admin;
+package com.ana29.deliverymanagement.security.admin;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

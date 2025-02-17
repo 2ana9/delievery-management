@@ -1,18 +1,13 @@
 package com.ana29.deliverymanagement.user.controller;
 
 
-import com.ana29.deliverymanagement.global.config.jwt.TokenBlacklist;
-import com.ana29.deliverymanagement.global.constant.jwt.JwtConfigEnum;
+import com.ana29.deliverymanagement.security.UserDetailsImpl;
+import com.ana29.deliverymanagement.security.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.user.dto.SignupRequestDto;
 import com.ana29.deliverymanagement.user.dto.UpdateRequestDto;
 import com.ana29.deliverymanagement.user.dto.UserInfoDto;
-import com.ana29.deliverymanagement.security.UserDetailsImpl;
-import com.ana29.deliverymanagement.user.service.KakaoService;
 import com.ana29.deliverymanagement.user.service.Userservice;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +24,6 @@ import java.util.List;
 public class UserController {
 
     private final Userservice userService;
-    private final KakaoService kakaoService;
     private String ifSuccessRedirectUrl;
 
     @GetMapping("/sign-up")
@@ -100,20 +94,6 @@ public class UserController {
         userService.deleteUser(userDetails, updateDto);
         return "redirect:/api/users/sign-in";
 
-    }
-
-    @GetMapping("/kakao/callback")
-    public String kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
-        log.info("kakaoLogin Controller Method");
-        String token = kakaoService.kakaoLogin(code).substring(Integer.parseInt(JwtConfigEnum.BEARER_PREFIX_COUNT.getGetJwtConfig()));
-        log.info("kakao token : " + token);
-        Cookie cookie = new Cookie(JwtConfigEnum.AUTHORIZATION_HEADER.getGetJwtConfig(), token);
-        log.info("kakao cookie : " + cookie);
-
-        cookie.setPath("/");
-        response.addCookie(cookie);
-
-        return "redirect:/api/users/sign-in";
     }
 
 }

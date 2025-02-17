@@ -1,14 +1,14 @@
 package com.ana29.deliverymanagement.mvc;
 
-import com.ana29.deliverymanagement.global.constant.UserRoleEnum;
+import com.ana29.deliverymanagement.security.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.user.entity.User;
-import com.ana29.deliverymanagement.user.jwt.JwtUtil;
-import com.ana29.deliverymanagement.user.kakao.KakaoClient;
-import com.ana29.deliverymanagement.user.kakao.KakaoTokenResponse;
-import com.ana29.deliverymanagement.user.kakao.KakaoUserClient;
-import com.ana29.deliverymanagement.user.kakao.KakaoUserInfoDto;
+import com.ana29.deliverymanagement.security.jwt.JwtUtil;
+import com.ana29.deliverymanagement.externalApi.kakao.KakaoClient;
+import com.ana29.deliverymanagement.externalApi.kakao.KakaoTokenResponse;
+import com.ana29.deliverymanagement.externalApi.kakao.KakaoUserClient;
+import com.ana29.deliverymanagement.externalApi.kakao.KakaoUserInfoDto;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
-import com.ana29.deliverymanagement.user.service.KakaoService;
+import com.ana29.deliverymanagement.externalApi.kakao.KakaoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
