@@ -1,14 +1,12 @@
 package com.ana29.deliverymanagement.externalApi.kakao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class KakaoUserInfoDto {
     private Long id;
 
