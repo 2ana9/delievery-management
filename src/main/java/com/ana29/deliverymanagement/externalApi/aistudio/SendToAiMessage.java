@@ -8,9 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum SendToAiMessage {
 
-    HEADER("{\"contents\": [{\"parts\": [{\"text\": \""),
-    ADDITIONAL_MESSAGE(", 답변을 최대한 간결하게 50자 이하로."),
-    FOOTER("\"}]}]}");
+    ADDITIONAL_MESSAGE(", 답변을 최대한 간결하게 50자 이하로.");
 
     private final String SendToAiMessage;
 
