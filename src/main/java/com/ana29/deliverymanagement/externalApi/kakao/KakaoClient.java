@@ -1,4 +1,4 @@
-package com.ana29.deliverymanagement.user.kakao;
+package com.ana29.deliverymanagement.externalApi.kakao;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

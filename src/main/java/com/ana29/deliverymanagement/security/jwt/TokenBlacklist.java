@@ -1,6 +1,6 @@
-package com.ana29.deliverymanagement.global.config.jwt;
+package com.ana29.deliverymanagement.security.jwt;
 
-import com.ana29.deliverymanagement.global.constant.jwt.JwtConfigEnum;
+import com.ana29.deliverymanagement.security.constant.jwt.JwtConfigEnum;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
