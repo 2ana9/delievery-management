@@ -1,4 +1,4 @@
-package com.ana29.deliverymanagement.dto;
+package com.ana29.deliverymanagement.category.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

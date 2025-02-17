@@ -1,9 +1,9 @@
-package com.ana29.deliverymanagement.service;
+package com.ana29.deliverymanagement.category.service;
 
-import com.ana29.deliverymanagement.dto.CategoryRequestDto;
-import com.ana29.deliverymanagement.dto.CategoryResponseDto;
-import com.ana29.deliverymanagement.entity.Category;
-import com.ana29.deliverymanagement.repository.CategoryRepository;
+import com.ana29.deliverymanagement.category.dto.CategoryRequestDto;
+import com.ana29.deliverymanagement.category.dto.CategoryResponseDto;
+import com.ana29.deliverymanagement.category.entity.Category;
+import com.ana29.deliverymanagement.category.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

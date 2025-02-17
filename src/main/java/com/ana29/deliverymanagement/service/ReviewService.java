@@ -1,13 +1,13 @@
 package com.ana29.deliverymanagement.service;
 
 import com.ana29.deliverymanagement.entity.Order;
-import com.ana29.deliverymanagement.entity.Restaurant;
+import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import com.ana29.deliverymanagement.entity.Review;
 import com.ana29.deliverymanagement.entity.User;
 import com.ana29.deliverymanagement.exception.AlreadyReviewedException;
 import com.ana29.deliverymanagement.exception.CustomNotFoundException;
 import com.ana29.deliverymanagement.repository.OrderRepository;
-import com.ana29.deliverymanagement.repository.RestaurantRepository;
+import com.ana29.deliverymanagement.restaurant.repository.RestaurantRepository;
 import com.ana29.deliverymanagement.repository.ReviewRepository;
 import com.ana29.deliverymanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

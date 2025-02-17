@@ -1,11 +1,9 @@
-package com.ana29.deliverymanagement.entity;
+package com.ana29.deliverymanagement.restaurant.entity;
 
-import com.ana29.deliverymanagement.dto.RestaurantRequestDto;
+import com.ana29.deliverymanagement.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -30,7 +28,7 @@ public class Restaurant extends Timestamped {
     private String operatingHours;
 
 //    @OneToMany
-//    @JoinColumn(name = "categoryId")
+//    @JoinColumn(name = "category_id")
 //    private List<Category> alists = new ArrayList<>();
 
 

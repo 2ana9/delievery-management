@@ -1,6 +1,8 @@
-package com.ana29.deliverymanagement.entity;
+package com.ana29.deliverymanagement.category.entity;
 
-import com.ana29.deliverymanagement.dto.CategoryRequestDto;
+import com.ana29.deliverymanagement.category.dto.CategoryRequestDto;
+import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
+import com.ana29.deliverymanagement.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
 @Builder
 @Table(name = "p_category")
-public class Category extends Timestamped{
+public class Category extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

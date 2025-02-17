@@ -1,6 +1,7 @@
 package com.ana29.deliverymanagement.entity;
 
 
+import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import jakarta.persistence.*;
 import lombok.*;
 

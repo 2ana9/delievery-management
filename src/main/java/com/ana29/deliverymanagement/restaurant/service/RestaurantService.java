@@ -1,9 +1,9 @@
-package com.ana29.deliverymanagement.service;
+package com.ana29.deliverymanagement.restaurant.service;
 
-import com.ana29.deliverymanagement.dto.RestaurantRequestDto;
-import com.ana29.deliverymanagement.dto.RestaurantResponseDto;
-import com.ana29.deliverymanagement.entity.Restaurant;
-import com.ana29.deliverymanagement.repository.RestaurantRepository;
+import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
+import com.ana29.deliverymanagement.restaurant.dto.RestaurantResponseDto;
+import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
+import com.ana29.deliverymanagement.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
