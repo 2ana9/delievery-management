@@ -21,7 +21,11 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     public CategoryResponseDto createCategory(CategoryRequestDto requestDto){
-       Category category = categoryRepository.save(new Category(requestDto));
+       Category category = categoryRepository.save(
+               Category.builder()
+                       .foodType(requestDto.getFoodType())
+                       .build()
+       );
        
         return new CategoryResponseDto(category);
     }
