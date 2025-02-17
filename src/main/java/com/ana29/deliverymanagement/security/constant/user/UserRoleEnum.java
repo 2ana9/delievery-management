@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum UserRoleEnum {
 
     USER("ROLE_USER"),  // 사용자 권한
-    ADMIN("ROLE_ADMIN");  // 관리자 권한
+    ADMIN("ROLE_ADMIN"),  // 관리자 권한
+    OWNER("ROLE_OWNER"); // 가게주인 권한
 
     private final String authority;
 
