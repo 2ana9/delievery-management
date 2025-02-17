@@ -3,9 +3,9 @@
 //import com.ana29.deliverymanagement.security.constant.user.UserRoleEnum;
 //import com.ana29.deliverymanagement.user.entity.User;
 //import com.ana29.deliverymanagement.security.jwt.JwtUtil;
-//import com.ana29.deliverymanagement.externalApi.kakao.KakaoClient;
+//import com.ana29.deliverymanagement.externalApi.kakao.feign.KakaoClient;
 //import com.ana29.deliverymanagement.externalApi.kakao.KakaoTokenResponse;
-//import com.ana29.deliverymanagement.externalApi.kakao.KakaoUserClient;
+//import com.ana29.deliverymanagement.externalApi.kakao.feign.KakaoUserClient;
 //import com.ana29.deliverymanagement.externalApi.kakao.KakaoUserInfoDto;
 //import com.ana29.deliverymanagement.user.repository.UserRepository;
 //import com.ana29.deliverymanagement.externalApi.kakao.KakaoService;
