@@ -26,11 +26,6 @@ public class Category extends Timestamped{
     @Builder.Default
     private boolean isDeleted =false;
 
-
-    public Category(CategoryRequestDto requestDto) {
-        this.foodType = requestDto.getFoodType();
-    }
-
     public void update(CategoryRequestDto requestDto) {
         this.foodType = requestDto.getFoodType();
     }

@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.entity;
 
+import com.ana29.deliverymanagement.dto.RestaurantRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,4 +26,5 @@ public class Restaurant extends Timestamped {
 
     @Column(length = 100, nullable = false)
     private String operatingHours;
+
 }
