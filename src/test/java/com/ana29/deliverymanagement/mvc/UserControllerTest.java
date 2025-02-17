@@ -1,15 +1,15 @@
 package com.ana29.deliverymanagement.mvc;
 
-import com.ana29.deliverymanagement.config.admin.AdminConfig;
-import com.ana29.deliverymanagement.controller.UserController;
-import com.ana29.deliverymanagement.dto.SignupRequestDto;
-import com.ana29.deliverymanagement.dto.UpdateRequestDto;
-import com.ana29.deliverymanagement.dto.UserInfoDto;
-import com.ana29.deliverymanagement.exception.GlobalExceptionHandler;
-import com.ana29.deliverymanagement.repository.UserRepository;
+import com.ana29.deliverymanagement.global.config.admin.AdminConfig;
+import com.ana29.deliverymanagement.user.controller.UserController;
+import com.ana29.deliverymanagement.user.dto.SignupRequestDto;
+import com.ana29.deliverymanagement.user.dto.UpdateRequestDto;
+import com.ana29.deliverymanagement.user.dto.UserInfoDto;
+import com.ana29.deliverymanagement.global.exception.GlobalExceptionHandler;
+import com.ana29.deliverymanagement.user.repository.UserRepository;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
-import com.ana29.deliverymanagement.service.KakaoService;
-import com.ana29.deliverymanagement.service.Userservice;
+import com.ana29.deliverymanagement.user.service.KakaoService;
+import com.ana29.deliverymanagement.user.service.Userservice;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
