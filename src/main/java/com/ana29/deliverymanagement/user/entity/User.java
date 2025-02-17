@@ -1,6 +1,6 @@
 package com.ana29.deliverymanagement.user.entity;
 
-import com.ana29.deliverymanagement.global.constant.UserRoleEnum;
+import com.ana29.deliverymanagement.security.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;

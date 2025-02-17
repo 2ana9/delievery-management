@@ -1,4 +1,4 @@
-package com.ana29.deliverymanagement.global.constant.jwt;
+package com.ana29.deliverymanagement.security.constant.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

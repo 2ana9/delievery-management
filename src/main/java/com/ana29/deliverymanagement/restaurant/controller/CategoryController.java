@@ -1,6 +1,6 @@
 package com.ana29.deliverymanagement.restaurant.controller;
 
-import com.ana29.deliverymanagement.global.constant.UserRoleEnum;
+import com.ana29.deliverymanagement.security.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.restaurant.dto.CategoryRequestDto;
 import com.ana29.deliverymanagement.restaurant.dto.CategoryResponseDto;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;

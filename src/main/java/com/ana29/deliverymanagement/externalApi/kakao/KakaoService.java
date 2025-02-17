@@ -1,12 +1,9 @@
-package com.ana29.deliverymanagement.user.service;
+package com.ana29.deliverymanagement.externalApi.kakao;
 
-import com.ana29.deliverymanagement.global.constant.UserRoleEnum;
+import com.ana29.deliverymanagement.security.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.user.entity.User;
-import com.ana29.deliverymanagement.user.jwt.JwtUtil;
-import com.ana29.deliverymanagement.user.kakao.KakaoClient;
-import com.ana29.deliverymanagement.user.kakao.KakaoTokenResponse;
-import com.ana29.deliverymanagement.user.kakao.KakaoUserClient;
-import com.ana29.deliverymanagement.user.kakao.KakaoUserInfoDto;
+import com.ana29.deliverymanagement.kakao.*;
+import com.ana29.deliverymanagement.security.jwt.JwtUtil;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;

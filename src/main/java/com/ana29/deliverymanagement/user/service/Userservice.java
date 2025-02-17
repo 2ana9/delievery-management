@@ -1,14 +1,14 @@
 package com.ana29.deliverymanagement.user.service;
 
-import com.ana29.deliverymanagement.global.config.admin.AdminConfig;
-import com.ana29.deliverymanagement.global.config.jwt.TokenBlacklist;
-import com.ana29.deliverymanagement.global.constant.SignupConfig;
-import com.ana29.deliverymanagement.global.constant.UserRoleEnum;
+import com.ana29.deliverymanagement.security.admin.AdminConfig;
+import com.ana29.deliverymanagement.security.jwt.TokenBlacklist;
+import com.ana29.deliverymanagement.security.constant.user.SignupConfig;
+import com.ana29.deliverymanagement.security.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.user.dto.SignupRequestDto;
 import com.ana29.deliverymanagement.user.dto.UpdateRequestDto;
 import com.ana29.deliverymanagement.user.dto.UserInfoDto;
 import com.ana29.deliverymanagement.user.entity.User;
-import com.ana29.deliverymanagement.user.jwt.JwtUtil;
+import com.ana29.deliverymanagement.security.jwt.JwtUtil;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletRequest;

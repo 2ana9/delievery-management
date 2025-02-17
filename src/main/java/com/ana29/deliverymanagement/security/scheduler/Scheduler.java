@@ -1,6 +1,6 @@
-package com.ana29.deliverymanagement.global.scheduler;
+package com.ana29.deliverymanagement.security.scheduler;
 
-import com.ana29.deliverymanagement.global.config.jwt.TokenBlacklist;
+import com.ana29.deliverymanagement.security.jwt.TokenBlacklist;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
