@@ -4,6 +4,8 @@ import com.ana29.deliverymanagement.dto.RestaurantRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -26,5 +28,11 @@ public class Restaurant extends Timestamped {
 
     @Column(length = 100, nullable = false)
     private String operatingHours;
+
+//    @OneToMany
+//    @JoinColumn(name = "categoryId")
+//    private List<Category> alists = new ArrayList<>();
+
+
 
 }

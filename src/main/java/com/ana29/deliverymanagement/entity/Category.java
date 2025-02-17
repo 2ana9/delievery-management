@@ -35,4 +35,7 @@ public class Category extends Timestamped{
         this.isDeleted = isDeleted;
     }
 
+    @ManyToOne
+    private Restaurant restaurant;
+
 }

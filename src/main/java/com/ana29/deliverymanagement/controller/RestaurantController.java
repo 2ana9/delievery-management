@@ -21,7 +21,7 @@ public class RestaurantController {
 
     private final RestaurantService restaurantService;
 
-    @PostMapping("/")
+    @PostMapping
     public RestaurantResponseDto createRestaurant(@RequestBody RestaurantRequestDto restaurantRequestDto,
                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         checkUserAccess(userDetails);
