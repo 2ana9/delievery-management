@@ -100,7 +100,7 @@ public class Userservice {
         log.info("user id= " + uuser.getId());
         log.info("user phone= " + uuser.getPhone());
         log.info("user role= " + uuser.getRole());
-        log.info("admin token= " + requestDto.getAdminToken());
+        log.info("admin token= " + requestDto.getTokenValue());
 
         userRepository.save(uuser);
 
@@ -283,11 +283,11 @@ public class Userservice {
      * 🔹 사용자 역할 확인 (관리자 요청인 경우 관리자 키 검증)
      */
     private UserRoleEnum checkUserRole(SignupRequestDto requestDto) {
-        if (authorityConfig.getMasterSignupKey().equals(requestDto.getAdminToken())) {
+        if (authorityConfig.getMasterSignupKey().equals(requestDto.getTokenValue())) {
             return UserRoleEnum.MASTER;
 //                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
         } else {
-            return UserRoleEnum.USER;
+            return UserRoleEnum.CUSTOMER;
         }
     }
 
