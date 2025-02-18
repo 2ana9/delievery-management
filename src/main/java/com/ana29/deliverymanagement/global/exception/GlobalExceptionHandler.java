@@ -3,6 +3,7 @@ package com.ana29.deliverymanagement.global.exception;
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 errorMessage
         );
-        
+
         // 회원가입 URL로 시작하는 경우로 제한 (예: "/api/users/sign-up")
         if (requestURI.startsWith("/api/users")) {
             headers = new HttpHeaders();

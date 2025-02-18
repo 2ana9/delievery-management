@@ -38,39 +38,16 @@ public class Userservice {
 
     private final JwtUtil jwtUtil;
 
+    @Transactional
     public String signup(SignupRequestDto requestDto) {
 
         // 중복 체크: 한 번의 쿼리로 모든 필드를 동시에 확인
         validateDuplicateValue(requestDto);
-
-        // 비밀번호 암호화
-        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
-
-        // 사용자 역할 확인 (관리자 요청인 경우 관리자 키 검증)
-        UserRoleEnum role = checkUserRole(requestDto);
-
-        // 상세 주소 확인
-        String currentAddress = checkCurrentAddress(requestDto.getCurrentAddress());
-
-        // 8. 사용자 등록 (여기서는 필요한 필드만 사용 - 엔티티 수정은 불가능하므로 DTO와 맞춰서 작성)
-        User uuser = User.builder()
-                .Id(requestDto.getId())
-                .nickname(requestDto.getNickname())
-                .email(requestDto.getEmail())
-                .password(encodedPassword)
-                .phone(requestDto.getPhone())
-                .role(role)
-                .currentAddress(currentAddress)
-                .build();
-        log.info("user id= " + uuser.getId());
-        log.info("user phone= " + uuser.getPhone());
-        log.info("user role= " + uuser.getRole());
-        log.info("admin token= " + requestDto.getTokenValue());
-
-        userRepository.save(uuser);
+        userRepository.save(createUserDto(requestDto));
 
         return "/api/users/sign-in";
     }
+
     public String signOut(HttpServletRequest request) {
         String token = jwtUtil.getJwtFromHeader(request);
         log.info("Sign Out Token Value   : " + token);
@@ -176,6 +153,18 @@ public class Userservice {
         }
     }
 
+    private User createUserDto(SignupRequestDto requestDto) {
+        // 8. 사용자 등록 (여기서는 필요한 필드만 사용 - 엔티티 수정은 불가능하므로 DTO와 맞춰서 작성)
+        return User.builder()
+                .Id(requestDto.getId())
+                .nickname(requestDto.getNickname())
+                .email(requestDto.getEmail())
+                .password(passwordEncoder.encode(requestDto.getPassword())) // 비밀번호 암호화
+                .phone(requestDto.getPhone())
+                .role(checkUserRole(requestDto)) // 유저 권한 부여
+                .currentAddress(checkCurrentAddress(requestDto.getCurrentAddress())) // 상세 주소 확인
+                .build();
+    }
 
     /**
      * 🔹 사용자 역할 확인 (관리자 요청인 경우 관리자 키 검증)
@@ -183,12 +172,14 @@ public class Userservice {
     private UserRoleEnum checkUserRole(SignupRequestDto requestDto) {
         if (authorityConfig.getMasterSignupKey().equals(requestDto.getTokenValue())) {
             return UserRoleEnum.MASTER;
-//                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
-        } else {
+        } else if (authorityConfig.getManagerSignupKey().equals(requestDto.getTokenValue())){
+            return UserRoleEnum.MANAGER;
+        } else if (authorityConfig.getOwnerSignupKey().equals(requestDto.getTokenValue())) {
+            return UserRoleEnum.OWNER;
+        }else {
             return UserRoleEnum.CUSTOMER;
         }
     }
-
 
     private String checkCurrentAddress(String currentAddress) {
         if (currentAddress == null || currentAddress.trim().isEmpty()) {
@@ -196,7 +187,5 @@ public class Userservice {
         }
         return currentAddress;
     }
-
-
 
 }
