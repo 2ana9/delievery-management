@@ -15,7 +15,7 @@ public class RestaurantRequestDto {
     private String name;
     private String ownerId; //관리자가 입력하는 가게주인id
     private UUID category;
-    private UUID area;
+    private long area;
     private String content;
     private String operatingHours;
     private boolean isDeleted; //삭제진행시 사용
