@@ -2,7 +2,7 @@ package com.ana29.deliverymanagement.externalApi.kakao;
 
 import com.ana29.deliverymanagement.externalApi.kakao.feign.KakaoClient;
 import com.ana29.deliverymanagement.externalApi.kakao.feign.KakaoUserClient;
-import com.ana29.deliverymanagement.security.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.user.entity.User;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
