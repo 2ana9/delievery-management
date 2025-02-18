@@ -35,7 +35,7 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.save(
                 Restaurant.builder()
                         .name(restaurantRequestDto.getName())
-                        .ownderId(restaurantRequestDto.getOwnerId())
+                        .ownerId(restaurantRequestDto.getOwnerId())
                         .content(restaurantRequestDto.getContent())
                         .area(area)
                         .category(category)

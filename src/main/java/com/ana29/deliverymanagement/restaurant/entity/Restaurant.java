@@ -26,7 +26,7 @@ public class Restaurant extends Timestamped {
 
     //가게주인을 표시? 표기? 하는 컬럼
     @Column(nullable = false)
-    private String ownderId;
+    private String ownerId;
 
     @Column(length = 100)
     private String content;
@@ -41,7 +41,7 @@ public class Restaurant extends Timestamped {
     public void update(RestaurantRequestDto restaurantRequestDto) {
         this.name = restaurantRequestDto.getName();
         this.content = restaurantRequestDto.getContent();
-        this.ownderId = restaurantRequestDto.getOwnerId();
+        this.ownerId = restaurantRequestDto.getOwnerId();
         this.operatingHours = restaurantRequestDto.getOperatingHours();
         this.isDeleted = restaurantRequestDto.isDeleted();
     }

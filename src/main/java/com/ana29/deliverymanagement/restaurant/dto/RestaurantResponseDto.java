@@ -21,7 +21,7 @@ public class RestaurantResponseDto {
 
     public RestaurantResponseDto(Restaurant restaurant) {
         this.id = restaurant.getId();
-        this.ownderId = restaurant.getOwnderId();
+        this.ownderId = restaurant.getOwnerId();
         this.category = restaurant.getCategory().getId();
         this.area = restaurant.getArea().getId();
         this.name = restaurant.getName();
