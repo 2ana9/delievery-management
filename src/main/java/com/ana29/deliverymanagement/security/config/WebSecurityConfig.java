@@ -1,6 +1,7 @@
-package com.ana29.deliverymanagement.security;
+package com.ana29.deliverymanagement.security.config;
 
 
+import com.ana29.deliverymanagement.security.UserDetailsServiceImpl;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthenticationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthorizationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;

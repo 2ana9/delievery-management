@@ -58,7 +58,7 @@ public class KakaoService {
                 .email(kakaoUserInfo.getEmail())
                 .password("kakao1234")
                 .phone("010-1111-1111")
-                .role(UserRoleEnum.USER)
+                .role(UserRoleEnum.CUSTOMER)
                 .build();
 //            3-2. 임시 데이터 저장 테스트
         userRepository.save(kakaoUser);

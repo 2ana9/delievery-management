@@ -1,7 +1,7 @@
 package com.ana29.deliverymanagement.user.service;
 
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
-import com.ana29.deliverymanagement.security.admin.AdminConfig;
+import com.ana29.deliverymanagement.security.config.AuthorityConfig;
 import com.ana29.deliverymanagement.user.constant.user.SignupConfig;
 import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;
@@ -35,7 +35,7 @@ public class Userservice {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AdminConfig adminConfig;
+    private final AuthorityConfig authorityConfig;
     private final JPAQueryFactory queryFactory;
 
     private final JwtUtil jwtUtil;
@@ -100,7 +100,7 @@ public class Userservice {
         log.info("user id= " + uuser.getId());
         log.info("user phone= " + uuser.getPhone());
         log.info("user role= " + uuser.getRole());
-        log.info("admin token= " + requestDto.getAdminToken());
+        log.info("admin token= " + requestDto.getTokenValue());
 
         userRepository.save(uuser);
 
@@ -121,7 +121,7 @@ public class Userservice {
 
     public List<UserInfoDto> getUserInfo(UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
-        boolean isAdmin = (user.getRole() == UserRoleEnum.ADMIN);
+        boolean isAdmin = (user.getRole() == UserRoleEnum.MASTER);
 
         List<UserInfoDto> userInfoDtoList = new ArrayList<>();
 
@@ -168,7 +168,7 @@ public class Userservice {
         userRepository.save(user);
 
         // 수정된 회원 정보를 DTO로 변환하여 반환 (여기서는 단일 객체를 리스트로 감싸서 반환)
-        boolean isAdmin = (user.getRole() == UserRoleEnum.ADMIN);
+        boolean isAdmin = (user.getRole() == UserRoleEnum.MASTER);
         UserInfoDto updatedInfo = new UserInfoDto(user.getId(), user.getNickname(), user.getEmail(), user.getPhone(), isAdmin);
         return List.of(updatedInfo);
     }
@@ -283,11 +283,11 @@ public class Userservice {
      * 🔹 사용자 역할 확인 (관리자 요청인 경우 관리자 키 검증)
      */
     private UserRoleEnum checkUserRole(SignupRequestDto requestDto) {
-        if (adminConfig.getAdminSignupKey().equals(requestDto.getAdminToken())) {
-            return UserRoleEnum.ADMIN;
+        if (authorityConfig.getMasterSignupKey().equals(requestDto.getTokenValue())) {
+            return UserRoleEnum.MASTER;
 //                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
         } else {
-            return UserRoleEnum.USER;
+            return UserRoleEnum.CUSTOMER;
         }
     }
 

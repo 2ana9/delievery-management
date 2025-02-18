@@ -61,7 +61,7 @@ public class CategoryController {
     //사용자의 권한확인 메소드
     public void checkUserAccess(UserDetailsImpl userDetails) throws AccessDeniedException {
         UserRoleEnum userRole = userDetails.getUser().getRole();
-        if (userRole != UserRoleEnum.ADMIN) {
+        if (userRole != UserRoleEnum.MASTER) {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
     };
