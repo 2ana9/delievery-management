@@ -28,24 +28,24 @@ public class ReviewController {
     }
 
     // 모든 리뷰 가져오기
-//    @GetMapping
-//    public ResponseDto<Page<Review>> getAllReviews(@RequestParam int page, @RequestParam int size) {
-//        return reviewService.getAllReviews(page, size);
-//    }
+    @GetMapping
+    public ResponseDto<Page<Review>> getAllReviews(@RequestParam int page, @RequestParam int size) {
+        return reviewService.getAllReviews(page, size);
+    }
 
-    // 가게 ID로 연관된 모든 리뷰 가져오기
-//    @GetMapping("/restaurant/{restaurantId}")
-//    public ResponseDto<Page<Review>> getReviewsByRestaurantId(@PathVariable UUID restaurantId,
-//                                                              @RequestParam int page,
-//                                                              @RequestParam int size) {
-//        return reviewService.getReviewsByRestaurantId(restaurantId, page, size);
-//    }
+//     가게 ID로 연관된 모든 리뷰 가져오기
+    @GetMapping("/restaurant/{restaurantId}")
+    public ResponseDto<Page<Review>> getReviewsByRestaurantId(@PathVariable UUID restaurantId,
+                                                              @RequestParam int page,
+                                                              @RequestParam int size) {
+        return reviewService.getReviewsByRestaurantId(restaurantId, page, size);
+    }
 
-    // 리뷰 ID로 리뷰 가져오기
-//    @GetMapping("/{id}")
-//    public ResponseDto<Review> getReviewById(@PathVariable UUID id) {
-//        return reviewService.getReviewById(id);
-//    }
+//     리뷰 ID로 리뷰 가져오기
+    @GetMapping("/{id}")
+    public ResponseDto<Review> getReviewById(@PathVariable UUID id) {
+        return reviewService.getReviewById(id);
+    }
 
     // 리뷰 수정
     @PutMapping("/{id}")
