@@ -9,7 +9,7 @@ public enum UserRoleEnum {
 
     USER("ROLE_USER"),  // 사용자 권한
     OWNER("ROLE_OWNER"), // 가게주인 권한
-    ADMIN("ROLE_MANAGER"),  // 관리자 권한
+    MANAGER("ROLE_MANAGER"),  // 관리자 권한
     MASTER("ROLE_MASTER"); // 마스터 권한
 
 
