@@ -1,32 +1,29 @@
 package com.ana29.deliverymanagement.restaurant.dto;
 
 import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@Getter
-@NoArgsConstructor
-public class RestaurantResponseDto {
-    private UUID id;
-    private String ownderId;
-    private UUID category;
-    private Long area;
-    private String name;
-    private String content;
-    private String operatingHours;
-    private boolean isDeleted; //삭제진행시 사용
-
-    public RestaurantResponseDto(Restaurant restaurant) {
-        this.id = restaurant.getId();
-        this.ownderId = restaurant.getOwnerId();
-        this.category = restaurant.getCategory().getId();
-        this.area = restaurant.getArea().getId();
-        this.name = restaurant.getName();
-        this.content = restaurant.getContent();
-        this.operatingHours = restaurant.getOperatingHours();
-        this.isDeleted = restaurant.isDeleted();
+public record RestaurantResponseDto(
+        UUID id,
+        String ownderId,
+        UUID category,
+        UUID area,
+        String name,
+        String content,
+        String operatingHours,
+        boolean isDeleted
+) {
+    public static RestaurantResponseDto from(Restaurant restaurant) {
+        return new RestaurantResponseDto(
+                restaurant.getId(),
+                restaurant.getOwnerId(),
+                restaurant.getCategory().getId(),
+                restaurant.getArea().getId(),
+                restaurant.getName(),
+                restaurant.getContent(),
+                restaurant.getOperatingHours(),
+                restaurant.isDeleted()
+        );
     }
 }
