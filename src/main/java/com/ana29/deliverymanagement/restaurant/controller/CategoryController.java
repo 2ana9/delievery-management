@@ -1,13 +1,18 @@
 package com.ana29.deliverymanagement.restaurant.controller;
 
+import com.ana29.deliverymanagement.global.dto.ResponseDto;
+import com.ana29.deliverymanagement.restaurant.dto.RestaurantResponseDto;
 import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.restaurant.dto.CategoryRequestDto;
 import com.ana29.deliverymanagement.restaurant.dto.CategoryResponseDto;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.restaurant.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,47 +20,53 @@ import java.nio.file.AccessDeniedException;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/categories")
 @RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService categoryService;
 
     //음식 카테고리 추가
-    @PostMapping("/categories")
-    @ResponseStatus(HttpStatus.CREATED)
-    public CategoryResponseDto createCategory(@RequestBody CategoryRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
+    @PostMapping
+    public ResponseEntity<ResponseDto<CategoryResponseDto>> createCategory(@RequestBody @Valid CategoryRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         checkUserAccess(userDetails);
-        return categoryService.createCategory(requestDto);
+
+        CategoryResponseDto response =
+                categoryService.createCategory(requestDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ResponseDto<>(HttpStatus.CREATED, response));
     };
 
     //음식 카테고리 수정
-    @PutMapping("/categories/{id}") //카테고리 이름수정
-    @ResponseStatus(HttpStatus.OK)
-    public CategoryResponseDto updateCategory(@PathVariable UUID id,
+    @PutMapping("/{id}") //카테고리 이름수정
+    public ResponseEntity<ResponseDto<CategoryResponseDto>> updateCategory(@PathVariable UUID id,
                                               @RequestBody CategoryRequestDto requestDto,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails)throws AccessDeniedException {
         checkUserAccess(userDetails);
-        return categoryService.updateCategory(id,requestDto);
+        CategoryResponseDto response = categoryService.updateCategory(id,requestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto<>(HttpStatus.OK, response));
     };
 
     //음식 카테고리 조회
-    @GetMapping("/api/categories?page={page}&size={size}&sortBy={sortBy}&isAsc={isAsc}")
-    public Page<CategoryResponseDto> getAllCategories(@RequestParam("page") int page,
-                                                        @RequestParam("size") int size,
-                                                        @RequestParam("sortBy") String sortBy,
-                                                        @RequestParam("isAsc") boolean isAsc) {
-        return categoryService.getAllCategories(
-                page-1,size,sortBy,isAsc);
+    @GetMapping
+    public ResponseEntity<ResponseDto<Page<CategoryResponseDto>>> getAllCategories(Pageable pageable) {
+        Page<CategoryResponseDto> response = categoryService.getAllCategories(pageable);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto<>(HttpStatus.OK, response));
     };
 
 
     //음식 카테고리 삭제
-    @DeleteMapping("categories/{id}")
-    public CategoryResponseDto deleteCategory(@PathVariable UUID id,
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDto<CategoryResponseDto>> deleteCategory(@PathVariable UUID id,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         checkUserAccess(userDetails);
-        return categoryService.deleteCategory(id);
+        CategoryResponseDto response = categoryService.deleteCategory(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto<>(HttpStatus.OK, response));
     };
     
     //사용자의 권한확인 메소드
