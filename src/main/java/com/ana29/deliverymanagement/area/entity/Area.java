@@ -1,13 +1,15 @@
 package com.ana29.deliverymanagement.area.entity;
 
-import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
-import jakarta.persistence.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.util.UUID;
 
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Getter
@@ -16,38 +18,46 @@ import lombok.*;
 @Builder
 @Table(name = "p_area")
 public class Area {
+// 데이터를 직접 입력시 uuid 생성 안됨
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.UUID)
+//	@Column(name = "area_id", columnDefinition = "uuid")
+//	private UUID id;
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "area_id", columnDefinition = "uuid")
-	private UUID id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // DB가 자동 증가 ID 관리
+	@Column(name = "area_id", updatable = false, nullable = false)
+	private Long id;
 
 	@Column(length = 20, nullable = false)
 	private String city;	//예) 서울특별시
 
-	@Column(length = 20, nullable = false)
+	@Column(length = 20)		//세종특별시는 district 가 없는 경우가 있음
 	private String district;	//예) 종로구
 
 	//지번 주소 (법정동)
 	@Column(length = 50, nullable = false)
 	private String town;	//예) 청운동
 
-	@Column(length = 10, nullable = false)
-	private String lot_main_no;	//지번 본번 예) (50)
+	@Column(length = 20)
+	private String village;  // 예) 서리
 
-	@Column(length = 10, nullable = false)
-	private String lot_sub_no;	//지번 부번 예) (6)
+	@Column(length = 10)
+	private String townMainNo;	//지번 본번 예) (50)
+
+	@Column(length = 10)
+	private String townSubNo;	//지번 부번 예) (6)
 
 	//도로명 주소
-	@Column(length = 50, nullable = false)
-	private String road_name;	//자하문로
+	@Column(length = 50)
+	private String road;	//자하문로
 
-	@Column(length = 10, nullable = false)
-	private String building_main_no;	//건물 본번 예) (115)
+	@Column(length = 10)
+	private String roadMainNo;	//도로명 본번 예) (115)
 
-	@Column(length = 10, nullable = false)
-	private String building_sub_no;	//건물 부번 예) (14)
+	@Column(length = 10)
+	private String roadSubNo;	//도로명 부번 예) (14)
 
-	@OneToMany(mappedBy = "area")
-	private List<Restaurant> restaurantList = new ArrayList<>();
-
+	@Column(length = 50)
+	private String buildingName;  // 건물명 (예: 삼성타워, 현대아파트)
 }
