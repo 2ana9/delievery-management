@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.order.controller;
 
+import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import com.ana29.deliverymanagement.order.dto.CreateOrderRequestDto;
 import com.ana29.deliverymanagement.order.dto.OrderDetailResponseDto;
 import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
@@ -30,30 +31,37 @@ public class OrderController {
 	private final OrderService orderService;
 
 	@PostMapping
-	public ResponseEntity<OrderDetailResponseDto> createOrder(
+	public ResponseEntity<ResponseDto<OrderDetailResponseDto>> createOrder(
 		@RequestBody @Valid CreateOrderRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-		OrderDetailResponseDto responseDto =
+		OrderDetailResponseDto response =
 			orderService.createOrder(requestDto, userDetails.getUsername());
-		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(new ResponseDto<>(HttpStatus.CREATED, response));
 	}
 
 	@GetMapping("/history")
-	public ResponseEntity<Page<OrderHistoryResponseDto>> getOrderHistory(
+	public ResponseEntity<ResponseDto<Page<OrderHistoryResponseDto>>> getOrderHistory(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@ModelAttribute OrderSearchCondition condition, Pageable pageable) {
 
-		return ResponseEntity.ok(
-			orderService.getOrderHistory(condition, pageable, userDetails.getUsername())
-		);
+		Page<OrderHistoryResponseDto> response =
+			orderService.getOrderHistory(condition, pageable, userDetails.getUsername());
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(new ResponseDto<>(HttpStatus.OK, response));
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<OrderDetailResponseDto> getOrderDetail(
+	public ResponseEntity<ResponseDto<OrderDetailResponseDto>> getOrderDetail(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@PathVariable("id") UUID id) {
 
-		return ResponseEntity.ok(orderService.getOrderDetail(id, userDetails.getUsername()));
+		OrderDetailResponseDto response =
+			orderService.getOrderDetail(id, userDetails.getUsername());
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(new ResponseDto<>(HttpStatus.OK, response));
 	}
 }

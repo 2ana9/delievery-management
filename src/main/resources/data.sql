@@ -1,7 +1,8 @@
 -- 사용자 데이터 삽입
-INSERT INTO p_users (id, nickname, email, password, phone, role, current_address, created_at, created_by)
-SELECT 'user1', 'johndoe123', 'john.doe@example.com', 'password123A!', '010-1234-5678', 'CUSTOMER', '123 Main St', CURRENT_TIMESTAMP, 'user1'
-WHERE NOT EXISTS (SELECT 1 FROM p_users WHERE id = 'user1');
+
+-- INSERT INTO p_users (id, nickname, email, password, phone, role, current_address, created_at, created_by)
+-- SELECT 'user1', 'johndoe123', 'john.doe@example.com', 'password123A!', '010-1234-5678', 'CUSTOMER', '123 Main St', CURRENT_TIMESTAMP, 'user1'
+-- WHERE NOT EXISTS (SELECT 1 FROM p_users WHERE id = 'user1');
 
 INSERT INTO p_users (id, nickname, email, password, phone, role, current_address, created_at, created_by)
 SELECT 'user2', 'janesmith1', 'jane.smith@example.com', 'password456A!', '010-2345-6789', 'CUSTOMER', '456 Elm St', CURRENT_TIMESTAMP, 'user2'

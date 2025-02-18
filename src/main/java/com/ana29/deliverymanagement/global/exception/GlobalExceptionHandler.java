@@ -15,8 +15,9 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-@Slf4j
+
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     private HttpHeaders headers;
@@ -132,3 +133,4 @@ public class GlobalExceptionHandler {
 //        ExceptionResponse response = ExceptionResponse.of(e.getMessage(), HttpStatus.BAD_REQUEST.value(), e.getPaymentResult());
 //        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 //    }
+
