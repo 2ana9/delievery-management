@@ -42,25 +42,8 @@ public class Userservice {
 
     public String signup(SignupRequestDto requestDto) {
 
-//        QUser user = QUser.user;
-//        BooleanExpression duplicatePredicate =
-//                user.Id.eq(requestDto.getId())
-//                        .or(user.email.eq(requestDto.getEmail()))
-//                        .or(user.nickname.eq(requestDto.getNickname()))
-//                        .or(user.phone.eq(requestDto.getPhone()));
-//
-//        Long duplicateCount = queryFactory.select(user.count())
-//                .from(user)
-//                .where(duplicatePredicate)
-//                .fetchOne();
-//
-//        if (duplicateCount != null && duplicateCount > 0) {
-//            // 중복된 데이터가 있는 경우 적절한 예외를 던집니다.
-//            throw new RuntimeException("아이디, 이메일, 닉네임, 전화번호 중 하나 이상이 이미 존재합니다.");
-//        }
-
 //        에러 발생 시 기존 회원가입 url 리다이렉트 하는 global handler 필요
-        // 1. 바인딩 에러 체크 (컨트롤러에서 @Valid를 사용했을 때의 추가 검증)
+//         1. 바인딩 에러 체크 (컨트롤러에서 @Valid를 사용했을 때의 추가 검증)
 //        checkFieldErrors(bindingResult);
 
         // 2. 사용자명 검증 및 중복 체크
