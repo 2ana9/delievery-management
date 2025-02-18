@@ -71,7 +71,7 @@ public class UserController {
         log.info("connet Test : /sign-out (Post Method)");
 //        /api/users/sign-in
         ifSuccessRedirectUrl = userService.signOut(request);
-        log.info("TOKEN BLACKLIST VALUE : " + TokenBlacklist.getBlacklistedTokens().toString());
+        log.info("TOKEN BLACKLIST VALUE : " + TokenBlacklist.getBlacklistedTokens());
         return "redirect:" + ifSuccessRedirectUrl;
     }
 
