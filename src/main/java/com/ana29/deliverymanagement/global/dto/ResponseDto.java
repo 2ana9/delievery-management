@@ -1,5 +1,7 @@
 package com.ana29.deliverymanagement.global.dto;
 
+import org.springframework.http.HttpStatus;
+
 public class ResponseDto<T> {
 
     private int code;
@@ -25,6 +27,13 @@ public class ResponseDto<T> {
         this.status = status;
         this.message = message;
         this.data = null;
+    }
+
+    public ResponseDto(HttpStatus httpStatus, T data) {
+        this.code = httpStatus.value();
+        this.status = httpStatus.getReasonPhrase();
+        this.message = "성공적으로 처리되었습니다.";
+        this.data = data;
     }
 
     // Getter, Setter
