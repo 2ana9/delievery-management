@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.global.exception;
 
+import com.ana29.deliverymanagement.order.exception.PaymentFailException;
 import com.ana29.deliverymanagement.review.exception.AlreadyReviewedException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +20,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({IllegalArgumentException.class})
     @ResponseBody
-    public ResponseEntity<RestApiException> illegalArgumentExceptionHandler(IllegalArgumentException ex, HttpServletRequest request) {
+    public ResponseEntity<ExceptionResponse> illegalArgumentExceptionHandler(IllegalArgumentException ex, HttpServletRequest request) {
         // 회원가입 URL에서 발생한 예외인 경우
         if (request.getRequestURI().contains("/api/users/sign-up")) {
             HttpHeaders headers = new HttpHeaders();
@@ -31,7 +32,7 @@ public class GlobalExceptionHandler {
             return new ResponseEntity<>(headers, HttpStatus.FOUND);
         }
 
-        RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+        ExceptionResponse restApiException = new ExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(
                 // HTTP body
                 restApiException,
@@ -42,11 +43,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({NullPointerException.class})
     @ResponseBody
-    public ResponseEntity<RestApiException> nullPointerExceptionHandler(NullPointerException ex) {
-        RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    public ResponseEntity<ExceptionResponse> nullPointerExceptionHandler(NullPointerException ex) {
+        ExceptionResponse response = new ExceptionResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(
                 // HTTP body
-                restApiException,
+                response,
                 // HTTP status code
                 HttpStatus.NOT_FOUND
         );
@@ -54,11 +55,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({ProductNotFoundException.class})
     @ResponseBody
-    public ResponseEntity<RestApiException> notFoundProductExceptionHandler(ProductNotFoundException ex) {
-        RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    public ResponseEntity<ExceptionResponse> notFoundProductExceptionHandler(ProductNotFoundException ex) {
+        ExceptionResponse response = new ExceptionResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(
                 // HTTP body
-                restApiException,
+                response,
                 // HTTP status code
                 HttpStatus.NOT_FOUND
         );
@@ -74,5 +75,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleAlreadyReviewedException(AlreadyReviewedException e) {
         return e.getMessage();
+    }
+
+    @ExceptionHandler(CustomForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ExceptionResponse handleCustomForbiddenException(CustomForbiddenException e) {
+        return new ExceptionResponse(e.getMessage(), HttpStatus.FORBIDDEN.value());
     }
 }

@@ -14,10 +14,10 @@ public record OrderDetailResponseDto(
 	Integer quantity,
 	String orderRequest,
 	LocalDateTime orderedAt,
-	Long totalPrice,
+	String restaurantName,
 	String menuName,
 	Long menuPrice,
-	String restaurantName,
+	Long totalPrice,
 	PaymentStatusEnum paymentStatus,
 	PaymentTypeEnum paymentType,
 	UUID externalPaymentId,
@@ -30,14 +30,14 @@ public record OrderDetailResponseDto(
 			order.getQuantity(),
 			order.getOrderRequest(),
 			order.getCreatedAt(),
-			order.getTotalPrice(),
+			order.getMenu().getRestaurant().getName(),
 			order.getMenu().getName(),
 			order.getMenu().getPrice(),
-			order.getMenu().getRestaurant().getName(),
-			payment != null ? payment.getPaymentStatus() : null,
-			payment != null ? payment.getPaymentType() : null,
-			payment != null ? payment.getExternalPaymentId() : null,
-			payment != null ? payment.getCreatedAt() : null
+			order.getTotalPrice(),
+			payment.getPaymentStatus(),
+			payment.getPaymentType(),
+			payment.getExternalPaymentId(),
+			payment.getCreatedAt()
 		);
 	}
 }
