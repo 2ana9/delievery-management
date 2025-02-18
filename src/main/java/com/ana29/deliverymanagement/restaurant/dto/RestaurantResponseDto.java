@@ -13,7 +13,7 @@ public class RestaurantResponseDto {
     private UUID id;
     private String ownderId;
     private UUID category;
-    private UUID area;
+    private Long area;
     private String name;
     private String content;
     private String operatingHours;
