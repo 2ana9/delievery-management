@@ -2,6 +2,7 @@ package com.ana29.deliverymanagement.order.entity;
 
 import com.ana29.deliverymanagement.global.constant.OrderStatusEnum;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
+import com.ana29.deliverymanagement.order.exception.OrderStatusChangeException;
 import com.ana29.deliverymanagement.restaurant.entity.Menu;
 import com.ana29.deliverymanagement.user.entity.User;
 import jakarta.persistence.Column;
@@ -67,8 +68,8 @@ public class Order extends Timestamped {
 	private Payment payment;
 
 	public void updateStatus(OrderStatusEnum newStatus) {
-		if(!this.orderStatus.canChangeTo(newStatus)){
-			throw new RuntimeException("Order status cannot be changed");
+		if (!this.orderStatus.canChangeTo(newStatus)) {
+			throw new OrderStatusChangeException(this.orderStatus, newStatus);
 		}
 		this.orderStatus = newStatus;
 	}

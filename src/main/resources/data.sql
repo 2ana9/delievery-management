@@ -41,4 +41,3 @@ WHERE NOT EXISTS (SELECT 1 FROM p_menus WHERE menu_id = '770e8400-e29b-41d4-a716
 INSERT INTO p_menus (menu_id, name, price, content, restaurant_id)
 SELECT '770e8400-e29b-41d4-a716-446655440001', '김치찌개', 9000, '얼큰한 국물과 두부', '92e8d27b-d604-4be3-b0ea-b9b55f365e09'
 WHERE NOT EXISTS (SELECT 1 FROM p_menus WHERE menu_id = '770e8400-e29b-41d4-a716-446655440001');
-
