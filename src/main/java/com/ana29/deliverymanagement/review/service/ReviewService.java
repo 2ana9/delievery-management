@@ -72,36 +72,36 @@ public class ReviewService {
 
 
     // 모든 리뷰 가져오기
-//    public ResponseDto<Page<Review>> getAllReviews(int page, int size) {
-//        Pageable pageable = PageRequest.of(page, size);
-//        Page<Review> reviews = reviewRepository.findAll(pageable);
-//
-//        // 성공적인 응답 반환
-//        return ResponseDto.success(reviews);
-//    }
+    public ResponseDto<Page<Review>> getAllReviews(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Review> reviews = reviewRepository.findAll(pageable);
+
+        // 성공적인 응답 반환
+        return ResponseDto.success(reviews);
+    }
 
     // 가게에 달린 리뷰들 모두 조회
-//    public ResponseDto<Page<Review>> getReviewsByRestaurantId(UUID restaurantId, int page, int size) {
-//        // 존재하는 가게인지 확인
-//        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-//                .orElseThrow(() -> new CustomNotFoundException("해당 가게를 찾을 수 없습니다."));
-//
-//        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-//        Page<Review> reviews = reviewRepository.findByRestaurantId(restaurant.getId(), pageable);
-//
-//        return ResponseDto.success(reviews);
-//    }
+    public ResponseDto<Page<Review>> getReviewsByRestaurantId(UUID restaurantId, int page, int size) {
+        // 존재하는 가게인지 확인
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new CustomNotFoundException("해당 가게를 찾을 수 없습니다."));
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Review> reviews = reviewRepository.findByRestaurantId(restaurant.getId(), pageable);
+
+        return ResponseDto.success(reviews);
+    }
 
     // 리뷰 ID로 리뷰 가져오기
-//    @Transactional(readOnly = true)
-//    public ResponseDto<Review> getReviewById(UUID id) {
-//        // 리뷰 조회
-//        Review review = reviewRepository.findById(id)
-//                .orElseThrow(() -> new CustomNotFoundException("리뷰를 찾을 수 없습니다. id: " + id));
-//
-//        // 조회된 리뷰를 ResponseDto로 반환
-//        return ResponseDto.success(review);
-//    }
+    @Transactional(readOnly = true)
+    public ResponseDto<Review> getReviewById(UUID id) {
+        // 리뷰 조회
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new CustomNotFoundException("리뷰를 찾을 수 없습니다. id: " + id));
+
+        // 조회된 리뷰를 ResponseDto로 반환
+        return ResponseDto.success(review);
+    }
 
     // 리뷰 수정
     @Transactional
