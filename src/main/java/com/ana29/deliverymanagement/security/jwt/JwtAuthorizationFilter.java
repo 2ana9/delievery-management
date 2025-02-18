@@ -50,7 +50,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String token = jwtUtil.getJwtFromHeader(request);
         //토큰 블랙리스트 검증
         if (token != null && !token.isEmpty()) {
-            log.info("BLACKLIST TEST : " + token);
             if (TokenBlacklist.isTokenBlacklisted(token)) {
                 log.info("BLACKLIST VALID");
                 log.info("BLACKLIST INfO : " + TokenBlacklist.getBlacklistedTokens().toString());
@@ -58,7 +57,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 return;
             }
         }
-        log.info("NOT BLACKLIST VALID");
         if (StringUtils.hasText(token)) {
 
             if (!jwtUtil.validateToken(token)) {

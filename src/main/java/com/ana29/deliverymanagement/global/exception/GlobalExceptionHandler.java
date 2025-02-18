@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -25,13 +26,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({IllegalArgumentException.class})
     @ResponseBody
     public ResponseEntity<ResponseDto> illegalArgumentExceptionHandler(IllegalArgumentException ex, HttpServletRequest request) {
-        return handleRedirectException(ex.getMessage(), request.getRequestURI());
+        return handleRedirectException("Type IllegalArgumentExceptionHandler : " + ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseBody
     public ResponseEntity<ResponseDto> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        return handleRedirectException(ex.getMessage(), request.getRequestURI());
+        // BindingResult에서 모든 에러를 가져온 후 마지막 에러의 기본 메시지만 추출합니다.
+        String errorMessage = ex.getBindingResult().getAllErrors().stream()
+                .reduce((first, second) -> second)  // 마지막 에러를 선택
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .orElse("유효성 검사 실패");
+
+        return handleRedirectException("Type MethodArgumentNotValidExceptionHandler : " + errorMessage, request.getRequestURI());
     }
 
     // 공통 로직: 특정 URL (예: 회원가입)인 경우, 에러 메시지를 인코딩하여 리다이렉트 응답 생성
