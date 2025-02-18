@@ -4,14 +4,10 @@ import com.ana29.deliverymanagement.restaurant.dto.CategoryRequestDto;
 import com.ana29.deliverymanagement.restaurant.dto.CategoryResponseDto;
 import com.ana29.deliverymanagement.restaurant.entity.Category;
 import com.ana29.deliverymanagement.restaurant.repository.CategoryRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -42,14 +38,11 @@ public class CategoryService {
         return CategoryResponseDto.from(category);
     }
 
-//    public Page<CategoryResponseDto> getAllCategories(int page, int size, String sortBy, boolean isAsc) {
-//        Sort.Direction direction = isAsc ? Sort.Direction.ASC: Sort.Direction.DESC;
-//        Sort sort = Sort.by(direction, sortBy); //정렬방향,정렬기준
-//        Pageable pageable = PageRequest.of(page,size,sort);
-//        Page<Category> categoryList = categoryRepository.findAll(pageable);
-//
-//        return categoryList.map(CategoryResponseDto::new);
-//    };
+    @Transactional(readOnly = true)
+    public Page<CategoryResponseDto> getAllCategories(Pageable pageable) {
+
+        return categoryRepository.findAll(pageable).map(CategoryResponseDto::from);
+    };
 
     public CategoryResponseDto deleteCategory(UUID id) {
         Category category = categoryRepository.findById(id).orElseThrow(()->

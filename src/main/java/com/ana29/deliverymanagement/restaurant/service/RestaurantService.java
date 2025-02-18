@@ -10,6 +10,7 @@ import com.ana29.deliverymanagement.restaurant.repository.CategoryRepository;
 import com.ana29.deliverymanagement.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -54,7 +55,7 @@ public class RestaurantService {
         return new RestaurantResponseDto(restaurant);
     }
 
-    public Page<RestaurantResponseDto> getAllRestaurant(int i, int size, String sortBy, boolean isAsc) {
+    public Page<RestaurantResponseDto> getAllRestaurant(Pageable pageable) {
         return null;
     }
 }
