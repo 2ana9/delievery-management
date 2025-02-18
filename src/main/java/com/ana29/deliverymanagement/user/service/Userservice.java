@@ -2,8 +2,8 @@ package com.ana29.deliverymanagement.user.service;
 
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.security.admin.AdminConfig;
-import com.ana29.deliverymanagement.security.constant.user.SignupConfig;
-import com.ana29.deliverymanagement.security.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.constant.user.SignupConfig;
+import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;
 import com.ana29.deliverymanagement.security.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.user.dto.SignupRequestDto;
