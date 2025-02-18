@@ -27,22 +27,27 @@ public class RestaurantController {
 
     //가게 추가 메소드(관리자)
     @PostMapping
-    public RestaurantResponseDto createRestaurant(@RequestBody RestaurantRequestDto restaurantRequestDto,
+    public ResponseEntity<ResponseDto<RestaurantResponseDto>> createRestaurant(@RequestBody RestaurantRequestDto restaurantRequestDto,
                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         checkUserAccess(userDetails);
-        return restaurantService.createRestaurant(restaurantRequestDto);
+        RestaurantResponseDto response = restaurantService.createRestaurant(restaurantRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ResponseDto<>(HttpStatus.CREATED, response));
     };
 
     //가게 수정 메소드(관리자,가게사장)
-    @PutMapping("{id}")
-    public RestaurantResponseDto updateRestaurant(@PathVariable UUID id, @RequestBody RestaurantRequestDto restaurantRequestDto
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseDto<RestaurantResponseDto>> updateRestaurant(@PathVariable UUID id, @RequestBody RestaurantRequestDto restaurantRequestDto
             , @AuthenticationPrincipal UserDetailsImpl userDetails)throws AccessDeniedException{
         //수정은 관리자도 가능하고 가게사장도 가능하게 구현
         UserRoleEnum userRole = userDetails.getUser().getRole();
         if (userRole == UserRoleEnum.CUSTOMER) {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
-        return restaurantService.updateRestaurant(id, restaurantRequestDto);
+        RestaurantResponseDto response = restaurantService.updateRestaurant(id, restaurantRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto<>(HttpStatus.OK, response));
     };
 
     //가게 조회 메소드 (전체)

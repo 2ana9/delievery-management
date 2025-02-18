@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,7 +27,7 @@ public class RestaurantService {
     private final AreaRepository areaRepository;
 
     private final CategoryRepository categoryRepository;
-
+    @Transactional
     public RestaurantResponseDto createRestaurant(RestaurantRequestDto restaurantRequestDto) {
         Area area = areaRepository.findById(restaurantRequestDto.getArea())
                 .orElseThrow(() -> new RuntimeException("Area not found"));
@@ -43,16 +44,19 @@ public class RestaurantService {
                         .operatingHours(restaurantRequestDto.getOperatingHours())
                         .build()
         );
-        return new RestaurantResponseDto(restaurant);
+
+        return RestaurantResponseDto.from(restaurant);
     }
 
+    @Transactional
     public RestaurantResponseDto updateRestaurant(UUID id, RestaurantRequestDto restaurantRequestDto) {
         Restaurant restaurant =  restaurantRepository.findById(id).orElseThrow(()->
                 new IllegalArgumentException("Restaurant not found")); //고유id값으로 가게정보 찾기
         restaurant.update(restaurantRequestDto);
 //        restaurant.setUpdatedAt(LocalDateTime.now()); //수정시간 업데이트
 //        restaurant.setUpdatedBy();//수정자 이름입력
-        return new RestaurantResponseDto(restaurant);
+
+        return RestaurantResponseDto.from(restaurant);
     }
 
     public Page<RestaurantResponseDto> getAllRestaurant(Pageable pageable) {
