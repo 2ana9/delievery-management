@@ -15,7 +15,7 @@ public enum SignupConfig {
     // 전화번호: 010-XXXX-XXXX 또는 010XXXXXXXX
     PHONE_PATTERN(Pattern.compile("^010-?\\d{4}-?\\d{4}$")),
     // 이메일: 일반적인 이메일 형식
-    EMAIL_PATTERN(Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,10}$"));
+    EMAIL_PATTERN(Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,20}$"));
 
     private final Pattern pattern;
 

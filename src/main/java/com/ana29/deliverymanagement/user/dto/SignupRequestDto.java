@@ -24,15 +24,18 @@ public class SignupRequestDto {
             message = "비밀번호는 알파벳 대소문자, 숫자, 특수문자를 포함한 8자 이상 15자 이하입니다.")
     private String password;
 
-    @NotBlank
-    private String phone;
-    @Email
-    @NotBlank
+    @Email(message = "유효한 이메일 주소를 입력하세요.")
+    @NotBlank(message = "이메일은 필수 입력값입니다.")
+    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,25}$", message = "유효한 이메일 주소를 입력하세요.")
     private String email;
+
+    @NotBlank(message = "전화번호는 필수 입력값입니다.")
+    @Pattern(regexp = "^010-?\\d{4}-?\\d{4}$", message = "유효한 전화번호를 입력하세요.")
+    private String phone;
 
     private String currentAddress;
 
     private boolean admin = false;
 
-    private String adminToken;
+    private String tokenValue;
 }

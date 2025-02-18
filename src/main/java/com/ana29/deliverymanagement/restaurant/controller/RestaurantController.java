@@ -37,7 +37,7 @@ public class RestaurantController {
             , @AuthenticationPrincipal UserDetailsImpl userDetails)throws AccessDeniedException{
         //수정은 관리자도 가능하고 가게사장도 가능하게 구현
         UserRoleEnum userRole = userDetails.getUser().getRole();
-        if (userRole == UserRoleEnum.USER) {
+        if (userRole == UserRoleEnum.CUSTOMER) {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
         return restaurantService.updateRestaurant(id, restaurantRequestDto);
@@ -60,7 +60,7 @@ public class RestaurantController {
     //사용자의 권한확인 메소드
     public void checkUserAccess(UserDetailsImpl userDetails) throws AccessDeniedException {
         UserRoleEnum userRole = userDetails.getUser().getRole();
-        if (userRole != UserRoleEnum.ADMIN) {
+        if (userRole != UserRoleEnum.MASTER) {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
     };

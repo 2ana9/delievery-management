@@ -15,9 +15,11 @@ public class UpdateRequestDto {
 
     @Email(message = "유효한 이메일 주소를 입력하세요.")
     @NotBlank(message = "이메일은 필수 입력값입니다.")
+    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,25}$", message = "유효한 이메일 주소를 입력하세요.")
     private String email;
 
     @NotBlank(message = "전화번호는 필수 입력값입니다.")
+    @Pattern(regexp = "^010-?\\d{4}-?\\d{4}$", message = "유효한 전화번호를 입력하세요.")
     private String phone;
 
     // 선택적으로 추가 필드
