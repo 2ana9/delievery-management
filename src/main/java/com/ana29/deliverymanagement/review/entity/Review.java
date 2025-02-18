@@ -3,6 +3,7 @@ package com.ana29.deliverymanagement.review.entity;
 import com.ana29.deliverymanagement.order.entity.Order;
 import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
+import com.ana29.deliverymanagement.review.dto.ReviewRequestDto;
 import com.ana29.deliverymanagement.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -33,18 +34,25 @@ public class Review extends Timestamped {
 	@Column(nullable = false, columnDefinition = "integer check (rating between 1 and 5)")
 	private Integer rating;
 
-	@JsonIgnore  // 이 필드는 JSON으로 직렬화되지 않음
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@JsonIgnore  // 이 필드는 JSON으로 직렬화되지 않음
+	@JsonIgnore
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id", nullable = false)
 	private Order order;
 
-	@JsonIgnore  // 이 필드는 JSON으로 직렬화되지 않음
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "restaurant_id", nullable = false)
 	private Restaurant restaurant;
+
+	// 기존 엔티티 값을 업데이트하는 메서드
+	public void updateReview(String title, String content, Integer rating) {
+		this.title = title;
+		this.content = content;
+		this.rating = rating;
+	}
 }

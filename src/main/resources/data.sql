@@ -1,14 +1,14 @@
 -- 사용자 데이터 삽입
-INSERT INTO p_users (id, nickname, email, password, phone, role, current_address, created_at, created_by)
-SELECT 'user1', 'John Doe', 'john.doe@example.com', 'password123', '010-1234-5678', 'USER', '123 Main St', CURRENT_TIMESTAMP, 'user1'
-WHERE NOT EXISTS (SELECT 1 FROM p_users WHERE id = 'user1');
+-- INSERT INTO p_users (id, nickname, email, password, phone, role, created_at, created_by, updated_at)
+-- SELECT 'user1', 'John Doe', 'john.doe@example.com', 'password123', '010-1234-5678', 'USER', CURRENT_TIMESTAMP, 'user1', CURRENT_TIMESTAMP
+-- WHERE NOT EXISTS (SELECT 1 FROM p_users WHERE id = 'user1');
 
-INSERT INTO p_users (id, nickname, email, password, phone, role, current_address, created_at, created_by)
-SELECT 'user2', 'Jane Smith', 'jane.smith@example.com', 'password456', '010-2345-6789', 'USER', '456 Elm St', CURRENT_TIMESTAMP, 'user2'
+INSERT INTO p_users (id, nickname, email, password, phone, role, created_at, created_by, updated_at)
+SELECT 'user2', 'Jane Smith', 'jane.smith@example.com', 'password456', '010-2345-6789', 'USER', CURRENT_TIMESTAMP, 'user2', CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM p_users WHERE id = 'user2');
 
-INSERT INTO p_users (id, nickname, email, password, phone, role, current_address, created_at, created_by)
-SELECT 'admin', 'Admin User', 'admin@example.com', 'adminpassword', '010-3456-7890', 'ADMIN', '789 Oak St', CURRENT_TIMESTAMP, 'admin'
+INSERT INTO p_users (id, nickname, email, password, phone, role, created_at, created_by, updated_at)
+SELECT 'admin', 'Admin User', 'admin@example.com', 'adminpassword', '010-3456-7890', 'ADMIN', CURRENT_TIMESTAMP, 'admin', CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM p_users WHERE id = 'admin');
 
 -- 카테고리 데이터 삽입
@@ -41,4 +41,3 @@ WHERE NOT EXISTS (SELECT 1 FROM p_menus WHERE menu_id = '770e8400-e29b-41d4-a716
 INSERT INTO p_menus (menu_id, name, price, content, restaurant_id)
 SELECT '770e8400-e29b-41d4-a716-446655440001', '김치찌개', 9000, '얼큰한 국물과 두부', '92e8d27b-d604-4be3-b0ea-b9b55f365e09'
 WHERE NOT EXISTS (SELECT 1 FROM p_menus WHERE menu_id = '770e8400-e29b-41d4-a716-446655440001');
-
