@@ -22,15 +22,15 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public ResponseEntity<CategoryResponseDto> createCategory(CategoryRequestDto requestDto){
+    @Transactional
+    public CategoryResponseDto createCategory(CategoryRequestDto requestDto){
        Category category = categoryRepository.save(
                Category.builder()
                        .foodType(requestDto.getFoodType())
                        .build()
        );
-        CategoryResponseDto responseDto = CategoryResponseDto.from(category);
 
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+        return CategoryResponseDto.from(category);
     }
 
     @Transactional
@@ -39,24 +39,24 @@ public class CategoryService {
                 new IllegalArgumentException("Category not found"));
         category.update(requestDto);
 
-        return new CategoryResponseDto(category);
+        return CategoryResponseDto.from(category);
     }
 
-    public Page<CategoryResponseDto> getAllCategories(int page, int size, String sortBy, boolean isAsc) {
-        Sort.Direction direction = isAsc ? Sort.Direction.ASC: Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, sortBy); //정렬방향,정렬기준
-        Pageable pageable = PageRequest.of(page,size,sort);
-        Page<Category> categoryList = categoryRepository.findAll(pageable);
-
-        return categoryList.map(CategoryResponseDto::new);
-    };
+//    public Page<CategoryResponseDto> getAllCategories(int page, int size, String sortBy, boolean isAsc) {
+//        Sort.Direction direction = isAsc ? Sort.Direction.ASC: Sort.Direction.DESC;
+//        Sort sort = Sort.by(direction, sortBy); //정렬방향,정렬기준
+//        Pageable pageable = PageRequest.of(page,size,sort);
+//        Page<Category> categoryList = categoryRepository.findAll(pageable);
+//
+//        return categoryList.map(CategoryResponseDto::new);
+//    };
 
     public CategoryResponseDto deleteCategory(UUID id) {
         Category category = categoryRepository.findById(id).orElseThrow(()->
                 new IllegalArgumentException("Category not found"));
         category.setIsDeleted(true);
         categoryRepository.save(category);
-        return new CategoryResponseDto(category);
+        return CategoryResponseDto.from(category);
     };
 
 
