@@ -1,7 +1,9 @@
 package com.ana29.deliverymanagement.restaurant.entity;
 
+import com.ana29.deliverymanagement.area.entity.Area;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,22 +24,41 @@ public class Restaurant extends Timestamped {
     @Column(length = 100, nullable = false)
     private String name;
 
+    //가게주인을 표시? 표기? 하는 컬럼
+    @Column(nullable = false)
+    private String ownderId;
+
     @Column(length = 100)
     private String content;
 
     @Column(length = 100, nullable = false)
     private String operatingHours;
 
+    @Column(name = "is_deleted",nullable = false)
+    @Builder.Default
+    private boolean isDeleted =false;
+
     public void update(RestaurantRequestDto restaurantRequestDto) {
         this.name = restaurantRequestDto.getName();
         this.content = restaurantRequestDto.getContent();
+        this.ownderId = restaurantRequestDto.getOwnerId();
         this.operatingHours = restaurantRequestDto.getOperatingHours();
+        this.isDeleted = restaurantRequestDto.isDeleted();
     }
 
-//    @OneToMany
-//    @JoinColumn(name = "category_id")
-//    private List<Category> alists = new ArrayList<>();
+    // 명시적으로 Setter 메서드 추가
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 
+    //카테고리 외래키
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
+    //주소 외래키
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "area_id", nullable = false)
+    private Area area;
 
 }
