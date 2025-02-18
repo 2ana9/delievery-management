@@ -24,13 +24,18 @@ INSERT INTO p_category (category_id, food_type, is_deleted)
 SELECT '660e8400-e29b-41d4-a716-446655440005', '치킨', false
 WHERE NOT EXISTS (SELECT 1 FROM p_category WHERE category_id = '660e8400-e29b-41d4-a716-446655440005');
 
+-- 주소 데이터 삽입
+INSERT INTO p_area (area_id,city,district,town,lot_main_no,lot_sub_no,road_name,building_main_no,building_sub_no)
+SELECT '747e8484-8239-497d-84d6-cb9f763e1707','서울특별시','종로구','청운동','50','6','자하문로','115','14'
+    WHERE NOT EXISTS (SELECT 1 FROM p_area WHERE area_id = '747e8484-8239-497d-84d6-cb9f763e1707');
+
 -- 식당 데이터 삽입
-INSERT INTO p_restaurant (restaurant_id, name, content, operating_hours, created_at, created_by)
-SELECT '92e8d27b-d604-4be3-b0ea-b9b55f365e09', '썬니 카페', '좋은 커피와 케이크가 있는 아늑한 카페입니다.', '오전 8시 - 오후 10시', CURRENT_TIMESTAMP, 'admin'
+INSERT INTO p_restaurant (restaurant_id, name, owner_id, area_id, category_id, content, operating_hours, created_at, created_by, is_deleted)
+SELECT '92e8d27b-d604-4be3-b0ea-b9b55f365e09', '썬니 카페','user1','747e8484-8239-497d-84d6-cb9f763e1707','660e8400-e29b-41d4-a716-446655440003', '좋은 커피와 케이크가 있는 아늑한 카페입니다.', '오전 8시 - 오후 10시', CURRENT_TIMESTAMP, 'admin', false
 WHERE NOT EXISTS (SELECT 1 FROM p_restaurant WHERE restaurant_id = '92e8d27b-d604-4be3-b0ea-b9b55f365e09');
 
-INSERT INTO p_restaurant (restaurant_id, name, content, operating_hours, created_at, created_by)
-SELECT 'f72ac5d3-9f1c-44f2-b676-8c02a211ac2b', '파스타 파라다이스', '신선한 재료로 만든 맛있는 파스타 요리들.', '오전 10시 - 오후 9시', CURRENT_TIMESTAMP, 'admin'
+INSERT INTO p_restaurant (restaurant_id, name, owner_id, area_id, category_id, content, operating_hours, created_at, created_by, is_deleted)
+SELECT 'f72ac5d3-9f1c-44f2-b676-8c02a211ac2b', '파스타 파라다이스','user2','747e8484-8239-497d-84d6-cb9f763e1707','660e8400-e29b-41d4-a716-446655440003', '신선한 재료로 만든 맛있는 파스타 요리들.', '오전 10시 - 오후 9시', CURRENT_TIMESTAMP, 'admin', false
 WHERE NOT EXISTS (SELECT 1 FROM p_restaurant WHERE restaurant_id = 'f72ac5d3-9f1c-44f2-b676-8c02a211ac2b');
 
 -- 메뉴 데이터 삽입

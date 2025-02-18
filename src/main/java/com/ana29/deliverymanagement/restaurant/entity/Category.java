@@ -5,6 +5,8 @@ import com.ana29.deliverymanagement.global.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -36,7 +38,7 @@ public class Category extends Timestamped {
         this.isDeleted = isDeleted;
     }
 
-    @ManyToOne
-    private Restaurant restaurant;
+    @OneToMany(mappedBy = "category")
+    private List<Restaurant> restaurantList = new ArrayList<>();
 
 }
