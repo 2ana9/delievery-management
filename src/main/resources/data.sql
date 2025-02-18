@@ -26,9 +26,9 @@ SELECT '660e8400-e29b-41d4-a716-446655440005', '치킨', false
 WHERE NOT EXISTS (SELECT 1 FROM p_category WHERE category_id = '660e8400-e29b-41d4-a716-446655440005');
 
 -- 주소 데이터 삽입
-INSERT INTO p_area (area_id,city,district,town,lot_main_no,lot_sub_no,road_name,building_main_no,building_sub_no)
-SELECT '747e8484-8239-497d-84d6-cb9f763e1707','서울특별시','종로구','청운동','50','6','자하문로','115','14'
-    WHERE NOT EXISTS (SELECT 1 FROM p_area WHERE area_id = '747e8484-8239-497d-84d6-cb9f763e1707');
+INSERT INTO p_area (area_id,city,district,town, village, town_main_no,town_sub_no,road,road_main_no,road_sub_no,building_name)
+SELECT 1,'서울특별시','종로구','청운동', '무슨리', '50','6','자하문로','115','14','삼성타워'
+    WHERE NOT EXISTS (SELECT 1 FROM p_area WHERE area_id = 1);
 
 -- 식당 데이터 삽입
 INSERT INTO p_restaurant (restaurant_id, name, owner_id, area_id, category_id, content, operating_hours, created_at, created_by, is_deleted)
