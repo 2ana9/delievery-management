@@ -1,16 +1,17 @@
 package com.ana29.deliverymanagement.user.service;
 
+import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.security.admin.AdminConfig;
-import com.ana29.deliverymanagement.security.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.security.constant.user.SignupConfig;
 import com.ana29.deliverymanagement.security.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.security.jwt.JwtUtil;
+import com.ana29.deliverymanagement.security.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.user.dto.SignupRequestDto;
 import com.ana29.deliverymanagement.user.dto.UpdateRequestDto;
 import com.ana29.deliverymanagement.user.dto.UserInfoDto;
 import com.ana29.deliverymanagement.user.entity.User;
-import com.ana29.deliverymanagement.security.jwt.JwtUtil;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
-import com.ana29.deliverymanagement.security.UserDetailsImpl;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,31 +36,50 @@ public class Userservice {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AdminConfig adminConfig;
+    private final JPAQueryFactory queryFactory;
+
     private final JwtUtil jwtUtil;
 
     public String signup(SignupRequestDto requestDto) {
+
+//        QUser user = QUser.user;
+//        BooleanExpression duplicatePredicate =
+//                user.Id.eq(requestDto.getId())
+//                        .or(user.email.eq(requestDto.getEmail()))
+//                        .or(user.nickname.eq(requestDto.getNickname()))
+//                        .or(user.phone.eq(requestDto.getPhone()));
+//
+//        Long duplicateCount = queryFactory.select(user.count())
+//                .from(user)
+//                .where(duplicatePredicate)
+//                .fetchOne();
+//
+//        if (duplicateCount != null && duplicateCount > 0) {
+//            // 중복된 데이터가 있는 경우 적절한 예외를 던집니다.
+//            throw new RuntimeException("아이디, 이메일, 닉네임, 전화번호 중 하나 이상이 이미 존재합니다.");
+//        }
+
 //        에러 발생 시 기존 회원가입 url 리다이렉트 하는 global handler 필요
         // 1. 바인딩 에러 체크 (컨트롤러에서 @Valid를 사용했을 때의 추가 검증)
 //        checkFieldErrors(bindingResult);
 
         // 2. 사용자명 검증 및 중복 체크
         validateUsername(requestDto.getId());
-        checkUsernameDuplicate(requestDto.getId());
 
         // 3. 이메일 검증 및 중복 체크
         validateEmail(requestDto.getEmail());
-        checkEmailDuplicate(requestDto.getEmail());
 
         // 4. 닉네임 정규식 검사
         validateNickname(requestDto.getNickname());
-        checkNicknameDuplicate(requestDto.getNickname());
+
 
         // 5. 전화번호 정규식 검사
         validatePhone(requestDto.getPhone());
-        checkPhoneDuplicate(requestDto.getPhone());
 
         // 6. 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
+//        String encodedPassword = requestDto.getPassword();
+
 
         // 7. 사용자 역할 확인 (관리자 요청인 경우 관리자 키 검증)
         UserRoleEnum role = checkUserRole(requestDto);
@@ -68,7 +88,7 @@ public class Userservice {
         String currentAddress = checkCurrentAddress(requestDto.getCurrentAddress());
 
         // 8. 사용자 등록 (여기서는 필요한 필드만 사용 - 엔티티 수정은 불가능하므로 DTO와 맞춰서 작성)
-        User user = User.builder()
+        User uuser = User.builder()
                 .Id(requestDto.getId())
                 .nickname(requestDto.getNickname())
                 .email(requestDto.getEmail())
@@ -77,12 +97,12 @@ public class Userservice {
                 .role(role)
                 .currentAddress(currentAddress)
                 .build();
-        log.info("user id= " + user.getId());
-        log.info("user phone= " + user.getPhone());
-        log.info("user role= " + user.getRole());
+        log.info("user id= " + uuser.getId());
+        log.info("user phone= " + uuser.getPhone());
+        log.info("user role= " + uuser.getRole());
         log.info("admin token= " + requestDto.getAdminToken());
 
-        userRepository.save(user);
+        userRepository.save(uuser);
 
         return "/api/users/sign-in";
     }
