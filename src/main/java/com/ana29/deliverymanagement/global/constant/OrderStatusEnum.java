@@ -17,7 +17,7 @@ public enum OrderStatusEnum {
 
     public boolean canChangeTo(OrderStatusEnum nextStatus) {
         return switch (this) {
-            case PENDING -> nextStatus == PAID || nextStatus == CANCELED;
+            case PENDING -> nextStatus == PAID;
             case PAID -> nextStatus == COMPLETED || nextStatus == CANCELED;
             case COMPLETED,CANCELED -> false;
         };

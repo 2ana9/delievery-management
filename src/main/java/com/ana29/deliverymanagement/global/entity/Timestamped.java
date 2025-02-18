@@ -41,4 +41,9 @@ public abstract class Timestamped {
 
     @Column(name = "deleted_by", length = 50)
     private String deletedBy;
+
+    public void delete(String deletedBy) {
+        this.deletedBy = deletedBy;
+        this.deletedAt = LocalDateTime.now();
+    }
 }

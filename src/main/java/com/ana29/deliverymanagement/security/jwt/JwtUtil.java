@@ -2,7 +2,7 @@ package com.ana29.deliverymanagement.security.jwt;
 
 
 import com.ana29.deliverymanagement.security.constant.jwt.JwtConfigEnum;
-import com.ana29.deliverymanagement.security.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.security.constant.jwt.JwtErrorMessage;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

@@ -1,5 +1,6 @@
-package com.ana29.deliverymanagement.externalApi.kakao;
+package com.ana29.deliverymanagement.externalApi.kakao.feign;
 
+import com.ana29.deliverymanagement.externalApi.kakao.KakaoTokenResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -10,10 +11,10 @@ public interface KakaoClient {
 
     // 🔹 1. 카카오 OAuth 토큰 요청
     @PostMapping(value = "/oauth/token", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    KakaoTokenResponse getToken(@RequestParam("grant_type") String grantType,
-                                @RequestParam("client_id") String clientId,
-                                @RequestParam("redirect_uri") String redirectUri,
-                                @RequestParam("code") String code);
+    KakaoTokenResponseDto getToken(@RequestParam("grant_type") String grantType,
+                                   @RequestParam("client_id") String clientId,
+                                   @RequestParam("redirect_uri") String redirectUri,
+                                   @RequestParam("code") String code);
 
 }
 
