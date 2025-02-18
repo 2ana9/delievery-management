@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -20,14 +22,15 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public CategoryResponseDto createCategory(CategoryRequestDto requestDto){
+    public ResponseEntity<CategoryResponseDto> createCategory(CategoryRequestDto requestDto){
        Category category = categoryRepository.save(
                Category.builder()
                        .foodType(requestDto.getFoodType())
                        .build()
        );
-       
-        return new CategoryResponseDto(category);
+        CategoryResponseDto responseDto = CategoryResponseDto.from(category);
+
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @Transactional
