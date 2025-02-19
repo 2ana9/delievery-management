@@ -2,14 +2,17 @@ package com.ana29.deliverymanagement.restaurant.service;
 
 import com.ana29.deliverymanagement.area.entity.Area;
 import com.ana29.deliverymanagement.area.repository.AreaRepository;
+import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantResponseDto;
+import com.ana29.deliverymanagement.restaurant.dto.RestaurantWithRatingDto;
 import com.ana29.deliverymanagement.restaurant.entity.Category;
 import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import com.ana29.deliverymanagement.restaurant.repository.CategoryRepository;
 import com.ana29.deliverymanagement.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +62,13 @@ public class RestaurantService {
         return RestaurantResponseDto.from(restaurant);
     }
 
-    public Page<RestaurantResponseDto> getAllRestaurant(Pageable pageable) {
-        return null;
+    public ResponseDto<Page<RestaurantWithRatingDto>> getRestaurantsWithAverageRating(int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+
+        // QueryDSL을 이용해 데이터를 조회
+        Page<RestaurantWithRatingDto> restaurantWithRatingDtos = restaurantRepository.getRestaurantsWithAverageRating(pageable);
+
+        // ResponseDto로 감싸서 반환
+        return ResponseDto.success(restaurantWithRatingDtos);
     }
 }
