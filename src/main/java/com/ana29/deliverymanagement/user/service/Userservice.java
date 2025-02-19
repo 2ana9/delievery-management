@@ -102,9 +102,9 @@ public class Userservice {
         user.setNickname(updateDto.getNickname());
         user.setEmail(updateDto.getEmail());
         user.setPhone(updateDto.getPhone());
-        if (updateDto.getCurrentAddress() != null) {
-            user.setCurrentAddress(updateDto.getCurrentAddress());
-        }
+//        if (updateDto.getCurrentAddress() != null) {
+//            user.setCurrentAddress(updateDto.getCurrentAddress());
+//        }
 
         // DB에 변경 사항 저장
         userRepository.save(user);
