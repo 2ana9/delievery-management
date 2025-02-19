@@ -10,12 +10,12 @@ import com.ana29.deliverymanagement.user.dto.UpdateRequestDto;
 import com.ana29.deliverymanagement.user.dto.UserInfoDto;
 import com.ana29.deliverymanagement.user.entity.User;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,6 @@ public class Userservice {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthorityConfig authorityConfig;
-    private final JPAQueryFactory queryFactory;
 
     private final JwtUtil jwtUtil;
 
@@ -44,7 +43,6 @@ public class Userservice {
         // 중복 체크: 한 번의 쿼리로 모든 필드를 동시에 확인
         validateDuplicateValue(requestDto);
         userRepository.save(createUserDto(requestDto));
-
         return "/api/users/sign-in";
     }
 
@@ -61,15 +59,15 @@ public class Userservice {
         return "/api/users/sign-in";
     }
 
-    public List<UserInfoDto> getUserInfo(UserDetailsImpl userDetails) {
+    public List<UserInfoDto> getUserInfo(UserDetailsImpl userDetails, int pageSize, String sortBy, boolean isAsc) {
         User user = userDetails.getUser();
-        boolean isAdmin = (user.getRole() == UserRoleEnum.MASTER);
+        boolean isAdmin = (user.getRole() == UserRoleEnum.MASTER || user.getRole() == UserRoleEnum.MANAGER);
 
         List<UserInfoDto> userInfoDtoList = new ArrayList<>();
 
         if (isAdmin) {
             // Admin이면 모든 유저 정보를 가져옴 (페이징 적용)
-            List<User> userList = userRepository.findAll(PageRequest.of(0, 10)).getContent();
+            List<User> userList = userInfoPaging(pageSize, sortBy, isAsc);
 
             // User -> UserInfoDto 변환하여 리스트에 추가
             userInfoDtoList = userList.stream()
@@ -89,6 +87,7 @@ public class Userservice {
      * 추가로 전달된 업데이트 DTO의 정보로 회원 정보를 수정한 후,
      * 수정된 정보를 UserInfoDto로 반환합니다.
      */
+
 
 
     @Transactional
@@ -188,4 +187,16 @@ public class Userservice {
         return currentAddress;
     }
 
+    private List<User> userInfoPaging(int pageSize, String sortBy, boolean isAsc){
+        // 10, 30, 50 중에서 선택된 값만 허용
+        if (pageSize != 10 && pageSize != 30 && pageSize != 50) {
+            pageSize = 10; // 기본값
+        }
+        // 정렬 기준 설정 (기본: 생성일)
+        Sort sort = Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC,
+                sortBy.equals("updatedAt") ? "updatedAt" : "createdAt");
+
+        // 페이징 및 정렬 적용하여 유저 리스트 조회
+        return userRepository.findAll(PageRequest.of(0, pageSize, sort)).getContent();
+    }
 }
