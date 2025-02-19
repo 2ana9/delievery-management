@@ -1,4 +1,4 @@
-package com.ana29.deliverymanagement.order.exception;
+package com.ana29.deliverymanagement.restaurant.exception;
 
 import com.ana29.deliverymanagement.global.exception.CustomNotFoundException;
 import java.util.UUID;

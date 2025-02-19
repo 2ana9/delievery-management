@@ -91,6 +91,14 @@ public class GlobalExceptionHandler {
 			.body(ResponseDto.failure(HttpStatus.FORBIDDEN, e.getMessage()));
 	}
 
+	@ExceptionHandler(CustomAccessDeniedException.class)
+	@ResponseBody
+	public ResponseEntity<ResponseDto> handleCustomAccessDeniedException(CustomAccessDeniedException e) {
+
+		return ResponseEntity.status(HttpStatus.FORBIDDEN)
+			.body(ResponseDto.failure(HttpStatus.FORBIDDEN, e.getMessage()));
+	}
+
 	@ExceptionHandler(PaymentFailException.class)
     @ResponseBody
     public ResponseEntity<ResponseDto> handlePaymentFailException(PaymentFailException e) {
@@ -99,13 +107,7 @@ public class GlobalExceptionHandler {
 			.body(ResponseDto.failure(HttpStatus.PAYMENT_REQUIRED, e.getMessage()));
     }
 
-	@ExceptionHandler(CustomConflictException.class)
-	@ResponseBody
-	public ResponseEntity<ResponseDto> handlePaymentFailException(CustomConflictException e) {
 
-		return ResponseEntity.status(HttpStatus.CONFLICT)
-			.body(ResponseDto.failure(HttpStatus.CONFLICT, e.getMessage()));
-	}
 
 
 }
