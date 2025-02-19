@@ -56,7 +56,7 @@ public class OrderController {
 			.body(ResponseDto.success(HttpStatus.OK, response));
 	}
 
-	@GetMapping("/history")
+	@GetMapping("/my")
 	public ResponseEntity<ResponseDto<Page<OrderHistoryResponseDto>>> getOrderHistory(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@ModelAttribute OrderSearchCondition condition, Pageable pageable) {
@@ -67,7 +67,7 @@ public class OrderController {
 			.body(ResponseDto.success(HttpStatus.OK, response));
 	}
 
-	@GetMapping("/history/restaurant")
+	@GetMapping("/restaurant")
 	public ResponseEntity<ResponseDto<Page<OrderHistoryResponseDto>>> getRestaurantOrderHistory(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestParam UUID restaurantId,
