@@ -1,10 +1,8 @@
 package com.ana29.deliverymanagement.area.service;
 
-import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
 import com.ana29.deliverymanagement.area.entity.Area;
 import com.ana29.deliverymanagement.area.entity.AreaDocument;
 import com.ana29.deliverymanagement.area.repository.AreaRepository;
-//import com.ana29.deliverymanagement.area.repository.AreaSearchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opensearch.client.opensearch.OpenSearchClient;
@@ -12,7 +10,6 @@ import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.aggregations.Aggregate;
 import org.opensearch.client.opensearch._types.aggregations.FilterAggregate;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
-import org.opensearch.client.opensearch._types.query_dsl.MultiMatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.opensearch.core.SearchResponse;
@@ -20,17 +17,15 @@ import org.opensearch.client.opensearch.core.search.Hit;
 import org.opensearch.client.opensearch.indices.AnalyzeRequest;
 import org.opensearch.client.opensearch.indices.AnalyzeResponse;
 import org.opensearch.client.opensearch.indices.analyze.AnalyzeToken;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class AreaService {
     private static final int BATCH_SIZE = 30_000;
     private static final String INDEX_NAME = "area_index";
@@ -39,6 +34,30 @@ public class AreaService {
     private final AreaRepository areaRepository;
     private final OpenSearchClient openSearchClient;
 //    private final AreaSearchRepository areaSearchRepository;
+
+    private static Map<String, Object> convertAreaDocumentToMap(Hit<AreaDocument> hit) {
+        Map<String, Object> docMap = new HashMap<>();
+        AreaDocument document = hit.source();
+
+        if (document != null) {
+            docMap.put("roadAddress", document.getRoadAddress());
+            docMap.put("jibunAddress", document.getJibunAddress());
+            // 필요하면 다른 필드도 추가가능
+        }
+
+        return docMap;
+    }
+
+    public static List<String> findNonZeroDocCountFields(SearchResponse<Void> response) {
+        Map<String, Aggregate> aggregations = response.aggregations();
+
+        return aggregations.entrySet().stream()
+                .filter(entry -> entry.getValue()._kind() == Aggregate.Kind.Filter) // FilterAggregate만 필터링
+                .map(entry -> new FieldCount(entry.getKey(), ((FilterAggregate) entry.getValue()._get()).docCount()))
+                .filter(fieldCount -> fieldCount.docCount > 0) // doc_count가 0보다 큰 것만 필터링
+                .map(fieldCount -> fieldCount.field) // 필드 이름 추출
+                .collect(Collectors.toList());
+    }
 
     //OpenSearch를 활용한 search 쿼리 생성
     public Map<String, Object> searchArea(String search, int page, int size) throws IOException {
@@ -147,7 +166,6 @@ public class AreaService {
         return response;
     }
 
-
     public List<Query> search(String token, List<String> fields) throws IOException {
         // 주어진 필드에서 주어진 토큰을 검색하는 쿼리 생성
         List<Query> searchQueries = fields.stream()
@@ -178,19 +196,6 @@ public class AreaService {
         return analyzeResponse.tokens().stream()
                 .map(AnalyzeToken::token)
                 .collect(Collectors.toList());
-    }
-
-    private static Map<String, Object> convertAreaDocumentToMap(Hit<AreaDocument> hit) {
-        Map<String, Object> docMap = new HashMap<>();
-        AreaDocument document = hit.source();
-
-        if (document != null) {
-            docMap.put("roadAddress", document.getRoadAddress());
-            docMap.put("jibunAddress", document.getJibunAddress());
-            // 필요하면 다른 필드도 추가가능
-        }
-
-        return docMap;
     }
 
     public List<String> getTokenFieldByAggregation(String token) throws IOException {
@@ -402,27 +407,6 @@ public class AreaService {
         return queries;
     }
 
-    public static List<String> findNonZeroDocCountFields(SearchResponse<Void> response) {
-        Map<String, Aggregate> aggregations = response.aggregations();
-
-        return aggregations.entrySet().stream()
-                .filter(entry -> entry.getValue()._kind() == Aggregate.Kind.Filter) // FilterAggregate만 필터링
-                .map(entry -> new FieldCount(entry.getKey(), ((FilterAggregate) entry.getValue()._get()).docCount()))
-                .filter(fieldCount -> fieldCount.docCount > 0) // doc_count가 0보다 큰 것만 필터링
-                .map(fieldCount -> fieldCount.field) // 필드 이름 추출
-                .collect(Collectors.toList());
-    }
-
-    private static class FieldCount {
-        String field;
-        long docCount;
-
-        FieldCount(String field, long docCount) {
-            this.field = field;
-            this.docCount = docCount;
-        }
-    }
-
     // 데이터 밀어 넣기
     // 한 번에 처리할 데이터 크기 30,000건
     public void syncDataToElasticsearch() {
@@ -455,5 +439,15 @@ public class AreaService {
 //            System.out.println("Processed Page: " + page);
 //
 //        } while (areas.hasNext()); // 다음 페이지가 있을 때까지 반복
+    }
+
+    private static class FieldCount {
+        String field;
+        long docCount;
+
+        FieldCount(String field, long docCount) {
+            this.field = field;
+            this.docCount = docCount;
+        }
     }
 }

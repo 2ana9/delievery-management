@@ -17,6 +17,10 @@ public interface UserRepository extends JpaRepository<User, String> {
                                     @Param("email") String email,
                                     @Param("nickname") String nickname,
                                     @Param("phone") String phone);
+    @Query("select u from User u where u.email = :email or u.nickname = :nickname or u.phone = :phone")
+    Optional<User> findAnyDuplicate(@Param("email") String email,
+                                    @Param("nickname") String nickname,
+                                    @Param("phone") String phone);
 
 //    Optional<User> findByKakaoId(Long kakaoId);
 }
