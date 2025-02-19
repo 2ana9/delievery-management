@@ -8,7 +8,6 @@ import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
 import com.ana29.deliverymanagement.order.dto.OrderSearchCondition;
 import com.ana29.deliverymanagement.order.entity.Order;
 import com.ana29.deliverymanagement.order.entity.QOrder;
-import com.ana29.deliverymanagement.order.entity.QPayment;
 import com.ana29.deliverymanagement.user.entity.QUser;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -33,7 +32,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 	QOrder order = QOrder.order;
 
 	@Override
-	public Page<OrderHistoryResponseDto> findOrderHistory(String userId,
+	public Page<OrderHistoryResponseDto> findOrderHistory(String ownerId,
 		OrderSearchCondition condition, Pageable pageable) {
 
 		List<OrderHistoryResponseDto> content = queryFactory
@@ -47,7 +46,51 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 			.join(order.menu, menu)
 			.join(menu.restaurant, restaurant)
 			.where(
-				order.user.Id.eq(userId),
+				order.user.Id.eq(ownerId),
+				order.isDeleted.isFalse(),
+				order.orderStatus.ne(OrderStatusEnum.PENDING),
+				keywordContains(condition.keyword()),
+				statusIn(condition.statuses()),
+				createdAtBetween(condition.startDate(), condition.endDate()))
+			.orderBy(condition.isAsc() ? order.createdAt.asc() : order.createdAt.desc())
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		Long fetchedCount = queryFactory
+			.select(order.count())
+			.from(order)
+			.where(
+				order.user.Id.eq(ownerId),
+				order.isDeleted.isFalse(),
+				order.orderStatus.ne(OrderStatusEnum.PENDING),
+				keywordContains(condition.keyword()),
+				statusIn(condition.statuses()),
+				createdAtBetween(condition.startDate(), condition.endDate())
+			)
+			.fetchOne();
+
+		long total = fetchedCount != null ? fetchedCount : 0;
+
+		return new PageImpl<>(content, pageable, total);
+	}
+
+	@Override
+	public Page<OrderHistoryResponseDto> findRestaurantOrderHistory(UUID restaurantId,
+		OrderSearchCondition condition, Pageable pageable) {
+
+		List<OrderHistoryResponseDto> content = queryFactory
+			.select(Projections.constructor(OrderHistoryResponseDto.class,
+				order.id,
+				restaurant.name,
+				menu.name,
+				order.orderStatus,
+				order.createdAt))
+			.from(order)
+			.join(order.menu, menu)
+			.join(menu.restaurant, restaurant)
+			.where(
+				restaurant.id.eq(restaurantId),
 				order.isDeleted.isFalse(),
 				order.orderStatus.ne(OrderStatusEnum.PENDING),
 				keywordContains(condition.keyword()),
@@ -64,7 +107,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 			.join(order.menu, menu)
 			.join(menu.restaurant, restaurant)
 			.where(
-				order.user.Id.eq(userId),
+				restaurant.id.eq(restaurantId),
 				order.isDeleted.isFalse(),
 				order.orderStatus.ne(OrderStatusEnum.PENDING),
 				keywordContains(condition.keyword()),
@@ -118,6 +161,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 			return order.createdAt.goe(startDate.atTime(0, 0, 0));
 		}
 
-		return order.createdAt.between(startDate.atTime(0, 0, 0), endDate.atTime(23, 59, 59));
+		return order.createdAt.between(startDate.atTime(0, 0, 0),
+			endDate.atTime(23, 59, 59));
 	}
 }
