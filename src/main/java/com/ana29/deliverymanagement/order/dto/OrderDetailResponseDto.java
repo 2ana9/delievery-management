@@ -22,7 +22,8 @@ public record OrderDetailResponseDto(
 	PaymentTypeEnum paymentType,
 	UUID externalPaymentId,
 	LocalDateTime paidAt,
-	LocalDateTime refundedAt
+	LocalDateTime refundedAt,
+	String createdBy
 ) {
 	public static OrderDetailResponseDto from(Order order, Payment payment) {
 		return new OrderDetailResponseDto(
@@ -39,7 +40,8 @@ public record OrderDetailResponseDto(
 			payment.getPaymentType(),
 			payment.getExternalPaymentId(),
 			payment.getCreatedAt(),
-			payment.getRefundedAt()
+			payment.getRefundedAt(),
+			order.getCreatedBy()
 		);
 	}
 }
