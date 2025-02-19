@@ -18,10 +18,10 @@ public class CategorySpecification {
 
     public static Specification<Category> hasFoodType(String foodType) {
         return (root, query, criteriaBuilder) -> {
-            if (foodType == null) {
+            if (foodType == null || foodType.isEmpty()) {
                 return criteriaBuilder.conjunction();  // 조건이 없으면 전체 데이터를 반환
             }
-            return criteriaBuilder.equal(root.get("foodType"), foodType);
+            return criteriaBuilder.like(root.get("foodType"), "%" + foodType + "%"); //부분만 작성해도 조회되도록
         };
     }
 }
