@@ -1,19 +1,22 @@
 package com.ana29.deliverymanagement.user.controller;
 
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
+import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
+import com.ana29.deliverymanagement.order.dto.OrderSearchCondition;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.user.dto.CreateUserAddressRequestDto;
 import com.ana29.deliverymanagement.user.dto.CreateUserAddressResponseDto;
+import com.ana29.deliverymanagement.user.dto.GetUserAddressesRequestDto;
+import com.ana29.deliverymanagement.user.dto.GetUserAddressesResponseDto;
 import com.ana29.deliverymanagement.user.service.UserAddressService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user/address")
@@ -32,5 +35,17 @@ public class UserAddressController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto<>(HttpStatus.CREATED, response));
+    }
+
+    @GetMapping
+    public ResponseEntity<ResponseDto<Page<GetUserAddressesResponseDto>>> getUserAddresses(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @ModelAttribute GetUserAddressesRequestDto condition, Pageable pageable) {
+
+        Page<GetUserAddressesResponseDto> response =
+                userAddressService.getUserAddresses(condition, pageable, userDetails);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto<>(HttpStatus.OK, response));
     }
 }

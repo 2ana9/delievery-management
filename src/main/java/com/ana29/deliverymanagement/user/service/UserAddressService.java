@@ -1,17 +1,20 @@
 package com.ana29.deliverymanagement.user.service;
 
+import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
+import com.ana29.deliverymanagement.order.dto.OrderSearchCondition;
 import com.ana29.deliverymanagement.order.exception.OrderForbiddenException;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
-import com.ana29.deliverymanagement.user.dto.CreateUserAddressRequestDto;
-import com.ana29.deliverymanagement.user.dto.CreateUserAddressResponseDto;
-import com.ana29.deliverymanagement.user.dto.UserInfoDto;
+import com.ana29.deliverymanagement.user.dto.*;
 import com.ana29.deliverymanagement.user.entity.User;
 import com.ana29.deliverymanagement.user.entity.UserAddress;
 import com.ana29.deliverymanagement.user.exception.DuplicateAddressException;
 import com.ana29.deliverymanagement.user.repository.UserAddressRepository;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -52,5 +55,10 @@ public class UserAddressService {
     // 문자열 공백 제거 메서드
     private String removeWhitespace(String input) {
         return input.replaceAll("\\s+", "");
+    }
+
+    @Transactional(readOnly = true)
+    public Page<GetUserAddressesResponseDto> getUserAddresses(GetUserAddressesRequestDto condition, Pageable pageable, UserDetailsImpl userDetails) {
+        return userAddressRepository.findUserAddresses(userDetails, condition, pageable);
     }
 }
