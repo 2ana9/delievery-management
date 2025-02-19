@@ -31,7 +31,7 @@ public class RestaurantController {
     public ResponseDto<Restaurant> createRestaurant(@RequestBody RestaurantRequestDto requestDto,
                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         UserRoleEnum userRole = userDetails.getUser().getRole();
-        if (userRole != UserRoleEnum.MASTER || userRole != UserRoleEnum.MANAGER) {
+        if (userRole != UserRoleEnum.MASTER && userRole != UserRoleEnum.MANAGER) {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
 
@@ -68,7 +68,7 @@ public class RestaurantController {
             @RequestParam(required = false) Long areaId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt,desc") String sort){ //페이징기능 10건 단위로, 생성일순 수정일순
+            @RequestParam(defaultValue = "createdAt,desc") String sort){
 
         Sort sortValue = checkSortValue(sort); //정렬기준 체크
 
@@ -98,7 +98,7 @@ public class RestaurantController {
     //사용자의 권한확인 메소드
     public void checkUserAccess(UserDetailsImpl userDetails) throws AccessDeniedException {
         UserRoleEnum userRole = userDetails.getUser().getRole();
-        if (userRole != UserRoleEnum.MASTER || userRole != UserRoleEnum.OWNER) {
+        if (userRole != UserRoleEnum.MASTER && userRole != UserRoleEnum.OWNER) {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
     };

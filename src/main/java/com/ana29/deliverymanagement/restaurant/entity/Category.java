@@ -2,6 +2,7 @@ package com.ana29.deliverymanagement.restaurant.entity;
 
 import com.ana29.deliverymanagement.restaurant.dto.CategoryRequestDto;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,6 +41,7 @@ public class Category extends Timestamped {
 
     @OneToMany(mappedBy = "category")
     @Builder.Default
+    @JsonBackReference
     private List<Restaurant> restaurantList = new ArrayList<>();
 
 }

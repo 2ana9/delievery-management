@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.security;
 
+import com.ana29.deliverymanagement.user.entity.User;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +20,9 @@ public class CachedUserDetailsService implements UserDetailsService {
     @Override
     @Cacheable(value = "userDetailsCache", key = "#username")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return (UserDetails) userRepository.findById(username)
+        User user = userRepository.findById(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
+
+        return new UserDetailsImpl(user);
     }
 }
