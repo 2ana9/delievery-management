@@ -14,5 +14,8 @@ public interface OrderRepositoryCustom {
 		OrderSearchCondition condition,
 		Pageable pageable);
 
+	Page<OrderHistoryResponseDto> findRestaurantOrderHistory(UUID restaurantId,
+		OrderSearchCondition condition, Pageable pageable);
+
 	Optional<Order> findOrderById(UUID orderId, String userId);
 }

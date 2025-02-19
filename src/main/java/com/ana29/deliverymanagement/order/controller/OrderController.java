@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -43,7 +44,19 @@ public class OrderController {
 			.body(ResponseDto.success(HttpStatus.CREATED, response));
 	}
 
-	@GetMapping("/history")
+	@GetMapping("/{id}")
+	public ResponseEntity<ResponseDto<OrderDetailResponseDto>> getOrderDetail(
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@PathVariable("id") UUID id) {
+
+		OrderDetailResponseDto response =
+			orderService.getOrderDetail(id, userDetails.getUsername());
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(ResponseDto.success(HttpStatus.OK, response));
+	}
+
+	@GetMapping("/my")
 	public ResponseEntity<ResponseDto<Page<OrderHistoryResponseDto>>> getOrderHistory(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@ModelAttribute OrderSearchCondition condition, Pageable pageable) {
@@ -54,13 +67,14 @@ public class OrderController {
 			.body(ResponseDto.success(HttpStatus.OK, response));
 	}
 
-	@GetMapping("/{id}")
-	public ResponseEntity<ResponseDto<OrderDetailResponseDto>> getOrderDetail(
+	@GetMapping("/restaurant")
+	public ResponseEntity<ResponseDto<Page<OrderHistoryResponseDto>>> getRestaurantOrderHistory(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@PathVariable("id") UUID id) {
+		@RequestParam UUID restaurantId,
+		@ModelAttribute OrderSearchCondition condition, Pageable pageable) {
 
-		OrderDetailResponseDto response =
-			orderService.getOrderDetail(id, userDetails.getUsername());
+		Page<OrderHistoryResponseDto> response =
+			orderService.getRestaurantOrderHistory(condition, pageable, userDetails, restaurantId);
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(ResponseDto.success(HttpStatus.OK, response));

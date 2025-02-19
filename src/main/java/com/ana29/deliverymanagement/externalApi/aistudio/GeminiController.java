@@ -20,5 +20,6 @@ public class GeminiController {
     public void geminiGetAnswer(@RequestParam String prompt){
         geminiService.generateContent(prompt);
     }
+//    ex) http://localhost:8080/api/users/gemini_service?prompt=맛있는음식10개
 
 }

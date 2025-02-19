@@ -1,7 +1,7 @@
 package com.ana29.deliverymanagement.security.config;
 
 
-import com.ana29.deliverymanagement.security.UserDetailsServiceImpl;
+import com.ana29.deliverymanagement.security.CachedUserDetailsService;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthenticationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthorizationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;
@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final CachedUserDetailsService userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean

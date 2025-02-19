@@ -1,15 +1,21 @@
 package com.ana29.deliverymanagement.data;
 
+import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Component
+@RequiredArgsConstructor
 public class DatabaseInitializer implements ApplicationRunner {
 
     private static final int TOTAL_USERS = 300;        // 생성할 사용자 수
@@ -17,6 +23,8 @@ public class DatabaseInitializer implements ApplicationRunner {
     private static final int MENUS_PER_RESTAURANT = 5; // 각 식당당 메뉴 개수
     @PersistenceContext
     private EntityManager entityManager;
+  
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -27,21 +35,25 @@ public class DatabaseInitializer implements ApplicationRunner {
         insertRestaurants(); // 식당 데이터 삽입
         insertMenus();       // 메뉴 데이터 삽입
     }
-
     private void insertUsers() {
         for (int i = 2; i <= TOTAL_USERS; i++) {
             String phone = "010-" + (1000 + (int) (Math.random() * 9000)) + "-" + (1000 + (int) (Math.random() * 9000));
 
+            // 🔹 UserRoleEnum에서 랜덤한 역할 선택
+            UserRoleEnum[] roles = UserRoleEnum.values();
+            UserRoleEnum randomRole = roles[ThreadLocalRandom.current().nextInt(roles.length)];
+
             entityManager.createNativeQuery(
                             "INSERT INTO p_users (id, nickname, email, password, phone, role, created_at, created_by) " +
-                                    "SELECT :id, :nickname, :email, :password, :phone, 'CUSTOMER', CURRENT_TIMESTAMP, :createdBy " +
+                                    "SELECT :id, :nickname, :email, :password, :phone, :role, CURRENT_TIMESTAMP, :createdBy " +
                                     "WHERE NOT EXISTS (SELECT 1 FROM p_users WHERE id = :id)"
                     )
                     .setParameter("id", "user" + i)
                     .setParameter("nickname", "nick" + i)
                     .setParameter("email", "user" + i + "@example.com")
-                    .setParameter("password", "Password" + i + "@!")
+                    .setParameter("password", passwordEncoder.encode("Password" + i + "@!")) // "Password + "아이디 번호" + @!"
                     .setParameter("phone", phone)
+                    .setParameter("role", randomRole.name())  // 🔹 랜덤 권한 설정
                     .setParameter("createdBy", "user" + i)
                     .executeUpdate();
         }
