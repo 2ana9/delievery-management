@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -54,6 +55,13 @@ public class Payment extends Timestamped {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id", nullable = false)
 	private Order order;
+
+	private LocalDateTime refundedAt;
+
+	public void refund(){
+		this.refundedAt = LocalDateTime.now();
+		this.paymentStatus = PaymentStatusEnum.REFUNDED;
+	}
 
 	public static Payment from(Order order, PaymentResultDto result) {
 		return Payment.builder()

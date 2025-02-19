@@ -77,9 +77,16 @@ public class UserController {
 
     @PostMapping("/me")
     @ResponseBody
-    public List<UserInfoDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userService.getUserInfo(userDetails);
+    public List<UserInfoDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                         @RequestParam(value = "page", defaultValue = "0") int page,
+                                         @RequestParam(value = "size", defaultValue = "10") int size,
+                                         @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
+                                         @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
+        return userService.getUserInfo(userDetails, page, size, sortBy, isAsc);
     }
+
+    // ex) GET 요청, /api/users/info?pageSize=30&sortBy=updatedAt&isAsc=false
+    //     GET 요청, /api/users/info?pageSize=50&sortBy=createdAt&isAsc=true
 
     @PatchMapping("/me")
     @ResponseBody

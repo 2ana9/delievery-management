@@ -1,6 +1,7 @@
 package com.ana29.deliverymanagement.global.entity;
 
 import jakarta.persistence.*;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -10,6 +11,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Getter
 @Setter
@@ -45,5 +48,12 @@ public abstract class Timestamped {
     public void delete(String deletedBy) {
         this.deletedBy = deletedBy;
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public Timestamped() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            createdBy = authentication.getName();
+        }
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,7 +40,7 @@ public class OrderController {
 			orderService.createOrder(requestDto, userDetails.getUsername());
 
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(new ResponseDto<>(HttpStatus.CREATED, response));
+			.body(ResponseDto.success(HttpStatus.CREATED, response));
 	}
 
 	@GetMapping("/history")
@@ -50,7 +51,7 @@ public class OrderController {
 		Page<OrderHistoryResponseDto> response =
 			orderService.getOrderHistory(condition, pageable, userDetails.getUsername());
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(new ResponseDto<>(HttpStatus.OK, response));
+			.body(ResponseDto.success(HttpStatus.OK, response));
 	}
 
 	@GetMapping("/{id}")
@@ -62,6 +63,18 @@ public class OrderController {
 			orderService.getOrderDetail(id, userDetails.getUsername());
 
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(new ResponseDto<>(HttpStatus.OK, response));
+			.body(ResponseDto.success(HttpStatus.OK, response));
+	}
+
+	@PatchMapping("/{id}/cancel")
+	public ResponseEntity<ResponseDto<OrderDetailResponseDto>> cancelOrder(
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@PathVariable("id") UUID id) {
+
+		OrderDetailResponseDto response =
+			orderService.cancelOrder(id, userDetails.getUsername());
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(ResponseDto.success(HttpStatus.OK, response));
 	}
 }

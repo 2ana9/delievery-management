@@ -4,6 +4,7 @@ import com.ana29.deliverymanagement.global.entity.Timestamped;
 import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.*;
 
 
 @Entity
@@ -34,7 +35,15 @@ public class User extends Timestamped {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-    @Column(length = 255, nullable = true)
-    private String currentAddress; // 대표 주소
+//    @Column(length = 255, nullable = true)
+//    private String currentAddress; // 대표 주소
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserAddress> addresses = new ArrayList<>();
+
+    // 주소 추가 메서드
+    public void addAddress(UserAddress address) {
+        addresses.add(address);
+        address.setUser(this);
+    }
 }

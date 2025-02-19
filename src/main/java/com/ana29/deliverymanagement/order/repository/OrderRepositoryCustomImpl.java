@@ -80,7 +80,6 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
 	@Override
 	public Optional<Order> findOrderById(UUID orderId, String userId) {
-		QPayment payment = QPayment.payment;
 		QUser user = QUser.user;
 
 		Order result = queryFactory
@@ -88,7 +87,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 			.leftJoin(order.user, user).fetchJoin()
 			.leftJoin(order.menu, menu).fetchJoin()
 			.leftJoin(menu.restaurant, restaurant).fetchJoin()
-			.leftJoin(payment).on(payment.order.id.eq(order.id)).fetchJoin()
+			.leftJoin(order.payment).fetchJoin()
 			.where(
 				order.id.eq(orderId)
 					.and(order.user.Id.eq(userId))
