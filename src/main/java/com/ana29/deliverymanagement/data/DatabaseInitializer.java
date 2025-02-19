@@ -4,6 +4,7 @@ import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,9 +23,8 @@ public class DatabaseInitializer implements ApplicationRunner {
     private static final int MENUS_PER_RESTAURANT = 5; // 각 식당당 메뉴 개수
     @PersistenceContext
     private EntityManager entityManager;
-
+  
     private final PasswordEncoder passwordEncoder;
-
 
     @Override
     @Transactional
