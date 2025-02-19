@@ -39,6 +39,7 @@ public class Category extends Timestamped {
     }
 
     @OneToMany(mappedBy = "category")
+    @Builder.Default
     private List<Restaurant> restaurantList = new ArrayList<>();
 
 }
