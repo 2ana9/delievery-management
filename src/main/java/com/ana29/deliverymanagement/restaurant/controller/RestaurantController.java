@@ -4,11 +4,13 @@ import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantResponseDto;
+import com.ana29.deliverymanagement.restaurant.dto.RestaurantWithRatingDto;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.restaurant.service.RestaurantService;
 import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -50,17 +53,6 @@ public class RestaurantController {
                 .body(new ResponseDto<>(HttpStatus.OK, response));
     };
 
-    //가게 조회 메소드 (전체)
-    @GetMapping
-    public ResponseEntity<ResponseDto<Page<RestaurantResponseDto>>> getAllRestaurant(Pageable pageable){
-
-        Page<RestaurantResponseDto> response =
-                restaurantService.getAllRestaurant(pageable);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ResponseDto<>(HttpStatus.OK, response));
-    }
-
     //가게 삭제메소드(관리자,가게사장)
 
     //사용자의 권한확인 메소드
@@ -70,5 +62,15 @@ public class RestaurantController {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
     };
+
+    //가게 목록과 평점을 조회 및 페이징 처리
+    @GetMapping
+    public ResponseDto<Page<RestaurantWithRatingDto>> getRestaurantsWithAverageRating(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        // 서비스 메서드 호출하여 가게 목록과 평균 평점 조회
+        return restaurantService.getRestaurantsWithAverageRating(page, size);
+    }
 
 }
