@@ -16,36 +16,39 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserAddressRepositoryCustomImpl implements UserAddressRepositoryCustom {
 
-	private final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory;
 
-	@Override
-	public Page<GetUserAddressesResponseDto> findUserAddresses(UserDetailsImpl userDetails, GetUserAddressesRequestDto condition, Pageable pageable) {
-		// 로그인한 유저 정보 가져오기
-		String userId = userDetails.getUsername();
+    @Override
+    public Page<GetUserAddressesResponseDto> findUserAddresses(UserDetailsImpl userDetails, GetUserAddressesRequestDto condition, Pageable pageable) {
+        // 로그인한 유저 정보 가져오기
+        String userId = userDetails.getUsername();
 
-		QUserAddress userAddress = QUserAddress.userAddress;
+        QUserAddress userAddress = QUserAddress.userAddress;
 
-		List<GetUserAddressesResponseDto> content = queryFactory
-				.select(Projections.constructor(GetUserAddressesResponseDto.class,
-						userAddress.id,
-						userAddress.address))
-				.from(userAddress)
-				.where(
-						userAddress.user.Id.eq(userId))
-				.offset(pageable.getOffset())
-				.limit(pageable.getPageSize())
-				.fetch();
+        List<GetUserAddressesResponseDto> content = queryFactory
+                .select(Projections.constructor(GetUserAddressesResponseDto.class,
+                        userAddress.id,
+                        userAddress.address,
+                        userAddress.detail))
+                .from(userAddress)
+                .where(
+                        userAddress.isDeleted.isFalse(),
+                        userAddress.user.Id.eq(userId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
-		Long fetchedCount = queryFactory
-				.select(userAddress.count())
-				.from(userAddress)
-				.where(
-						userAddress.user.Id.eq(userId)
-				)
-				.fetchOne();
+        Long fetchedCount = queryFactory
+                .select(userAddress.count())
+                .from(userAddress)
+                .where(
+                        userAddress.isDeleted.isFalse(),
+                        userAddress.user.Id.eq(userId)
+                )
+                .fetchOne();
 
-		long total = fetchedCount != null ? fetchedCount : 0;
+        long total = fetchedCount != null ? fetchedCount : 0;
 
-		return new PageImpl<>(content, pageable, total);
-	}
+        return new PageImpl<>(content, pageable, total);
+    }
 }

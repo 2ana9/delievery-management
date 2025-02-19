@@ -32,8 +32,8 @@ public class UserAddressController {
         CreateUserAddressResponseDto response =
                 userAddressService.createUserAddress(requestDto, userDetails);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseDto<>(HttpStatus.CREATED, response));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto<>(HttpStatus.OK, response));
     }
 
     @GetMapping
@@ -52,10 +52,22 @@ public class UserAddressController {
     public ResponseEntity<ResponseDto<UpdateUserAddressResponseDto>> updateUserAddresses(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable UUID id,
-            @ModelAttribute UpdateUserAddressRequestDto requestDto) {
+            @RequestBody @Valid UpdateUserAddressRequestDto requestDto) {
 
         UpdateUserAddressResponseDto response =
                 userAddressService.updateUserAddresses(id, requestDto, userDetails);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto<>(HttpStatus.OK, response));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDto<DeleteUserAddressResponseDto>> deleteUserAddresses(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable UUID id) {
+
+        DeleteUserAddressResponseDto response =
+                userAddressService.deleteUserAddresses(id, userDetails);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseDto<>(HttpStatus.OK, response));

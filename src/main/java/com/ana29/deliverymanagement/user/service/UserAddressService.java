@@ -37,7 +37,7 @@ public class UserAddressService {
         String normalizedAddress = removeWhitespace(requestDto.address());
 
         // 해당 유저의 기존 배송지 목록 조회
-        List<UserAddress> userAddressList = userAddressRepository.findByUser(user);
+        List<UserAddress> userAddressList = userAddressRepository.findByUserAndIsDeletedFalse(user);
 
         // 배송지 개수 제한 (최대 10개)
         if(userAddressList.size() >= 10){
@@ -60,7 +60,7 @@ public class UserAddressService {
                 .detail(requestDto.detail())
                 .build());
 
-        return new CreateUserAddressResponseDto(userAddress.getId(), userAddress.getAddress(), userAddress.getAddress());
+        return new CreateUserAddressResponseDto(userAddress.getId(), userAddress.getAddress(), userAddress.getDetail());
     }
 
     // 문자열 공백 제거 메서드
@@ -77,22 +77,43 @@ public class UserAddressService {
         // 로그인한 유저 정보 가져오기
         User user = userDetails.getUser();
 
-        // 전달 받은 파라미터가 배송지 정보가 있는지 체크
+        // 전달 받은 id로 배송지 정보가 있는지 체크
         UserAddress findUserAddress = userAddressRepository.findById(id).orElseThrow(UserAddressNotFoundException::new);
 
-        // 전달 받은 파라미터가 자신이 등록한 주소인지 검증
+        // 전달 받은 id가 자신이 등록한 주소인지 검증
         if (!findUserAddress.getUser().getId().equals(user.getId())) {
             throw new UserAddressForbiddenException();
         }
 
-        // 기존 배송지 업데이트
-        UserAddress resultUserAddress = userAddressRepository.save(UserAddress.builder()
-                .id(findUserAddress.getId())
-                .user(user)
-                .address(requestDto.address())
-                .detail(requestDto.detail())
-                .build());
+        // 기존 값과 비교했을때 변경할 값이 없을 경우
+        if(!findUserAddress.updateAddress(requestDto)){
+            throw new UserAddressForbiddenException();
+        }
 
-        return new UpdateUserAddressResponseDto(resultUserAddress.getId(), resultUserAddress.getAddress(), resultUserAddress.getAddress());
+        // 기존 배송지 업데이트
+        UserAddress resultUserAddress = userAddressRepository.save(findUserAddress);
+
+        return new UpdateUserAddressResponseDto(resultUserAddress.getId(), resultUserAddress.getAddress(), resultUserAddress.getDetail());
+    }
+
+    public DeleteUserAddressResponseDto deleteUserAddresses(UUID id, UserDetailsImpl userDetails) {
+        // 로그인한 유저 정보 가져오기
+        User user = userDetails.getUser();
+
+        // 전달 받은 id로 배송지 정보가 있는지 체크
+        UserAddress findUserAddress = userAddressRepository.findById(id).orElseThrow(UserAddressNotFoundException::new);
+
+        // 전달 받은 id가 자신이 등록한 주소인지 검증
+        if (!findUserAddress.getUser().getId().equals(user.getId())) {
+            throw new UserAddressForbiddenException();
+        }
+
+        // 기존 배송지 delete 상태 업데이트
+        findUserAddress.delete(user.getId());
+
+        // 기존 배송지 업데이트
+        UserAddress resultUserAddress = userAddressRepository.save(findUserAddress);
+
+        return new DeleteUserAddressResponseDto(resultUserAddress.getId());
     }
 }

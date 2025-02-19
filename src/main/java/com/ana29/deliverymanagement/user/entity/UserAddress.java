@@ -1,6 +1,9 @@
 package com.ana29.deliverymanagement.user.entity;
 
+import com.ana29.deliverymanagement.global.constant.OrderStatusEnum;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
+import com.ana29.deliverymanagement.order.exception.OrderStatusChangeException;
+import com.ana29.deliverymanagement.user.dto.UpdateUserAddressRequestDto;
 import com.ana29.deliverymanagement.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,8 +32,35 @@ public class UserAddress extends Timestamped {
     @Builder.Default
     private Boolean currentAddress = false;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isDeleted = false;
+
     @Setter
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public boolean updateAddress(UpdateUserAddressRequestDto requestDto) {
+        String address = requestDto.address();
+        String detail = requestDto.detail();
+
+        boolean isChanged = false;
+
+        if (!this.address.equals(address)) {
+            this.address = address;
+            isChanged = true;
+        }
+        if (!this.detail.equals(detail)) {
+            this.detail = detail;
+            isChanged = true;
+        }
+
+        return isChanged;
+    }
+
+    public void delete(String deletedBy){
+        super.delete(deletedBy);
+        this.isDeleted = true;
+    }
 }
