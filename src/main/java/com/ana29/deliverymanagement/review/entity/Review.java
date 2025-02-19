@@ -17,7 +17,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
 @Builder
-@Table(name = "p_reviews")
+@Table(name = "p_review")
 public class Review extends Timestamped {
 
 	@Id
