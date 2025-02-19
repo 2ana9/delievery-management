@@ -58,12 +58,12 @@ public class CategoryService {
 
     //음식 카테고리 id로 조회
     @Transactional
-    public ResponseDto<List<Restaurant>> searchCategories(UUID id, String foodType, Pageable pageable) {
+    public ResponseDto<List<Category>> searchCategories(UUID id, String foodType, Pageable pageable) {
         Specification<Category> spec = Specification.where(CategorySpecification.hasId(id)
                 .and(CategorySpecification.hasFoodType(foodType)));
-        Page<Category> category = categoryRepository.findAll(spec, pageable);
+        Page<Category> categoryPage = categoryRepository.findAll(spec, pageable);
 
-        return ResponseDto.success(category);
+        return ResponseDto.success(categoryPage.getContent());
     }
 
     public ResponseDto<Category> deleteCategory(UUID id, String userId) {

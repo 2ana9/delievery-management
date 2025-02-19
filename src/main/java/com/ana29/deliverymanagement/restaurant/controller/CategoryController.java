@@ -54,7 +54,7 @@ public class CategoryController {
 
     //search
     @GetMapping("/search")
-    public ResponseDto<List<Restaurant>> searchCategories(
+    public ResponseDto<List<Category>> searchCategories(
             @PathVariable(required = false) UUID id,
             @RequestParam(required = false) String foodType,
             @RequestParam(defaultValue = "0") int page,
