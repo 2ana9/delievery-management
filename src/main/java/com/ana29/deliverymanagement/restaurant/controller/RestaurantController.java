@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -73,14 +74,18 @@ public class RestaurantController {
     }
 
     //search
-//    @GetMapping("/search")
-//    public ResponseEntity<ResponseDto<Page<RestaurantResponseDto>>> searchRestaurants(
-//            RestaurantRequestDto requestDto, Pageable pageable){
-//
-//        Page<RestaurantResponseDto> response =
-//        restaurantService.searchRestaurants(requestDto,pageable);
-//
-//    };
+    @GetMapping("/search")
+    public ResponseEntity<ResponseDto<List<RestaurantResponseDto>>> searchRestaurants(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) Long areaId, Pageable pageable){
+
+        List<RestaurantResponseDto> response =
+        restaurantService.searchRestaurants(name,categoryId,areaId,pageable);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto<>(HttpStatus.OK, response));
+    };
 
 
     //사용자의 권한확인 메소드

@@ -8,7 +8,7 @@ public record RestaurantResponseDto(
         UUID id,
         String ownderId,
         UUID category,
-        long area,
+        Long area,
         String name,
         String content,
         String operatingHours,
