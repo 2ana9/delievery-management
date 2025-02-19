@@ -2,8 +2,10 @@ package com.ana29.deliverymanagement.data;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,9 @@ public class DatabaseInitializer implements ApplicationRunner {
     private static final int MENUS_PER_RESTAURANT = 5; // 각 식당당 메뉴 개수
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -40,7 +45,7 @@ public class DatabaseInitializer implements ApplicationRunner {
                     .setParameter("id", "user" + i)
                     .setParameter("nickname", "nick" + i)
                     .setParameter("email", "user" + i + "@example.com")
-                    .setParameter("password", "Password" + i + "@!")
+                    .setParameter("password", passwordEncoder.encode(String.format("Password%d@!",i)))
                     .setParameter("phone", phone)
                     .setParameter("createdBy", "user" + i)
                     .executeUpdate();
