@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 @Slf4j(topic = "Gemini Service")
@@ -20,6 +21,7 @@ public class GeminiService {
     @Value("${gemini.api.key}")
     private String geminiApiKey;
 
+    @Transactional
     public void generateContent(String prompt) {
         // 요청 텍스트에 "답변을 최대한 간결하게 50자 이하로" 문구 추가
         String finalPrompt = prompt + SendToAiMessage.ADDITIONAL_MESSAGE.getSendToAiMessage();
@@ -42,6 +44,7 @@ public class GeminiService {
             saveGeneratedContent(gemini);
         }
     }
+
 
     private void saveGeneratedContent(Gemini gemini){
         geminiRepository.save(gemini);
