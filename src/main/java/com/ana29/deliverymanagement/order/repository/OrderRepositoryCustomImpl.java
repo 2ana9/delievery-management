@@ -38,6 +38,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 		List<OrderHistoryResponseDto> content = queryFactory
 			.select(Projections.constructor(OrderHistoryResponseDto.class,
 				order.id,
+				restaurant.id,
 				restaurant.name,
 				menu.name,
 				order.orderStatus,
@@ -82,6 +83,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 		List<OrderHistoryResponseDto> content = queryFactory
 			.select(Projections.constructor(OrderHistoryResponseDto.class,
 				order.id,
+				restaurant.id,
 				restaurant.name,
 				menu.name,
 				order.orderStatus,
