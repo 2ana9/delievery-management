@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -59,7 +60,7 @@ public class Userservice {
         return "/api/users/sign-in";
     }
 
-    public List<UserInfoDto> getUserInfo(UserDetailsImpl userDetails, int pageSize, String sortBy, boolean isAsc) {
+    public List<UserInfoDto> getUserInfo(UserDetailsImpl userDetails, int page, int size, String sortBy, boolean isAsc) {
         User user = userDetails.getUser();
         boolean isAdmin = (user.getRole() == UserRoleEnum.MASTER || user.getRole() == UserRoleEnum.MANAGER);
 
@@ -67,7 +68,7 @@ public class Userservice {
 
         if (isAdmin) {
             // Admin이면 모든 유저 정보를 가져옴 (페이징 적용)
-            List<User> userList = userInfoPaging(pageSize, sortBy, isAsc);
+            List<User> userList = userInfoPaging(page, size, sortBy, isAsc);
 
             // User -> UserInfoDto 변환하여 리스트에 추가
             userInfoDtoList = userList.stream()
@@ -161,7 +162,7 @@ public class Userservice {
                 .password(passwordEncoder.encode(requestDto.getPassword())) // 비밀번호 암호화
                 .phone(requestDto.getPhone())
                 .role(checkUserRole(requestDto)) // 유저 권한 부여
-                .currentAddress(checkCurrentAddress(requestDto.getCurrentAddress())) // 상세 주소 확인
+//                .currentAddress(checkCurrentAddress(requestDto.getCurrentAddress())) // 상세 주소 확인
                 .build();
     }
 
@@ -180,23 +181,25 @@ public class Userservice {
         }
     }
 
-    private String checkCurrentAddress(String currentAddress) {
-        if (currentAddress == null || currentAddress.trim().isEmpty()) {
-            return null;
-        }
-        return currentAddress;
-    }
+//    private String checkCurrentAddress(String currentAddress) {
+//        if (currentAddress == null || currentAddress.trim().isEmpty()) {
+//            return null;
+//        }
+//        return currentAddress;
+//    }
 
-    private List<User> userInfoPaging(int pageSize, String sortBy, boolean isAsc){
+    private List<User> userInfoPaging(int page, int size, String sortBy, boolean isAsc){
         // 10, 30, 50 중에서 선택된 값만 허용
-        if (pageSize != 10 && pageSize != 30 && pageSize != 50) {
-            pageSize = 10; // 기본값
+        if (size != 10 && size != 30 && size != 50) {
+            size = 10; // 기본값
         }
         // 정렬 기준 설정 (기본: 생성일)
         Sort sort = Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC,
                 sortBy.equals("updatedAt") ? "updatedAt" : "createdAt");
+        // 페이징 및 정렬 적용하여 유저 리스트 조회
+        Pageable pageable = PageRequest.of(page, size, sort);
 
         // 페이징 및 정렬 적용하여 유저 리스트 조회
-        return userRepository.findAll(PageRequest.of(0, pageSize, sort)).getContent();
+        return userRepository.findAll(pageable).getContent();
     }
 }
