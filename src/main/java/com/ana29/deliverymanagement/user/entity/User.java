@@ -38,6 +38,7 @@ public class User extends Timestamped {
 //    @Column(length = 255, nullable = true)
 //    private String currentAddress; // 대표 주소
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAddress> addresses = new ArrayList<>();
 
