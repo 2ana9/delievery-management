@@ -84,8 +84,7 @@ public class UserController {
         return userService.getUserInfo(userDetails, page, size, sortBy, isAsc);
     }
 
-    // ex) GET 요청, /api/users/info?pageSize=30&sortBy=updatedAt&isAsc=false
-    //     GET 요청, /api/users/info?pageSize=50&sortBy=createdAt&isAsc=true
+    // ex) GET 요청, /api/users/me?page=2&size=30&sortBy=updatedAt&isAsc=false
 
     @PatchMapping("/me")
     @ResponseBody
