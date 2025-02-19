@@ -80,25 +80,14 @@ public class Userservice {
         return userInfoDtoList;
     }
 
-
-    /**
-     * JWT를 통해 인증된 사용자(UserDetailsImpl)를 기반으로,
-     * 추가로 전달된 업데이트 DTO의 정보로 회원 정보를 수정한 후,
-     * 수정된 정보를 UserInfoDto로 반환합니다.
-     */
-
-
-
     @Transactional
     public UserInfoDto modifyUserInfo(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
+
+        // 업데이트 DTO의 정보로 필드 검증
+        validateDuplicateValue(updateDto);
+
         // JWT로부터 현재 로그인한 사용자 엔티티 가져오기
         User user = userDetails.getUser();
-
-        // 업데이트 DTO의 정보로 필드 수정
-        user.setNickname(updateDto.getNickname());
-        user.setEmail(updateDto.getEmail());
-        user.setPhone(updateDto.getPhone());
-
         // DB에 변경 사항 저장
         userRepository.save(user);
 
@@ -124,6 +113,17 @@ public class Userservice {
             getUser(requestDto, duplicateUserOpt);
         }
     }
+    private void validateDuplicateValue(UpdateRequestDto requestDto){
+        // 중복 체크: 한 번의 쿼리로 모든 필드를 동시에 확인
+        Optional<User> duplicateUserOpt = userRepository.findAnyDuplicate(
+                requestDto.getEmail(),
+                requestDto.getNickname(),
+                requestDto.getPhone()
+        );
+        if (duplicateUserOpt.isPresent()) {
+            getUser(requestDto, duplicateUserOpt);
+        }
+    }
 
     private void getUser(SignupRequestDto requestDto, Optional<User> duplicateUserOpt) {
         User duplicateUser = duplicateUserOpt.get();
@@ -131,6 +131,20 @@ public class Userservice {
         if (duplicateUser.getId().equals(requestDto.getId())) {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
+        if (duplicateUser.getEmail().equals(requestDto.getEmail())) {
+            throw new IllegalArgumentException("중복된 Email 입니다.");
+        }
+        if (duplicateUser.getNickname().equals(requestDto.getNickname())) {
+            throw new IllegalArgumentException("중복된 닉네임 입니다.");
+        }
+        if (duplicateUser.getPhone().equals(requestDto.getPhone())) {
+            throw new IllegalArgumentException("중복된 전화번호 입니다.");
+        }
+    }
+
+    private void getUser(UpdateRequestDto requestDto, Optional<User> duplicateUserOpt) {
+        User duplicateUser = duplicateUserOpt.get();
+        // 중복된 필드를 확인하고, 해당하는 예외 메시지를 던집니다.
         if (duplicateUser.getEmail().equals(requestDto.getEmail())) {
             throw new IllegalArgumentException("중복된 Email 입니다.");
         }
