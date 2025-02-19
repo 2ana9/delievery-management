@@ -34,7 +34,7 @@ public class User extends Timestamped {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-    @Column(length = 255, nullable = true)
-    private String currentAddress; // 대표 주소
+//    @Column(length = 255, nullable = true)
+//    private String currentAddress; // 대표 주소
 
 }

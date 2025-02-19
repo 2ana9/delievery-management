@@ -162,7 +162,7 @@ public class Userservice {
                 .password(passwordEncoder.encode(requestDto.getPassword())) // 비밀번호 암호화
                 .phone(requestDto.getPhone())
                 .role(checkUserRole(requestDto)) // 유저 권한 부여
-                .currentAddress(checkCurrentAddress(requestDto.getCurrentAddress())) // 상세 주소 확인
+//                .currentAddress(checkCurrentAddress(requestDto.getCurrentAddress())) // 상세 주소 확인
                 .build();
     }
 
@@ -181,12 +181,12 @@ public class Userservice {
         }
     }
 
-    private String checkCurrentAddress(String currentAddress) {
-        if (currentAddress == null || currentAddress.trim().isEmpty()) {
-            return null;
-        }
-        return currentAddress;
-    }
+//    private String checkCurrentAddress(String currentAddress) {
+//        if (currentAddress == null || currentAddress.trim().isEmpty()) {
+//            return null;
+//        }
+//        return currentAddress;
+//    }
 
     private List<User> userInfoPaging(int page, int size, String sortBy, boolean isAsc){
         // 10, 30, 50 중에서 선택된 값만 허용
