@@ -27,7 +27,7 @@ public class UserAddressRepositoryCustomImpl implements UserAddressRepositoryCus
 
 		List<GetUserAddressesResponseDto> content = queryFactory
 				.select(Projections.constructor(GetUserAddressesResponseDto.class,
-						userAddress.user,
+						userAddress.id,
 						userAddress.address))
 				.from(userAddress)
 				.where(

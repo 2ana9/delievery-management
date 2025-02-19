@@ -7,12 +7,14 @@ import java.util.UUID;
 
 public record CreateUserAddressResponseDto(
 		UUID userAddressId,
-		String address
+		String address,
+		String detail
 ) {
 	public static CreateUserAddressResponseDto from(UserAddress userAddress) {
 		return new CreateUserAddressResponseDto(
 				userAddress.getId(),
-				userAddress.getAddress()
+				userAddress.getAddress(),
+				userAddress.getDetail()
 		);
 	}
 }

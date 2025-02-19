@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.*;
 
-public interface UserAddressRepository extends JpaRepository<UserAddress, String>, UserAddressRepositoryCustom {
+public interface UserAddressRepository extends JpaRepository<UserAddress, UUID>, UserAddressRepositoryCustom {
     List<UserAddress> findByUser(User user);
 }

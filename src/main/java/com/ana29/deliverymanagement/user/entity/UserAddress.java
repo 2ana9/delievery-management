@@ -22,6 +22,9 @@ public class UserAddress extends Timestamped {
     @Column(nullable = false)
     private String address;
 
+    @Column(length = 50)
+    private String detail;
+
     @Column(nullable = false)
     @Builder.Default
     private Boolean currentAddress = false;
