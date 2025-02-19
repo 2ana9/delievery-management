@@ -1,6 +1,6 @@
 package com.ana29.deliverymanagement.security.jwt;
 
-import com.ana29.deliverymanagement.security.UserDetailsServiceImpl;
+import com.ana29.deliverymanagement.security.CachedUserDetailsService;
 import com.ana29.deliverymanagement.security.constant.jwt.JwtErrorMessage;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -23,9 +23,9 @@ import java.io.IOException;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final CachedUserDetailsService userDetailsService;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
+    public JwtAuthorizationFilter(JwtUtil jwtUtil, CachedUserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
     }
