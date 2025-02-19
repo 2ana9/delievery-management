@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.2'
     id 'io.spring.dependency-management' version '1.1.7'
+    id "org.asciidoctor.jvm.convert" version "3.3.2"
+
 }
 
 group = 'com.ana29'
@@ -14,6 +16,7 @@ java {
 }
 
 configurations {
+    asciidoctorExt
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -25,6 +28,8 @@ repositories {
 
 ext {
     set('springCloudVersion', "2024.0.0")
+    snippetsDir = file('build/generated-snippets')
+
 }
 
 
@@ -69,6 +74,10 @@ dependencies {
     // opensearch
     implementation 'org.opensearch.client:opensearch-java:2.11.1'
     implementation 'org.opensearch.client:opensearch-rest-client:2.19.0'
+
+    // rest-docs
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
 dependencyManagement {
@@ -79,4 +88,14 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+test {
+    outputs.dir snippetsDir
+}
+
+asciidoctor {
+    inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
+    dependsOn test
 }
