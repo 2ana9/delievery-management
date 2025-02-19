@@ -1,11 +1,10 @@
 package com.ana29.deliverymanagement.restaurant.controller;
 
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
-import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantResponseDto;
-import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.restaurant.service.RestaurantService;
+import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,25 +26,25 @@ public class RestaurantController {
 
     //가게 추가 메소드(관리자)
     @PostMapping
-    public ResponseEntity<ResponseDto<RestaurantResponseDto>> createRestaurant(@RequestBody RestaurantRequestDto restaurantRequestDto,
+    public ResponseEntity<ResponseDto<RestaurantResponseDto>> createRestaurant(@RequestBody RestaurantRequestDto requestDto,
                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
-        checkUserAccess(userDetails);
-        RestaurantResponseDto response = restaurantService.createRestaurant(restaurantRequestDto);
+        UserRoleEnum userRole = userDetails.getUser().getRole();
+        if (userRole != UserRoleEnum.MASTER) {
+            throw new AccessDeniedException("관리자 접근이 필요합니다.");
+        }
+        RestaurantResponseDto response = restaurantService.createRestaurant(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto<>(HttpStatus.CREATED, response));
     };
 
     //가게 수정 메소드(관리자,가게사장)
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<RestaurantResponseDto>> updateRestaurant(@PathVariable UUID id, @RequestBody RestaurantRequestDto restaurantRequestDto
+    public ResponseEntity<ResponseDto<RestaurantResponseDto>> updateRestaurant(@PathVariable UUID id, @RequestBody RestaurantRequestDto requestDto
             , @AuthenticationPrincipal UserDetailsImpl userDetails)throws AccessDeniedException{
         //수정은 관리자도 가능하고 가게사장도 가능하게 구현
-        UserRoleEnum userRole = userDetails.getUser().getRole();
-        if (userRole == UserRoleEnum.CUSTOMER) {
-            throw new AccessDeniedException("관리자 접근이 필요합니다.");
-        }
-        RestaurantResponseDto response = restaurantService.updateRestaurant(id, restaurantRequestDto);
 
+        checkUserAccess(userDetails);
+        RestaurantResponseDto response = restaurantService.updateRestaurant(id, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseDto<>(HttpStatus.OK, response));
     };
@@ -62,11 +61,32 @@ public class RestaurantController {
     }
 
     //가게 삭제메소드(관리자,가게사장)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDto<RestaurantResponseDto>>
+    deleteRestaurant(@PathVariable UUID id,
+                     @AuthenticationPrincipal UserDetailsImpl userDetails)
+            throws AccessDeniedException{
+        checkUserAccess(userDetails);
+        RestaurantResponseDto response = restaurantService.deleteRestaurant(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto<>(HttpStatus.OK, response));
+    }
+
+    //search
+//    @GetMapping("/search")
+//    public ResponseEntity<ResponseDto<Page<RestaurantResponseDto>>> searchRestaurants(
+//            RestaurantRequestDto requestDto, Pageable pageable){
+//
+//        Page<RestaurantResponseDto> response =
+//        restaurantService.searchRestaurants(requestDto,pageable);
+//
+//    };
+
 
     //사용자의 권한확인 메소드
     public void checkUserAccess(UserDetailsImpl userDetails) throws AccessDeniedException {
         UserRoleEnum userRole = userDetails.getUser().getRole();
-        if (userRole != UserRoleEnum.MASTER) {
+        if (userRole != UserRoleEnum.MASTER || userRole != UserRoleEnum.OWNER) {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
     };

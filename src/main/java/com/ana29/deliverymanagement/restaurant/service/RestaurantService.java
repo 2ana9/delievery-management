@@ -14,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,6 +25,7 @@ public class RestaurantService {
     private final AreaRepository areaRepository;
 
     private final CategoryRepository categoryRepository;
+
     @Transactional
     public RestaurantResponseDto createRestaurant(RestaurantRequestDto restaurantRequestDto) {
         Area area = areaRepository.findById(restaurantRequestDto.getArea())
@@ -60,6 +59,18 @@ public class RestaurantService {
     }
 
     public Page<RestaurantResponseDto> getAllRestaurant(Pageable pageable) {
-        return null;
+        return restaurantRepository.findAll(pageable).map(RestaurantResponseDto::from);
     }
+
+    public RestaurantResponseDto deleteRestaurant(UUID id) {
+        Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(()->
+                new IllegalArgumentException("restaurant not found"));
+        restaurant.setIsDeleted(true);
+        restaurantRepository.save(restaurant);
+        return RestaurantResponseDto.from(restaurant);
+    }
+
+//    public Page<RestaurantResponseDto> searchRestaurants(RestaurantRequestDto requestDto, Pageable pageable) {
+//
+//    };
 }
