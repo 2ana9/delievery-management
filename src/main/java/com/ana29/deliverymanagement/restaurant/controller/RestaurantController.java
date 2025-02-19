@@ -26,12 +26,12 @@ public class RestaurantController {
 
     private final RestaurantService restaurantService;
 
-    //가게 추가 메소드(관리자)
+    //가게 추가 메소드(관리자,매니저)
     @PostMapping
     public ResponseDto<Restaurant> createRestaurant(@RequestBody RestaurantRequestDto requestDto,
                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         UserRoleEnum userRole = userDetails.getUser().getRole();
-        if (userRole != UserRoleEnum.MASTER) {
+        if (userRole != UserRoleEnum.MASTER || userRole != UserRoleEnum.MANAGER) {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
 
@@ -45,7 +45,8 @@ public class RestaurantController {
         //수정은 관리자도 가능하고 가게사장도 가능하게 구현
 
         checkUserAccess(userDetails);
-        return restaurantService.updateRestaurant(id, requestDto);
+        String userId = userDetails.getUser().getId();
+        return restaurantService.updateRestaurant(id, requestDto, userId);
     };
 
     //가게 조회 메소드 (전체)
@@ -66,7 +67,8 @@ public class RestaurantController {
                      @AuthenticationPrincipal UserDetailsImpl userDetails)
             throws AccessDeniedException{
         checkUserAccess(userDetails);
-        return restaurantService.deleteRestaurant(id);
+        String userId = userDetails.getUser().getId();
+        return restaurantService.deleteRestaurant(id,userId);
     }
 
     //search
@@ -74,7 +76,7 @@ public class RestaurantController {
     public ResponseDto<List<Restaurant>> searchRestaurants(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) UUID categoryId,
-            @RequestParam(required = false) Long areaId, Pageable pageable){
+            @RequestParam(required = false) Long areaId, Pageable pageable){ //페이징기능 단건 10건으로 수정
 
         return restaurantService.searchRestaurants(name,categoryId,areaId,pageable);
     };

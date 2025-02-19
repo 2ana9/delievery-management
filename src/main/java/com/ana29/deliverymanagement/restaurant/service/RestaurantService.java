@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -53,12 +54,12 @@ public class RestaurantService {
     }
 
     @Transactional
-    public ResponseDto<Restaurant> updateRestaurant(UUID id, RestaurantRequestDto requestDto) {
+    public ResponseDto<Restaurant> updateRestaurant(UUID id, RestaurantRequestDto requestDto,String userId) {
         Restaurant restaurant =  restaurantRepository.findById(id).orElseThrow(()->
                 new IllegalArgumentException("Restaurant not found")); //고유id값으로 가게정보 찾기
         restaurant.update(requestDto);
-//        restaurant.setUpdatedAt(LocalDateTime.now()); //수정시간 업데이트
-//        restaurant.setUpdatedBy();//수정자 이름입력
+        restaurant.setUpdatedAt(LocalDateTime.now());
+        restaurant.setUpdatedBy(userId);
 
         return ResponseDto.success(restaurant);
     }
@@ -67,10 +68,12 @@ public class RestaurantService {
         return restaurantRepository.findAll(pageable).map(RestaurantResponseDto::from);
     }
 
-    public ResponseDto<Restaurant> deleteRestaurant(UUID id) {
+    public ResponseDto<Restaurant> deleteRestaurant(UUID id,String userId) {
         Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(()->
                 new IllegalArgumentException("restaurant not found"));
         restaurant.setIsDeleted(true);
+        restaurant.setUpdatedAt(LocalDateTime.now());
+        restaurant.setUpdatedBy(userId);
         restaurantRepository.save(restaurant);
 
         return ResponseDto.success(restaurant);
