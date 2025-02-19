@@ -2,6 +2,8 @@ package com.ana29.deliverymanagement.order.entity;
 
 import com.ana29.deliverymanagement.global.constant.OrderStatusEnum;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
+import com.ana29.deliverymanagement.order.dto.CreateOrderRequestDto;
+import com.ana29.deliverymanagement.order.exception.OrderCancelTimeoutException;
 import com.ana29.deliverymanagement.order.exception.OrderStatusChangeException;
 import com.ana29.deliverymanagement.restaurant.entity.Menu;
 import com.ana29.deliverymanagement.user.entity.User;
@@ -17,6 +19,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -67,11 +70,33 @@ public class Order extends Timestamped {
 	@OneToOne(mappedBy = "order")
 	private Payment payment;
 
+	public static Order from(User user, Menu menu, CreateOrderRequestDto requestDto) {
+		return Order.builder()
+			.user(user)
+			.menu(menu)
+			.quantity(requestDto.quantity())
+			.totalPrice(menu.getPrice() * requestDto.quantity())
+			.orderRequest(requestDto.orderRequest())
+			.orderStatus(OrderStatusEnum.PENDING)
+			.build();
+	}
+
 	public void updateStatus(OrderStatusEnum newStatus) {
 		if (!this.orderStatus.canChangeTo(newStatus)) {
 			throw new OrderStatusChangeException(this.orderStatus, newStatus);
 		}
 		this.orderStatus = newStatus;
+	}
+
+	public void cancel() {
+		if(LocalDateTime.now().isAfter(this.getPayment().getCreatedAt().plusMinutes(5))){
+			throw new OrderCancelTimeoutException();
+		}
+		updateStatus(OrderStatusEnum.CANCELED);
+	}
+
+	public void pay() {
+		updateStatus(OrderStatusEnum.PAID);
 	}
 
 	public void delete(String deletedBy){

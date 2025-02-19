@@ -61,4 +61,8 @@ public class Restaurant extends Timestamped {
     @JoinColumn(name = "area_id", nullable = false)
     private Area area;
 
+    public boolean isOwner (String userId){
+        return userId.equals(ownerId);
+    }
+
 }

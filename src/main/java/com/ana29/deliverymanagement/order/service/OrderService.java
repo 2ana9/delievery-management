@@ -3,11 +3,12 @@ package com.ana29.deliverymanagement.order.service;
 import com.ana29.deliverymanagement.global.constant.OrderStatusEnum;
 import com.ana29.deliverymanagement.global.constant.PaymentTypeEnum;
 import com.ana29.deliverymanagement.order.dto.CreateOrderRequestDto;
-import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
 import com.ana29.deliverymanagement.order.dto.OrderDetailResponseDto;
+import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
 import com.ana29.deliverymanagement.order.dto.OrderSearchCondition;
 import com.ana29.deliverymanagement.order.dto.PaymentRequestDto;
 import com.ana29.deliverymanagement.order.dto.PaymentResultDto;
+import com.ana29.deliverymanagement.order.dto.RefundRequestDto;
 import com.ana29.deliverymanagement.order.entity.Order;
 import com.ana29.deliverymanagement.order.entity.Payment;
 import com.ana29.deliverymanagement.order.exception.MenuNotFoundException;
@@ -43,17 +44,10 @@ public class OrderService {
 			.orElseThrow(() -> new MenuNotFoundException(requestDto.menuId()));
 
 		//새로운 주문 생성
-		Order order = orderRepository.save(Order.builder()
-			.user(userRepository.getReferenceById(userId))
-			.menu(menu)
-			.quantity(requestDto.quantity())
-			.totalPrice(menu.getPrice() * requestDto.quantity())
-			.orderRequest(requestDto.orderRequest())
-			.orderStatus(OrderStatusEnum.PENDING)
-			.build());
+		Order order = orderRepository
+			.save(Order.from(userRepository.getReferenceById(userId), menu, requestDto));
 
 		Payment payment = createPayment(order, requestDto.paymentType());
-
 		return OrderDetailResponseDto.from(order, payment);
 	}
 
@@ -69,27 +63,56 @@ public class OrderService {
 
 	@Transactional(readOnly = true)
 	public OrderDetailResponseDto getOrderDetail(UUID orderId, String userId) {
-		Order order = orderRepository.findOrderById(orderId, userId)
-			.orElseThrow(() -> new OrderNotFoundException(orderId));
-
-		//관리자, 식당주인 권한 추가
-		if(!order.isOwner(userId)) {
-			throw new OrderForbiddenException(orderId);
-		}
+		Order order = findOrder(orderId, userId);
+		validateOrderAccess(userId, order);
 		return OrderDetailResponseDto.from(order, order.getPayment());
 	}
 
-	//결제 처리 및 주문상태 업데이트
+	@Transactional
+	public OrderDetailResponseDto cancelOrder(UUID orderId, String userId) {
+		Order order = findOrder(orderId, userId);
+		validateOrderAccess(userId, order);
+		refundPayment(order);
+		return OrderDetailResponseDto.from(order, order.getPayment());
+	}
+
+	private Order findOrder(UUID orderId, String userId) {
+		return orderRepository.findOrderById(orderId, userId)
+			.orElseThrow(() -> new OrderNotFoundException(orderId));
+	}
+
+	private void validateOrderAccess(String userId, Order order) {
+		if (!order.isOwner(userId) && !order.getMenu().getRestaurant().isOwner(userId)) {
+			throw new OrderForbiddenException(order.getId());
+		}
+	}
+
+	//결제처리
 	private PaymentResultDto processPayment(Order order, PaymentTypeEnum paymentType) {
 		PaymentResultDto resultDto =
 			paymentProcessor.processPayment(
 				new PaymentRequestDto(order.getTotalPrice(), paymentType));
 
-		if (resultDto.isSuccess()) {
-			order.updateStatus(OrderStatusEnum.PAID);
-		} else {
+		if (!resultDto.isSuccess()) {
 			throw new PaymentFailException(resultDto);
 		}
+
+		order.pay();
 		return resultDto;
+	}
+
+	//환불처리
+	private void refundPayment(Order order) {
+		PaymentResultDto resultDto =
+			paymentProcessor.refundPayment(
+				new RefundRequestDto(order.getPayment().getExternalPaymentId(),
+					order.getTotalPrice(), "Default reason"));
+
+		if (!resultDto.isSuccess()) {
+			throw new PaymentFailException(resultDto);
+		}
+
+		order.getPayment().refund();
+		order.cancel();
 	}
 }
