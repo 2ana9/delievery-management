@@ -4,7 +4,6 @@ import com.ana29.deliverymanagement.area.entity.Area;
 import com.ana29.deliverymanagement.area.repository.AreaRepository;
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
-import com.ana29.deliverymanagement.restaurant.dto.RestaurantResponseDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantWithRatingDto;
 import com.ana29.deliverymanagement.restaurant.entity.Category;
 import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -88,8 +86,10 @@ public class RestaurantService {
     }
 
     @Transactional
-    public ResponseDto<List<Restaurant>> searchRestaurants(String name, UUID categoryId, Long areaId, Pageable pageable) {
+    public ResponseDto<List<Restaurant>> searchRestaurants(
+            String name, UUID categoryId, Long areaId, Pageable pageable) {
         //가게이름,음식카테고리,지역위치로 필터링 진행 (+ 페이징처리)
+
         // 동적 쿼리 조건 생성
         Specification<Restaurant> spec = Specification.where(RestaurantSpecification.hasName(name))
                 .and(RestaurantSpecification.hasCategory(categoryId))

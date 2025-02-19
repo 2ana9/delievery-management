@@ -2,19 +2,16 @@ package com.ana29.deliverymanagement.restaurant.controller;
 
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
-import com.ana29.deliverymanagement.restaurant.dto.RestaurantResponseDto;
 import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantWithRatingDto;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.restaurant.service.RestaurantService;
-import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,10 +65,34 @@ public class RestaurantController {
     public ResponseDto<List<Restaurant>> searchRestaurants(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) UUID categoryId,
-            @RequestParam(required = false) Long areaId, Pageable pageable){ //페이징기능 단건 10건으로 수정
+            @RequestParam(required = false) Long areaId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort){ //페이징기능 10건 단위로, 생성일순 수정일순
+
+        Sort sortValue = checkSortValue(sort); //정렬기준 체크
+
+        if(size != 10 && size != 30 && size != 50){//10건 30건 50건 외에는 10건 고정
+            size = 10;
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sortValue);
 
         return restaurantService.searchRestaurants(name,categoryId,areaId,pageable);
-    };
+    }
+
+    //생성일순,수정일순 정렬체크
+    private Sort checkSortValue(String sort) {
+        String[] sortParams = sort.split(",");
+        String sortType = sortParams[0];//정렬기준
+        String sortDirection = sortParams[1];//asc,desc
+
+        if (sortDirection.equalsIgnoreCase("desc")) {
+            return Sort.by(Sort.Order.desc(sortType));
+        } else {
+            return Sort.by(Sort.Order.asc(sortType));
+        }
+    }
 
 
     //사용자의 권한확인 메소드
