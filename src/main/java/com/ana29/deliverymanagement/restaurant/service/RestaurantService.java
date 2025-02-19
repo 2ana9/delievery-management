@@ -60,6 +60,7 @@ public class RestaurantService {
         restaurant.update(requestDto);
         restaurant.setUpdatedAt(LocalDateTime.now());
         restaurant.setUpdatedBy(userId);
+        restaurantRepository.save(restaurant);
 
         return ResponseDto.success(restaurant);
     }
@@ -78,8 +79,8 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(()->
                 new IllegalArgumentException("restaurant not found"));
         restaurant.setIsDeleted(true);
-        restaurant.setUpdatedAt(LocalDateTime.now());
-        restaurant.setUpdatedBy(userId);
+        restaurant.setDeletedAt(LocalDateTime.now());
+        restaurant.setDeletedBy(userId);
         restaurantRepository.save(restaurant);
 
         return ResponseDto.success(restaurant);
