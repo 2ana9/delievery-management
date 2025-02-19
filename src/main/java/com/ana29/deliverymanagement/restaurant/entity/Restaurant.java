@@ -52,11 +52,13 @@ public class Restaurant extends Timestamped {
     }
 
     //카테고리 외래키
+    @JsonIgnore //순환참조 방지
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     //주소 외래키
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "area_id", nullable = false)
     private Area area;

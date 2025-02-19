@@ -3,6 +3,7 @@ package com.ana29.deliverymanagement.restaurant.controller;
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantResponseDto;
+import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import com.ana29.deliverymanagement.restaurant.service.RestaurantService;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
@@ -27,27 +28,24 @@ public class RestaurantController {
 
     //가게 추가 메소드(관리자)
     @PostMapping
-    public ResponseEntity<ResponseDto<RestaurantResponseDto>> createRestaurant(@RequestBody RestaurantRequestDto requestDto,
+    public ResponseDto<Restaurant> createRestaurant(@RequestBody RestaurantRequestDto requestDto,
                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         UserRoleEnum userRole = userDetails.getUser().getRole();
         if (userRole != UserRoleEnum.MASTER) {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
-        RestaurantResponseDto response = restaurantService.createRestaurant(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseDto<>(HttpStatus.CREATED, response));
+
+        return restaurantService.createRestaurant(requestDto);
     };
 
     //가게 수정 메소드(관리자,가게사장)
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<RestaurantResponseDto>> updateRestaurant(@PathVariable UUID id, @RequestBody RestaurantRequestDto requestDto
+    public ResponseDto<Restaurant> updateRestaurant(@PathVariable UUID id, @RequestBody RestaurantRequestDto requestDto
             , @AuthenticationPrincipal UserDetailsImpl userDetails)throws AccessDeniedException{
         //수정은 관리자도 가능하고 가게사장도 가능하게 구현
 
         checkUserAccess(userDetails);
-        RestaurantResponseDto response = restaurantService.updateRestaurant(id, requestDto);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ResponseDto<>(HttpStatus.OK, response));
+        return restaurantService.updateRestaurant(id, requestDto);
     };
 
     //가게 조회 메소드 (전체)
@@ -63,28 +61,22 @@ public class RestaurantController {
 
     //가게 삭제메소드(관리자,가게사장)
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto<RestaurantResponseDto>>
+    public ResponseDto<Restaurant>
     deleteRestaurant(@PathVariable UUID id,
                      @AuthenticationPrincipal UserDetailsImpl userDetails)
             throws AccessDeniedException{
         checkUserAccess(userDetails);
-        RestaurantResponseDto response = restaurantService.deleteRestaurant(id);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ResponseDto<>(HttpStatus.OK, response));
+        return restaurantService.deleteRestaurant(id);
     }
 
     //search
     @GetMapping("/search")
-    public ResponseEntity<ResponseDto<List<RestaurantResponseDto>>> searchRestaurants(
+    public ResponseDto<List<Restaurant>> searchRestaurants(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) Long areaId, Pageable pageable){
 
-        List<RestaurantResponseDto> response =
-        restaurantService.searchRestaurants(name,categoryId,areaId,pageable);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ResponseDto<>(HttpStatus.OK, response));
+        return restaurantService.searchRestaurants(name,categoryId,areaId,pageable);
     };
 
 
