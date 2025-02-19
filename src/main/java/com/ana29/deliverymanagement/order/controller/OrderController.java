@@ -40,7 +40,7 @@ public class OrderController {
 			orderService.createOrder(requestDto, userDetails.getUsername());
 
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(new ResponseDto<>(HttpStatus.CREATED, response));
+			.body(ResponseDto.success(HttpStatus.CREATED, response));
 	}
 
 	@GetMapping("/history")
@@ -51,7 +51,7 @@ public class OrderController {
 		Page<OrderHistoryResponseDto> response =
 			orderService.getOrderHistory(condition, pageable, userDetails.getUsername());
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(new ResponseDto<>(HttpStatus.OK, response));
+			.body(ResponseDto.success(HttpStatus.OK, response));
 	}
 
 	@GetMapping("/{id}")
@@ -63,7 +63,7 @@ public class OrderController {
 			orderService.getOrderDetail(id, userDetails.getUsername());
 
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(new ResponseDto<>(HttpStatus.OK, response));
+			.body(ResponseDto.success(HttpStatus.OK, response));
 	}
 
 	@PatchMapping("/{id}/cancel")
@@ -75,6 +75,6 @@ public class OrderController {
 			orderService.cancelOrder(id, userDetails.getUsername());
 
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(new ResponseDto<>(HttpStatus.OK, response));
+			.body(ResponseDto.success(HttpStatus.OK, response));
 	}
 }

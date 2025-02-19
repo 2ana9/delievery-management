@@ -36,6 +36,13 @@ public class ResponseDto<T> {
         this.data = data;
     }
 
+    public ResponseDto(HttpStatus httpStatus, String message) {
+        this.code = httpStatus.value();
+        this.status = httpStatus.getReasonPhrase();
+        this.message = message;
+        this.data = null;
+    }
+
     // Getter, Setter
     public int getCode() {
         return code;
@@ -74,9 +81,13 @@ public class ResponseDto<T> {
         return new ResponseDto<>(200, "success", "성공적으로 처리되었습니다.", data);
     }
 
+    public static <T> ResponseDto<T> success(HttpStatus status, T data) {
+        return new ResponseDto<>(status, data);
+    }
+
     // 실패 응답을 쉽게 반환할 수 있는 메서드
-    public static ResponseDto<Object> failure(String message) {
-        return new ResponseDto<>(500, "failure", message);
+    public static ResponseDto<Object> failure(HttpStatus status, String message) {
+        return new ResponseDto<>(status, message);
     }
 
 }
