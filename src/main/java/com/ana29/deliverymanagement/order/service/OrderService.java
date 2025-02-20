@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.order.service;
 
+import com.ana29.deliverymanagement.global.constant.OrderTypeEnum;
 import com.ana29.deliverymanagement.global.constant.PaymentTypeEnum;
 import com.ana29.deliverymanagement.order.dto.CreateOrderRequestDto;
 import com.ana29.deliverymanagement.order.dto.OrderDetailResponseDto;
@@ -10,6 +11,7 @@ import com.ana29.deliverymanagement.order.dto.PaymentResultDto;
 import com.ana29.deliverymanagement.order.dto.RefundRequestDto;
 import com.ana29.deliverymanagement.order.entity.Order;
 import com.ana29.deliverymanagement.order.entity.Payment;
+import com.ana29.deliverymanagement.order.exception.MissingUserAddressException;
 import com.ana29.deliverymanagement.order.exception.OrderAccessDeniedException;
 import com.ana29.deliverymanagement.order.exception.OrderNotFoundException;
 import com.ana29.deliverymanagement.order.exception.PaymentFailException;
@@ -24,6 +26,9 @@ import com.ana29.deliverymanagement.restaurant.repository.MenuRepository;
 import com.ana29.deliverymanagement.restaurant.repository.RestaurantRepository;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.entity.UserAddress;
+import com.ana29.deliverymanagement.user.exception.UserAddressNotFoundException;
+import com.ana29.deliverymanagement.user.repository.UserAddressRepository;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -42,25 +47,48 @@ public class OrderService {
 	private final PaymentRepository paymentRepository;
 	private final PaymentProcessor paymentProcessor;
 	private final RestaurantRepository restaurantRepository;
+	private final UserAddressRepository userAddressRepository;
 
 	@Transactional
 	public OrderDetailResponseDto createOrder(CreateOrderRequestDto requestDto, String userId) {
-		//메뉴와 레스토랑 정보 한 번에 조회 (식당 정보 전달 위함)
-		Menu menu = menuRepository.findMenuWithRestaurant(requestDto.menuId())
-			.orElseThrow(() -> new MenuNotFoundException(requestDto.menuId()));
 
-		//새로운 주문 생성
-		Order order = orderRepository
-			.save(Order.from(userRepository.getReferenceById(userId), menu, requestDto));
-
+		UserAddress userAddress = getUserAddress(requestDto, userId);
+		Menu menu = getMenuById(requestDto.menuId());
+		Order order = createOrder(requestDto, userId, menu, userAddress);
 		Payment payment = createPayment(order, requestDto.paymentType());
+
 		return OrderDetailResponseDto.from(order, payment);
+	}
+
+	private UserAddress getUserAddress(CreateOrderRequestDto requestDto, String userId) {
+		if (requestDto.orderType() == OrderTypeEnum.ONLINE && requestDto.userAddressId() == null) {
+			throw new MissingUserAddressException();
+		}
+
+		if (requestDto.orderType() == OrderTypeEnum.ONLINE) {
+			return userAddressRepository.findByIdAndUserIdAndIsDeletedFalse(
+					requestDto.userAddressId(), userId)
+				.orElseThrow(UserAddressNotFoundException::new);
+		}
+		return null;
+	}
+
+
+	private Menu getMenuById(UUID menuId) {
+		return menuRepository.findMenuWithRestaurant(menuId)
+			.orElseThrow(() -> new MenuNotFoundException(menuId));
+	}
+
+	private Order createOrder(CreateOrderRequestDto requestDto, String userId, Menu menu,
+		UserAddress userAddress) {
+		return orderRepository
+			.save(Order.of(userRepository.getReferenceById(userId), menu, requestDto,
+				userAddress));
 	}
 
 	private Payment createPayment(Order order, PaymentTypeEnum paymentType) {
 		return paymentRepository.save(Payment.from(order, processPayment(order, paymentType)));
 	}
-	//결제처리
 
 	private PaymentResultDto processPayment(Order order, PaymentTypeEnum paymentType) {
 		PaymentResultDto resultDto =

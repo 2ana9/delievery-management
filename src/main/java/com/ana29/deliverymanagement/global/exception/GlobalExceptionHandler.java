@@ -1,6 +1,7 @@
 package com.ana29.deliverymanagement.global.exception;
 
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
+import com.ana29.deliverymanagement.order.exception.MissingUserAddressException;
 import com.ana29.deliverymanagement.order.exception.PaymentFailException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -118,7 +119,12 @@ public class GlobalExceptionHandler {
 			.body(ResponseDto.failure(HttpStatus.PAYMENT_REQUIRED, e.getMessage()));
     }
 
-
+	@ExceptionHandler(MissingUserAddressException.class)
+	@ResponseBody
+	public ResponseEntity<ResponseDto> handleMissingUserAddressException(MissingUserAddressException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(ResponseDto.failure(HttpStatus.BAD_REQUEST, e.getMessage()));
+	}
 
 
 }
