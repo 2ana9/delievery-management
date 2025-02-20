@@ -60,4 +60,7 @@ public class Area {
 
 	@Column(length = 50)
 	private String buildingName;  // 건물명 (예: 삼성타워, 현대아파트)
+
+	@Column(length = 5, nullable = false)
+	private int legalCode; // 5자리 법정동 코드 (예: 11110) 구단위로 필터링 하기 위해 5자리로 고정
 }
