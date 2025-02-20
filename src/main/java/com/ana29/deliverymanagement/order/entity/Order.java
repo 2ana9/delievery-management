@@ -102,6 +102,7 @@ public class Order extends Timestamped {
 	public void delete(String deletedBy){
 		super.delete(deletedBy);
 		this.isDeleted = true;
+		this.payment.delete(deletedBy);
 	}
 
 	public boolean isOwner(String userId){

@@ -23,6 +23,7 @@ import com.ana29.deliverymanagement.restaurant.exception.RestaurantNotFoundExcep
 import com.ana29.deliverymanagement.restaurant.repository.MenuRepository;
 import com.ana29.deliverymanagement.restaurant.repository.RestaurantRepository;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
+import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +57,24 @@ public class OrderService {
 		return OrderDetailResponseDto.from(order, payment);
 	}
 
+	private Payment createPayment(Order order, PaymentTypeEnum paymentType) {
+		return paymentRepository.save(Payment.from(order, processPayment(order, paymentType)));
+	}
+	//결제처리
+
+	private PaymentResultDto processPayment(Order order, PaymentTypeEnum paymentType) {
+		PaymentResultDto resultDto =
+			paymentProcessor.processPayment(
+				new PaymentRequestDto(order.getTotalPrice(), paymentType));
+
+		if (!resultDto.isSuccess()) {
+			throw new PaymentFailException(resultDto);
+		}
+
+		order.pay();
+		return resultDto;
+	}
+
 	@Transactional(readOnly = true)
 	public Page<OrderHistoryResponseDto> getOrderHistory(OrderSearchCondition condition,
 		Pageable pageable, String userId) {
@@ -76,6 +95,11 @@ public class OrderService {
 		return orderRepository.findRestaurantOrderHistory(restaurantId, condition, pageable);
 	}
 
+	private boolean isAdmin(UserDetailsImpl userDetails) {
+		UserRoleEnum role = userDetails.getUser().getRole();
+		return role.equals(UserRoleEnum.MANAGER) || role.equals(UserRoleEnum.MASTER);
+	}
+
 	@Transactional(readOnly = true)
 	public OrderDetailResponseDto getOrderDetail(UUID orderId, String userId) {
 		Order order = findOrder(orderId, userId);
@@ -92,24 +116,6 @@ public class OrderService {
 		if (!order.isOwner(userId) && !order.getMenu().getRestaurant().isOwner(userId)) {
 			throw new OrderAccessDeniedException(order.getId());
 		}
-	}
-
-	private Payment createPayment(Order order, PaymentTypeEnum paymentType) {
-		return paymentRepository.save(Payment.from(order, processPayment(order, paymentType)));
-	}
-
-	//결제처리
-	private PaymentResultDto processPayment(Order order, PaymentTypeEnum paymentType) {
-		PaymentResultDto resultDto =
-			paymentProcessor.processPayment(
-				new PaymentRequestDto(order.getTotalPrice(), paymentType));
-
-		if (!resultDto.isSuccess()) {
-			throw new PaymentFailException(resultDto);
-		}
-
-		order.pay();
-		return resultDto;
 	}
 
 	@Transactional
@@ -135,10 +141,9 @@ public class OrderService {
 		order.cancel();
 	}
 
-	private boolean isAdmin(UserDetailsImpl userDetails) {
-		return userDetails.getAuthorities().stream()
-			.anyMatch(a ->
-				a.getAuthority().equals("ROLE_MANAGER") || a.getAuthority().equals("ROLE_MASTER"));
+	@Transactional
+	public void deleteOrder(UUID id, String userId) {
+		orderRepository.findWithPaymentById(id)
+			.ifPresent(order -> order.delete(userId));
 	}
-
 }
