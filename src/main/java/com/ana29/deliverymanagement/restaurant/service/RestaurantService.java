@@ -44,7 +44,7 @@ public class RestaurantService {
                         .name(requestDto.getName())
                         .ownerId(requestDto.getOwnerId())
                         .content(requestDto.getContent())
-                        .area(area)
+//                        .area(area)
                         .category(category)
                         .operatingHours(requestDto.getOperatingHours())
                         .build()
