@@ -23,6 +23,7 @@ import com.ana29.deliverymanagement.restaurant.exception.RestaurantNotFoundExcep
 import com.ana29.deliverymanagement.restaurant.repository.MenuRepository;
 import com.ana29.deliverymanagement.restaurant.repository.RestaurantRepository;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
+import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -95,9 +96,8 @@ public class OrderService {
 	}
 
 	private boolean isAdmin(UserDetailsImpl userDetails) {
-		return userDetails.getAuthorities().stream()
-			.anyMatch(a ->
-				a.getAuthority().equals("ROLE_MANAGER") || a.getAuthority().equals("ROLE_MASTER"));
+		UserRoleEnum role = userDetails.getUser().getRole();
+		return role.equals(UserRoleEnum.MANAGER) || role.equals(UserRoleEnum.MASTER);
 	}
 
 	@Transactional(readOnly = true)
