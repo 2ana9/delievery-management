@@ -81,6 +81,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework:spring-context'
 
+
     // ✅ Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -103,12 +104,28 @@ dependencies {
     // ✅ Spring RestDocs
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
+    // ✅ Spring Boot Redis Starter (Spring Data Redis + 기본 클라이언트 Lettuce 포함)
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // ✅ Date 타입 redis에 저장하기 위해 필요한 의존성
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+
+    // ✅ (선택) Jedis 클라이언트를 사용하려면 추가
+    implementation 'redis.clients:jedis:5.0.2'
+
+    // ✅ (선택) Spring Cache와 함께 사용 시 필요
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
 }
 
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
+}
+
+tasks.named('bootBuildImage') {
+    builder = 'paketobuildpacks/builder-jammy-base:latest'
 }
 
 // ✅ RestDocs 설정
@@ -133,11 +150,10 @@ tasks.register('copyDocument', Copy) {
 tasks.named('build') {
     dependsOn copyDocument
 }
-
 // ✅ BootJar 설정 (빌드시 RestDocs 포함)
-tasks.named('bootJar') {
+bootJar {
     dependsOn copyDocument
-    from("${buildDir}/docs/asciidoc") {
+    from ("${asciidoctor.outputDir}") {
         into 'src/main/resources/static/docs'
     }
 }

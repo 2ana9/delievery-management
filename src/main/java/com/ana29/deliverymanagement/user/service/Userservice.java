@@ -4,7 +4,7 @@ import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.security.config.AuthorityConfig;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;
 import com.ana29.deliverymanagement.security.jwt.TokenBlacklist;
-import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.controller.user.UserRoleEnum;
 import com.ana29.deliverymanagement.user.dto.SignupRequestDto;
 import com.ana29.deliverymanagement.user.dto.UpdateRequestDto;
 import com.ana29.deliverymanagement.user.dto.UserInfoDto;

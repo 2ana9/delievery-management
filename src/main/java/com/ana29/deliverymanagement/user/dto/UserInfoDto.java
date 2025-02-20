@@ -1,6 +1,6 @@
 package com.ana29.deliverymanagement.user.dto;
 
-import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.controller.user.UserRoleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -12,4 +12,5 @@ public class UserInfoDto {
     private String email;
     private String phone;
     UserRoleEnum isAdmin;
+
 }

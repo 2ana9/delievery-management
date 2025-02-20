@@ -2,7 +2,7 @@ package com.ana29.deliverymanagement.security.jwt;
 
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.security.constant.jwt.JwtConfigEnum;
-import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.controller.user.UserRoleEnum;
 import com.ana29.deliverymanagement.user.dto.SigninRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -84,7 +84,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
-        UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
+        UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getRole();
 
         String token = jwtUtil.createToken(username, role);
         response.addHeader(JwtConfigEnum.AUTHORIZATION_HEADER.getGetJwtConfig(), token);

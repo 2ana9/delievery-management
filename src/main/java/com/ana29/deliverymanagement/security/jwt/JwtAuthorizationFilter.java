@@ -1,7 +1,10 @@
 package com.ana29.deliverymanagement.security.jwt;
 
 import com.ana29.deliverymanagement.security.CachedUserDetailsService;
+import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.security.constant.jwt.JwtErrorMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,6 +21,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 
 @Slf4j(topic = "JWT 검증 및 인가")
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -58,14 +62,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
         }
         if (StringUtils.hasText(token)) {
-
+            log.info("token : " + token);
             if (!jwtUtil.validateToken(token)) {
                 log.error(JwtErrorMessage.Error.getGetJwtErrorMessage());
                 return;
             }
 
             Claims info = jwtUtil.getUserInfoFromToken(token);
-
+            log.info("Claims : " + info);
             try {
                 setAuthentication(info.getSubject());
             } catch (Exception e) {
@@ -88,7 +92,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     // 인증 객체 생성
     private Authentication createAuthentication(String username) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        Object cachedUserDetails = userDetailsService.loadUserByUsername(username);
+        log.info("createAuthentication : " + cachedUserDetails.toString());
+
+        if (cachedUserDetails instanceof LinkedHashMap) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule()); // ✅ LocalDateTime 지원
+            UserDetailsImpl userDetails = objectMapper.convertValue(cachedUserDetails, UserDetailsImpl.class);
+            return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        }
+
+        return new UsernamePasswordAuthenticationToken(cachedUserDetails, null, ((UserDetails) cachedUserDetails).getAuthorities());
     }
+
 }

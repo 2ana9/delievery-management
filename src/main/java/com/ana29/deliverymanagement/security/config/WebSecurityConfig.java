@@ -5,6 +5,7 @@ import com.ana29.deliverymanagement.security.CachedUserDetailsService;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthenticationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthorizationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;
+import com.ana29.deliverymanagement.user.controller.user.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.NullSecurityContextRepository;
 
 @Configuration
 @EnableWebSecurity // Spring Security 지원을 가능하게 함
@@ -66,7 +68,7 @@ public class WebSecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
                         .requestMatchers("/api/users/**").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
-
+                        .requestMatchers("/redis/**").hasAuthority(UserRoleEnum.MASTER.getAuthority())
 //                        .requestMatchers("/api/admin/**").hasRole("ADMIN")  // 관리자 전용 API 보호
 //                        .requestMatchers("/api/users/**").authenticated()  // 일반 유저 API는 JWT 필요
 //                        .requestMatchers("/api/reviews").permitAll()
@@ -82,6 +84,10 @@ public class WebSecurityConfig {
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
+        // SecurityContext 설정: 세션을 사용하지 않음
+        http.securityContext(context ->
+                context.securityContextRepository(new NullSecurityContextRepository())
+        );
         return http.build();
     }
 }
