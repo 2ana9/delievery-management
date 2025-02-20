@@ -4,5 +4,6 @@ import java.util.UUID;
 
 public record GetUserAddressesResponseDto(UUID userAddressId,
 										  String address,
-										  String detail
+										  String detail,
+										  Boolean defaultAddress
 										  ) {}

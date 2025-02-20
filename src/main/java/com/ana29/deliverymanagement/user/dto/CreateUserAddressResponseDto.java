@@ -8,13 +8,15 @@ import java.util.UUID;
 public record CreateUserAddressResponseDto(
 		UUID userAddressId,
 		String address,
-		String detail
+		String detail,
+		Boolean defaultAddress
 ) {
 	public static CreateUserAddressResponseDto from(UserAddress userAddress) {
 		return new CreateUserAddressResponseDto(
 				userAddress.getId(),
 				userAddress.getAddress(),
-				userAddress.getDetail()
+				userAddress.getDetail(),
+				userAddress.getDefaultAddress()
 		);
 	}
 }

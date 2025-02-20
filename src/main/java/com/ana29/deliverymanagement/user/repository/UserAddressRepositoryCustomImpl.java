@@ -29,7 +29,8 @@ public class UserAddressRepositoryCustomImpl implements UserAddressRepositoryCus
                 .select(Projections.constructor(GetUserAddressesResponseDto.class,
                         userAddress.id,
                         userAddress.address,
-                        userAddress.detail))
+                        userAddress.detail,
+                        userAddress.defaultAddress))
                 .from(userAddress)
                 .where(
                         userAddress.isDeleted.isFalse(),

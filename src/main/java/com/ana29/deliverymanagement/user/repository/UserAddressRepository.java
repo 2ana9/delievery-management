@@ -8,4 +8,5 @@ import java.util.*;
 
 public interface UserAddressRepository extends JpaRepository<UserAddress, UUID>, UserAddressRepositoryCustom {
     List<UserAddress> findByUserAndIsDeletedFalse(User user);
+    Optional<UserAddress> findByUserAndDefaultAddressTrue(User user);
 }

@@ -30,7 +30,7 @@ public class UserAddress extends Timestamped {
 
     @Column(nullable = false)
     @Builder.Default
-    private Boolean currentAddress = false;
+    private Boolean defaultAddress = false;
 
     @Column(nullable = false)
     @Builder.Default
@@ -57,6 +57,10 @@ public class UserAddress extends Timestamped {
         }
 
         return isChanged;
+    }
+
+    public void updateDefaultAddress(boolean isDefault) {
+        this.defaultAddress = isDefault;
     }
 
     public void delete(String deletedBy){

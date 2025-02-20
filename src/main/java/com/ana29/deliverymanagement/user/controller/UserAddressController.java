@@ -61,6 +61,18 @@ public class UserAddressController {
                 .body(new ResponseDto<>(HttpStatus.OK, response));
     }
 
+    @PutMapping("/{id}/default")
+    public ResponseEntity<ResponseDto<UpdateUserAddressResponseDto>> setDefaultAddress(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable UUID id) {
+
+        UpdateUserAddressResponseDto response =
+                userAddressService.setDefaultAddress(id, userDetails);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto<>(HttpStatus.OK, response));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<DeleteUserAddressResponseDto>> deleteUserAddresses(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
