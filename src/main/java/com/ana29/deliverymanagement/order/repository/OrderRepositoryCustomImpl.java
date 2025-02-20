@@ -42,6 +42,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 				restaurant.name,
 				menu.name,
 				order.orderStatus,
+				order.orderType,
 				order.createdAt))
 			.from(order)
 			.join(order.menu, menu)
@@ -61,6 +62,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 		Long fetchedCount = queryFactory
 			.select(order.count())
 			.from(order)
+			.join(order.menu, menu)
+			.join(menu.restaurant, restaurant)
 			.where(
 				order.user.Id.eq(ownerId),
 				order.isDeleted.isFalse(),
@@ -87,6 +90,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 				restaurant.name,
 				menu.name,
 				order.orderStatus,
+				order.orderType,
 				order.createdAt))
 			.from(order)
 			.join(order.menu, menu)
@@ -133,6 +137,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 			.leftJoin(order.menu, menu).fetchJoin()
 			.leftJoin(menu.restaurant, restaurant).fetchJoin()
 			.leftJoin(order.payment).fetchJoin()
+			.leftJoin(order.userAddress).fetchJoin()
 			.where(
 				order.id.eq(orderId)
 					.and(order.user.Id.eq(userId))
