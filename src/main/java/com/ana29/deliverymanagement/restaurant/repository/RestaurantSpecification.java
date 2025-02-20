@@ -27,12 +27,12 @@ public class RestaurantSpecification {
     }
 
     // 지역 ID로 필터링
-    public static Specification<Restaurant> hasArea(Long areaId) {
+    public static Specification<Restaurant> haslegalCode(String legalCode) {
         return (root, query, criteriaBuilder) -> {
-            if (areaId == null) {
+            if (legalCode == null) {
                 return criteriaBuilder.conjunction();  // 조건이 없으면 전체 데이터를 반환
             }
-            return criteriaBuilder.equal(root.get("area").get("id"), areaId);
+            return criteriaBuilder.equal(root.get("legalCode"), legalCode);
         };
     }
 }
