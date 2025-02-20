@@ -33,8 +33,9 @@ class CategoryControllerTest {
                 Category.builder()
                         .foodType(requestDto.getFoodType())
                         .build()
-        );//이렇게해야 저장이되낭
+        );//이렇게해야 저장이되
 
+        //MockMVc
     }
 
     @Test

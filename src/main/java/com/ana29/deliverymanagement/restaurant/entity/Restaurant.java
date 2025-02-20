@@ -58,6 +58,7 @@ public class Restaurant extends Timestamped {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    //(연관관계를 맺지않고 진행해보기로!)
     //주소 외래키
     @ManyToOne
     @JoinColumn(name = "area_id", nullable = false)

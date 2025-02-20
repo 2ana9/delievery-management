@@ -52,7 +52,7 @@ public class CategoryController {
         return categoryService.getAllCategories(pageable);
     };
 
-    //search
+    //search (삭제처리된 카테고리의경우 조회안되게 숨김처리)
     @GetMapping("/search")
     public ResponseDto<List<Category>> searchCategories(
             @PathVariable(required = false) UUID id,
