@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.security;
 
+import com.ana29.deliverymanagement.user.entity.User;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;

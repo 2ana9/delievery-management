@@ -4,6 +4,7 @@ import com.ana29.deliverymanagement.area.entity.Area;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -52,12 +53,13 @@ public class Restaurant extends Timestamped {
     }
 
     //카테고리 외래키
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     //주소 외래키
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "area_id", nullable = false)
     private Area area;
 
