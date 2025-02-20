@@ -8,6 +8,7 @@ import com.ana29.deliverymanagement.restaurant.dto.RestaurantWithRatingDto;
 import com.ana29.deliverymanagement.restaurant.entity.Category;
 import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import com.ana29.deliverymanagement.restaurant.repository.CategoryRepository;
+import com.ana29.deliverymanagement.restaurant.repository.CategorySpecification;
 import com.ana29.deliverymanagement.restaurant.repository.RestaurantRepository;
 import com.ana29.deliverymanagement.restaurant.repository.RestaurantSpecification;
 import lombok.RequiredArgsConstructor;
@@ -92,7 +93,8 @@ public class RestaurantService {
         // 동적 쿼리 조건 생성
         Specification<Restaurant> spec = Specification.where(RestaurantSpecification.hasName(name))
                 .and(RestaurantSpecification.hasCategory(categoryId))
-                .and(RestaurantSpecification.haslegalCode(legalCode));
+                .and(RestaurantSpecification.haslegalCode(legalCode))
+                .and(RestaurantSpecification.isNotDeleted());
 
         // 조건에 맞는 데이터를 페이징 처리하여 가져오기
         Page<Restaurant> restaurantPage = restaurantRepository.findAll(spec, pageable);

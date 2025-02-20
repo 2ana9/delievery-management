@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.restaurant.repository;
 
+import com.ana29.deliverymanagement.restaurant.entity.Category;
 import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -34,5 +35,11 @@ public class RestaurantSpecification {
             }
             return criteriaBuilder.equal(root.get("legalCode"), legalCode);
         };
+    }
+
+    public static Specification<Restaurant> isNotDeleted() {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("isDeleted"),false);//삭제가 안된 값들만 조회되도록
+
     }
 }
