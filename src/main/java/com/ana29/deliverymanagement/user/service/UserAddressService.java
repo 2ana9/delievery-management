@@ -1,8 +1,5 @@
 package com.ana29.deliverymanagement.user.service;
 
-import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
-import com.ana29.deliverymanagement.order.dto.OrderSearchCondition;
-import com.ana29.deliverymanagement.order.exception.OrderForbiddenException;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.user.dto.*;
 import com.ana29.deliverymanagement.user.entity.User;
@@ -12,7 +9,6 @@ import com.ana29.deliverymanagement.user.exception.DuplicateAddressException;
 import com.ana29.deliverymanagement.user.exception.UserAddressForbiddenException;
 import com.ana29.deliverymanagement.user.exception.UserAddressNotFoundException;
 import com.ana29.deliverymanagement.user.repository.UserAddressRepository;
-import com.ana29.deliverymanagement.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

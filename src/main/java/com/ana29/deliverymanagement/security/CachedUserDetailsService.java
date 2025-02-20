@@ -19,7 +19,8 @@ public class CachedUserDetailsService implements UserDetailsService {
     @Override
     @Cacheable(value = "userDetailsCache", key = "#username")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return (UserDetails) userRepository.findById(username)
+        return  userRepository.findById(username)
+                .map(UserDetailsImpl::new)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
     }
 }
