@@ -11,6 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -23,18 +26,21 @@ public class DatabaseInitializer implements ApplicationRunner {
     private static final int MENUS_PER_RESTAURANT = 5; // 각 식당당 메뉴 개수
     @PersistenceContext
     private EntityManager entityManager;
-  
+
+    private static final String CSV_FILE_PATH = "src/main/resources/p_legal_district.csv";
+
     private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
         insertCategories();  // 🔹 카테고리 데이터 먼저 삽입
-        insertAreas();       // 외래 키 문제 방지: 먼저 지역 데이터 삽입
+        insertLegalDistricts();      // 법정동 코드 데이터 삽입
         insertUsers();       // 사용자 데이터 삽입
         insertRestaurants(); // 식당 데이터 삽입
         insertMenus();       // 메뉴 데이터 삽입
     }
+
     private void insertUsers() {
         for (int i = 2; i <= TOTAL_USERS; i++) {
             String phone = "010-" + (1000 + (int) (Math.random() * 9000)) + "-" + (1000 + (int) (Math.random() * 9000));
@@ -55,35 +61,6 @@ public class DatabaseInitializer implements ApplicationRunner {
                     .setParameter("phone", phone)
                     .setParameter("role", randomRole.name())  // 🔹 랜덤 권한 설정
                     .setParameter("createdBy", "user" + i)
-                    .executeUpdate();
-        }
-    }
-
-    private void insertAreas() {
-        for (int i = 1; i <= 5; i++) {
-            String city = switch (i) {
-                case 1 -> "서울특별시";
-                case 2 -> "부산광역시";
-                case 3 -> "대구광역시";
-                case 4 -> "인천광역시";
-                case 5 -> "광주광역시";
-                default -> "기타";
-            };
-
-            String district = (i % 2 == 0) ? "중구" : "서구"; // 예제용 랜덤 데이터
-            String town = "법정동 " + i;
-            String road = "도로명 " + i;
-
-            entityManager.createNativeQuery(
-                            "INSERT INTO p_area (area_id, city, district, town, road) " +
-                                    "SELECT :areaId, :city, :district, :town, :road " +
-                                    "WHERE NOT EXISTS (SELECT 1 FROM p_area WHERE area_id = :areaId)"
-                    )
-                    .setParameter("areaId", i)
-                    .setParameter("city", city)  // 🔹 올바른 컬럼명 적용
-                    .setParameter("district", district)
-                    .setParameter("town", town)
-                    .setParameter("road", road)
                     .executeUpdate();
         }
     }
@@ -119,20 +96,20 @@ public class DatabaseInitializer implements ApplicationRunner {
             UUID restaurantId = UUID.randomUUID(); // UUID 직접 생성
             String ownerId = "user" + (2 + (i % (TOTAL_USERS - 1))); // user2 ~ user(TOTAL_USERS) 중 랜덤 선택
             UUID categoryId = UUID.fromString("660e8400-e29b-41d4-a716-446655440003"); // UUID 타입으로 변환
-            int areaId = 1 + (i % 5); // 1~5 지역 랜덤 배정
+            String legalCode = "11110"; // 종로구 법정코드
             String name = "레스토랑 " + i;
             String content = "맛있는 음식을 제공하는 " + name;
             String operatingHours = "오전 10시 - 오후 10시";
 
             entityManager.createNativeQuery(
-                            "INSERT INTO p_restaurant (restaurant_id, name, owner_id, area_id, category_id, content, operating_hours, created_at, created_by, is_deleted) " +
-                                    "SELECT CAST(:restaurantId AS UUID), :name, :ownerId, :areaId, :categoryId, :content, :operatingHours, CURRENT_TIMESTAMP, 'admin', false " +
+                            "INSERT INTO p_restaurant (restaurant_id, name, owner_id, legal_code, category_id, content, operating_hours, created_at, created_by, is_deleted) " +
+                                    "SELECT CAST(:restaurantId AS UUID), :name, :ownerId, :legalCode, :categoryId, :content, :operatingHours, CURRENT_TIMESTAMP, 'admin', false " +
                                     "WHERE NOT EXISTS (SELECT 1 FROM p_restaurant WHERE restaurant_id = CAST(:restaurantId AS UUID))"
                     )
                     .setParameter("restaurantId", restaurantId) // UUID 객체 직접 전달
                     .setParameter("name", name)
                     .setParameter("ownerId", ownerId)
-                    .setParameter("areaId", areaId)
+                    .setParameter("legalCode", legalCode)
                     .setParameter("categoryId", categoryId)
                     .setParameter("content", content)
                     .setParameter("operatingHours", operatingHours)
@@ -169,4 +146,35 @@ public class DatabaseInitializer implements ApplicationRunner {
         }
     }
 
+    private void insertLegalDistricts() {
+        try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE_PATH))) {
+            String line;
+            boolean isFirstLine = true; // 헤더 스킵
+            while ((line = br.readLine()) != null) {
+                if (isFirstLine) {
+                    isFirstLine = false;
+                    continue;
+                }
+
+                String[] data = line.split(",");
+                if (data.length < 3) continue;
+
+                String legalCode = data[0].trim();
+                String city = data[1].trim();
+                String district = data[2].trim();
+
+                entityManager.createNativeQuery(
+                                "INSERT INTO p_legal_district (legal_code, city, district) " +
+                                        "SELECT :legalCode, :city, :district " +
+                                        "WHERE NOT EXISTS (SELECT 1 FROM p_legal_district WHERE legal_code = :legalCode)"
+                        )
+                        .setParameter("legalCode", legalCode)
+                        .setParameter("city", city)
+                        .setParameter("district", district)
+                        .executeUpdate();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

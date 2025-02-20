@@ -58,10 +58,8 @@ public class Restaurant extends Timestamped {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    //주소 외래키
-    @ManyToOne
-    @JoinColumn(name = "area_id", nullable = false)
-    private Area area;
+    //지역 코드 정보 저장
+    private String legalCode;
 
     public boolean isOwner (String userId){
         return userId.equals(ownerId);
