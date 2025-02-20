@@ -60,7 +60,7 @@ public class RestaurantController {
         return restaurantService.deleteRestaurant(id,userId);
     }
 
-    //search (삭제처리된 가게의경우 조회안되게 숨김처리)
+    //search
     @GetMapping("/search")
     public ResponseDto<List<Restaurant>> searchRestaurants(
             @RequestParam(required = false) String name,

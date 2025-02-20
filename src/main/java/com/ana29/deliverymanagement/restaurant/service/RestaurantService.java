@@ -89,7 +89,7 @@ public class RestaurantService {
     @Transactional
     public ResponseDto<List<Restaurant>> searchRestaurants(
             String name, UUID categoryId, Long areaId, Pageable pageable) {
-        //가게이름,음식카테고리,지역위치로 필터링 진행 (+ 페이징처리)
+        //가게이름,음식카테고리,지역위치로 필터링 진행 (+ 페이징처리 / 삭제처리된 가게의경우 숨김)
 
         // 동적 쿼리 조건 생성
         Specification<Restaurant> spec = Specification.where(RestaurantSpecification.hasName(name))
