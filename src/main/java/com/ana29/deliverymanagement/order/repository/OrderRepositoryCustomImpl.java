@@ -61,6 +61,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 		Long fetchedCount = queryFactory
 			.select(order.count())
 			.from(order)
+			.join(order.menu, menu)
+			.join(menu.restaurant, restaurant)
 			.where(
 				order.user.Id.eq(ownerId),
 				order.isDeleted.isFalse(),
