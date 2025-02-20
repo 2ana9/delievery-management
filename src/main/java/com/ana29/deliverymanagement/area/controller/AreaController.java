@@ -1,12 +1,15 @@
 package com.ana29.deliverymanagement.area.controller;
 
-import com.ana29.deliverymanagement.area.service.AreaService;
+import com.ana29.deliverymanagement.area.dto.AreaRequestDto;
+import com.ana29.deliverymanagement.area.service.AreaServiceFactory;
+import com.ana29.deliverymanagement.area.service.AreaServiceInterface;
+import com.ana29.deliverymanagement.area.service.ElasticSearchService;
+import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -16,19 +19,24 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AreaController {
 
-    private final AreaService areaService;
+    private final ElasticSearchService elasticSearchService;
+    private final AreaServiceFactory areaServiceFactory;
 
     @GetMapping("/search")
-    public ResponseEntity<Map<String, Object>> searchAreas(@RequestParam("search") String search,
-                                                           @RequestParam("page") int page,
-                                                            @RequestParam("size") int size) throws IOException {
-        Map<String, Object> result = areaService.searchArea(search, page, size);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<ResponseDto<Map<String, Object>>> elasticSearchAreas(@ModelAttribute AreaRequestDto requestDto, Pageable pageable) throws IOException {
+        String type = requestDto.type();
+
+        AreaServiceInterface areaService = areaServiceFactory.getService(type);
+
+        Map<String, Object> response = areaService.searchArea(requestDto, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto<>(HttpStatus.OK, response));
     }
 
     @GetMapping("/sync")
     public String syncData() {
-        areaService.syncDataToElasticsearch();
+        elasticSearchService.syncDataToElasticsearch();
         return "Data synced successfully!";
     }
 }

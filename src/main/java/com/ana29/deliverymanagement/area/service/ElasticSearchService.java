@@ -1,10 +1,10 @@
 package com.ana29.deliverymanagement.area.service;
 
+import com.ana29.deliverymanagement.area.dto.AreaRequestDto;
 import com.ana29.deliverymanagement.area.entity.Area;
 import com.ana29.deliverymanagement.area.entity.AreaDocument;
 import com.ana29.deliverymanagement.area.repository.AreaRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.aggregations.Aggregate;
@@ -17,50 +17,24 @@ import org.opensearch.client.opensearch.core.search.Hit;
 import org.opensearch.client.opensearch.indices.AnalyzeRequest;
 import org.opensearch.client.opensearch.indices.AnalyzeResponse;
 import org.opensearch.client.opensearch.indices.analyze.AnalyzeToken;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Slf4j
-@Service
+
+@Service("elasticsearch")
 @RequiredArgsConstructor
-public class AreaService {
-    private static final int BATCH_SIZE = 30_000;
-    private static final String INDEX_NAME = "area_index";
-    private static final String NORI_ANALYZER_NAME = "nori_analyzer";
-
-    private final AreaRepository areaRepository;
-    private final OpenSearchClient openSearchClient;
-//    private final AreaSearchRepository areaSearchRepository;
-
-    private static Map<String, Object> convertAreaDocumentToMap(Hit<AreaDocument> hit) {
-        Map<String, Object> docMap = new HashMap<>();
-        AreaDocument document = hit.source();
-
-        if (document != null) {
-            docMap.put("roadAddress", document.getRoadAddress());
-            docMap.put("jibunAddress", document.getJibunAddress());
-            // 필요하면 다른 필드도 추가가능
-        }
-
-        return docMap;
-    }
-
-    public static List<String> findNonZeroDocCountFields(SearchResponse<Void> response) {
-        Map<String, Aggregate> aggregations = response.aggregations();
-
-        return aggregations.entrySet().stream()
-                .filter(entry -> entry.getValue()._kind() == Aggregate.Kind.Filter) // FilterAggregate만 필터링
-                .map(entry -> new FieldCount(entry.getKey(), ((FilterAggregate) entry.getValue()._get()).docCount()))
-                .filter(fieldCount -> fieldCount.docCount > 0) // doc_count가 0보다 큰 것만 필터링
-                .map(fieldCount -> fieldCount.field) // 필드 이름 추출
-                .collect(Collectors.toList());
-    }
+public class ElasticSearchService implements AreaServiceInterface{
 
     //OpenSearch를 활용한 search 쿼리 생성
-    public Map<String, Object> searchArea(String search, int page, int size) throws IOException {
+    @Override
+    public Map<String, Object> searchArea(AreaRequestDto requestDto, Pageable pageable) throws IOException {
+
+        String search = requestDto.search();
+
         AnalyzeRequest analyzeRequest = AnalyzeRequest.of(a -> a
                 .index(INDEX_NAME)
                 .text(search)
@@ -144,8 +118,8 @@ public class AreaService {
         // 검색 요청 생성
         SearchRequest searchRequest = SearchRequest.of(s -> s
                 .index(INDEX_NAME)
-                .from(page)
-                .size(size)
+                .from(pageable.getPageNumber())
+                .size(pageable.getPageSize())
                 .query(q -> q.bool(b -> b.must(queries)))
         );
 
@@ -154,7 +128,7 @@ public class AreaService {
 
         // 검색 결과 목록 가져오기
         List<Map<String, Object>> documents = analyzeResponse2.hits().hits().stream()
-                .map(AreaService::convertAreaDocumentToMap)
+                .map(ElasticSearchService::convertAreaDocumentToMap)
                 .collect(Collectors.toList());
 
         Map<String, Object> response = new HashMap<>();
@@ -164,6 +138,38 @@ public class AreaService {
         response.put("documents", documents); // 변환된 문서 리스트
 
         return response;
+    }
+
+    private static final int BATCH_SIZE = 30_000;
+    private static final String INDEX_NAME = "area_index";
+    private static final String NORI_ANALYZER_NAME = "nori_analyzer";
+
+    private final AreaRepository areaRepository;
+    private final OpenSearchClient openSearchClient;
+//    private final AreaSearchRepository areaSearchRepository;
+
+    private static Map<String, Object> convertAreaDocumentToMap(Hit<AreaDocument> hit) {
+        Map<String, Object> docMap = new HashMap<>();
+        AreaDocument document = hit.source();
+
+        if (document != null) {
+            docMap.put("roadAddress", document.getRoadAddress());
+            docMap.put("jibunAddress", document.getJibunAddress());
+            // 필요하면 다른 필드도 추가가능
+        }
+
+        return docMap;
+    }
+
+    public List<String> findNonZeroDocCountFields(SearchResponse<Void> response) {
+        Map<String, Aggregate> aggregations = response.aggregations();
+
+        return aggregations.entrySet().stream()
+                .filter(entry -> entry.getValue()._kind() == Aggregate.Kind.Filter) // FilterAggregate만 필터링
+                .map(entry -> new FieldCount(entry.getKey(), ((FilterAggregate) entry.getValue()._get()).docCount()))
+                .filter(fieldCount -> fieldCount.docCount > 0) // doc_count가 0보다 큰 것만 필터링
+                .map(fieldCount -> fieldCount.field) // 필드 이름 추출
+                .collect(Collectors.toList());
     }
 
     public List<Query> search(String token, List<String> fields) throws IOException {

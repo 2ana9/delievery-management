@@ -10,6 +10,8 @@ import java.util.UUID;
 
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Entity
 @Getter
@@ -63,4 +65,10 @@ public class Area {
 
 	@Column(length = 10, nullable = false)
 	private String legalCode; // 5자리 법정동 코드 (예: 11110) 구단위로 필터링 하기 위해 5자리로 고정
+
+	@Column
+	private String roadAddress; // 지번 주소 (예: 서울특별시 종로구 청운동 50-6)
+
+	@Column
+	private String jibunAddress; // 도로명 주소 (예: 서울특별시 종로구 자하문로 115-14)
 }
