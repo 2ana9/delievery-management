@@ -1,7 +1,7 @@
 package com.ana29.deliverymanagement.security.config;
 
 
-import com.ana29.deliverymanagement.security.CachedUserDetailsService;
+import com.ana29.deliverymanagement.security.service.CachedUserDetailsService;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthenticationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthorizationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;

@@ -59,7 +59,7 @@ public class Userservice {
     }
 
     public List<UserInfoDto> getUserInfo(UserDetailsImpl userDetails, int page, int size, String sortBy, boolean isAsc) {
-        boolean isAdmin = (userDetails.getUser().getRole() == UserRoleEnum.MASTER || userDetails.getUser().getRole() == UserRoleEnum.MANAGER);
+        boolean isAdmin = (userDetails.getRole() == UserRoleEnum.MASTER || userDetails.getRole() == UserRoleEnum.MANAGER);
 
         List<UserInfoDto> userInfoDtoList = new ArrayList<>();
 
@@ -73,8 +73,8 @@ public class Userservice {
                     .collect(Collectors.toList());
         } else {
             // 일반 사용자는 자신의 정보만 반환
-            userInfoDtoList.add(new UserInfoDto(userDetails.getUser().getId(), userDetails.getUser().getNickname(),
-                    userDetails.getUser().getEmail(), userDetails.getUser().getPhone(), userDetails.getUser().getRole()));
+            userInfoDtoList.add(new UserInfoDto(userDetails.getUsername(), userDetails.getNickname(),
+                    userDetails.getEmail(), userDetails.getPhone(), userDetails.getRole()));
         }
 
         return userInfoDtoList;
@@ -87,7 +87,8 @@ public class Userservice {
         validateDuplicateValue(updateDto);
 
         // JWT로부터 현재 로그인한 사용자 엔티티 가져오기
-        User user = userDetails.getUser();
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow();
         // DB에 변경 사항 저장
         userRepository.save(user);
 
@@ -97,9 +98,10 @@ public class Userservice {
 
     @Transactional
     public void deleteUser(UserDetailsImpl userDetails) {
-        userRepository.delete(userDetails.getUser());
+        User user = userRepository.findById(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userDetails.getUsername()));
+        userRepository.delete(user);
     }
-
 
     private void validateDuplicateValue(SignupRequestDto requestDto){
         // 중복 체크: 한 번의 쿼리로 모든 필드를 동시에 확인

@@ -1,6 +1,6 @@
 package com.ana29.deliverymanagement.security.jwt;
 
-import com.ana29.deliverymanagement.security.CachedUserDetailsService;
+import com.ana29.deliverymanagement.security.service.CachedUserDetailsService;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.security.constant.jwt.JwtErrorMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +24,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j(topic = "JWT 검증 및 인가")
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -95,14 +99,23 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         Object cachedUserDetails = userDetailsService.loadUserByUsername(username);
         log.info("createAuthentication : " + cachedUserDetails.toString());
 
-        if (cachedUserDetails instanceof LinkedHashMap) {
+        if (cachedUserDetails instanceof LinkedHashMap<?, ?> map) {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule()); // ✅ LocalDateTime 지원
-            UserDetailsImpl userDetails = objectMapper.convertValue(cachedUserDetails, UserDetailsImpl.class);
+
+            // ✅ Redis에서 역직렬화된 데이터 → `UserDetailsImpl` 변환
+            UserDetailsImpl userDetails = objectMapper.convertValue(map, UserDetailsImpl.class);
+            // ✅ `String`으로 저장된 권한을 `SimpleGrantedAuthority`로 변환
+            List<GrantedAuthority> authorities = userDetails.getAuthorities().stream()
+                    .map(grantedAuthority -> new SimpleGrantedAuthority(grantedAuthority.getAuthority()))
+                    .collect(Collectors.toList());
+
+            userDetails.setAuthorities(authorities.stream().map(GrantedAuthority::getAuthority).toList());
             return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         }
 
         return new UsernamePasswordAuthenticationToken(cachedUserDetails, null, ((UserDetails) cachedUserDetails).getAuthorities());
     }
+
 
 }

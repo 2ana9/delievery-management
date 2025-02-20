@@ -3,8 +3,11 @@ package com.ana29.deliverymanagement.user.entity;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
 import com.ana29.deliverymanagement.user.controller.user.UserRoleEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.io.Serial;
 import java.util.*;
 import java.io.Serializable; // 직렬화 추가
 
@@ -16,7 +19,9 @@ import java.io.Serializable; // 직렬화 추가
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
 @Builder
 @Table(name = "p_users")
+@JsonIgnoreProperties(ignoreUnknown = true) // ✅ 정의되지 않은 필드는 무시하여 Jackson 역직렬화 오류 방지
 public class User extends Timestamped implements Serializable{
+    @Serial
     private static final long serialVersionUID = 1L;
     @Id
     @Column(length = 50, nullable = false)

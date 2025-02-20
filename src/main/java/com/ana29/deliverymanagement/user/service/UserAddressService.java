@@ -1,11 +1,8 @@
 package com.ana29.deliverymanagement.user.service;
 
-import com.ana29.deliverymanagement.order.exception.OrderForbiddenException;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.user.dto.CreateUserAddressRequestDto;
 import com.ana29.deliverymanagement.user.dto.CreateUserAddressResponseDto;
-import com.ana29.deliverymanagement.user.dto.UserInfoDto;
-import com.ana29.deliverymanagement.user.entity.User;
 import com.ana29.deliverymanagement.user.entity.UserAddress;
 import com.ana29.deliverymanagement.user.exception.DuplicateAddressException;
 import com.ana29.deliverymanagement.user.repository.UserAddressRepository;
@@ -13,7 +10,7 @@ import com.ana29.deliverymanagement.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,15 +18,17 @@ public class UserAddressService {
 
     private final UserAddressRepository userAddressRepository;
 
+    private final UserRepository userRepository;
+
     public CreateUserAddressResponseDto createUserAddress(CreateUserAddressRequestDto requestDto, UserDetailsImpl userDetails) {
         // 로그인한 유저 정보 가져오기
-        User user = userDetails.getUser();
+//        User user = userDetails.getUser();
 
         // 새 주소에서 공백 제거
         String normalizedAddress = removeWhitespace(requestDto.address());
 
         // 해당 유저의 기존 배송지 목록 조회
-        List<UserAddress> userAddressList = userAddressRepository.findByUser(user);
+        Optional<UserAddress> userAddressList = userAddressRepository.findById(userDetails.getUsername());
 
         // 기존 배송지와 공백 제거 후 비교하여 중복 체크
         boolean isDuplicate = userAddressList.stream()
@@ -42,9 +41,11 @@ public class UserAddressService {
 
         // 중복이 없으면 새로운 배송지 저장
         UserAddress userAddress = userAddressRepository.save(UserAddress.builder()
-                .user(user)
+                .user(userRepository.findById(userDetails.getUsername())
+                        .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userDetails.getUsername())))
                 .address(requestDto.address()) // 원본 주소 저장
                 .build());
+
 
         return new CreateUserAddressResponseDto(userAddress.getId(), userAddress.getAddress());
     }
