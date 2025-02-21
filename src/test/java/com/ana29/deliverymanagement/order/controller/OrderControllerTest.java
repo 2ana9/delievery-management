@@ -24,7 +24,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ana29.deliverymanagement.global.constant.OrderStatusEnum;
 import com.ana29.deliverymanagement.order.dto.CreateOrderRequestDto;
 import com.ana29.deliverymanagement.order.dto.OrderDetailResponseDto;
 import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
@@ -35,7 +34,6 @@ import com.ana29.deliverymanagement.security.config.WebSecurityConfig;
 import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,8 +46,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
@@ -60,7 +56,6 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.restdocs.request.QueryParametersSnippet;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -99,6 +94,7 @@ class OrderControllerTest {
 	public void setup(RestDocumentationContextProvider restDocumentation) {
 		mockMvc = MockMvcBuilders.webAppContextSetup(context)
 			.apply(documentationConfiguration(restDocumentation))
+			.defaultRequest(post("/").with(SecurityMockMvcRequestPostProcessors.csrf().asHeader()))
 			.apply(springSecurity())
 			.build();
 	}
@@ -119,7 +115,6 @@ class OrderControllerTest {
 		mockMvc.perform(post("/api/orders")
 				.header("Authorization", MOCK_JWT_TOKEN)
 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-				.with(SecurityMockMvcRequestPostProcessors.csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(requestDto)))
 			.andExpect(status().isCreated())
@@ -145,8 +140,7 @@ class OrderControllerTest {
 		// When & Then
 		mockMvc.perform(get("/api/orders/{id}", TEST_ORDER_ID)
 				.header("Authorization", MOCK_JWT_TOKEN)
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-				.with(SecurityMockMvcRequestPostProcessors.csrf()))
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails)))
 			.andExpect(status().isOk())
 			.andDo(document("order-detail",
 				preprocessRequest(prettyPrint()),
@@ -162,30 +156,28 @@ class OrderControllerTest {
 
 	@Test
 	@DisplayName("내 주문 내역 조회 API")
-	@WithMockUser(username = TEST_USERNAME)
 	void getOrderHistory() throws Exception {
 		// Given
 		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.CUSTOMER);
 		OrderSearchCondition condition = OrderDtoStub.createOrderSearchCondition();
 		Page<OrderHistoryResponseDto> pageResult = OrderDtoStub.createOrderHistoryPage();
 
-		when(orderService.getOrderHistory(any(OrderSearchCondition.class), any(Pageable.class), anyString()))
+		when(orderService.getOrderHistory(any(OrderSearchCondition.class), any(Pageable.class),
+			anyString()))
 			.thenReturn(pageResult);
 
 		// When & Then
-		mockMvc.perform(get("/api/orders/my")
-				.param("keyword", "치킨")
-				.param("statuses", OrderStatusEnum.PAID.name())
-				.param("startDate", LocalDate.now().minusDays(7).toString())
-				.param("endDate", LocalDate.now().toString())
-				.param("isAsc", "false")
-				.param("page", "0")
-				.param("size", "10")
-				.with(SecurityMockMvcRequestPostProcessors.csrf()))
+		mockMvc.perform(
+				OrderDtoStub.applyDefaultSearchParams(
+						get("/api/orders/my"))
+					.header("Authorization", MOCK_JWT_TOKEN)
+					.with(SecurityMockMvcRequestPostProcessors.user(userDetails)))
 			.andExpect(status().isOk())
 			.andDo(document("order-history-my",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("JWT 토큰")),
 				getQueryParametersSnippet(),
 				getMyOrderResponseSnippet()));
 	}
@@ -193,9 +185,11 @@ class OrderControllerTest {
 	private static ResponseFieldsSnippet getMyOrderResponseSnippet() {
 		return responseFields(
 			fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
+			fieldWithPath("status").type(JsonFieldType.STRING).description("응답 상태"),
 			fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
 			fieldWithPath("data.content[]").type(JsonFieldType.ARRAY).description("주문 목록"),
-			fieldWithPath("data.content[].orderId").type(JsonFieldType.STRING).description("주문 ID"),
+			fieldWithPath("data.content[].orderId").type(JsonFieldType.STRING).description("주문 "
+				+ "ID"),
 			fieldWithPath("data.content[].restaurantId").type(JsonFieldType.STRING)
 				.description("음식점 ID"),
 			fieldWithPath("data.content[].restaurantName").type(JsonFieldType.STRING)
@@ -216,7 +210,8 @@ class OrderControllerTest {
 				.description("정렬 적용 여부"),
 			fieldWithPath("data.pageable.sort.unsorted").type(JsonFieldType.BOOLEAN)
 				.description("정렬 미적용 여부"),
-			fieldWithPath("data.pageable.offset").type(JsonFieldType.NUMBER).description("페이지 오프셋"),
+			fieldWithPath("data.pageable.offset").type(JsonFieldType.NUMBER).description("페이지 "
+				+ "오프셋"),
 			fieldWithPath("data.pageable.pageNumber").type(JsonFieldType.NUMBER)
 				.description("페이지 번호"),
 			fieldWithPath("data.pageable.pageSize").type(JsonFieldType.NUMBER)
@@ -288,7 +283,8 @@ class OrderControllerTest {
 		Page<OrderHistoryResponseDto> pageResult = new PageImpl<>(
 			orders, PageRequest.of(0, 10), 1);
 
-		UserDetailsImpl userDetails = new UserDetailsImpl(User.builder().username(TEST_USERNAME).build());
+		UserDetailsImpl userDetails = new UserDetailsImpl(User.builder().username(TEST_USERNAME)
+		.build());
 
 		when(orderService.getRestaurantOrderHistory(
 			any(OrderSearchCondition.class),
@@ -326,35 +322,62 @@ class OrderControllerTest {
 					fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
 					fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
 					fieldWithPath("data.content[]").type(JsonFieldType.ARRAY).description("주문 목록"),
-					fieldWithPath("data.content[].orderId").type(JsonFieldType.STRING).description("주문 ID"),
-					fieldWithPath("data.content[].restaurantId").type(JsonFieldType.STRING).description("음식점 ID"),
-					fieldWithPath("data.content[].restaurantName").type(JsonFieldType.STRING).description("음식점 이름"),
-					fieldWithPath("data.content[].menuName").type(JsonFieldType.STRING).description("메뉴 이름"),
-					fieldWithPath("data.content[].orderStatus").type(JsonFieldType.STRING).description("주문 상태"),
-					fieldWithPath("data.content[].orderType").type(JsonFieldType.STRING).description("주문 타입"),
-					fieldWithPath("data.content[].createdAt").type(JsonFieldType.STRING).description("주문 생성 시간"),
-					fieldWithPath("data.pageable").type(JsonFieldType.OBJECT).description("페이지 정보"),
-					fieldWithPath("data.pageable.sort").type(JsonFieldType.OBJECT).description("정렬 정보"),
-					fieldWithPath("data.pageable.sort.empty").type(JsonFieldType.BOOLEAN).description("정렬이 비어있는지 여부"),
-					fieldWithPath("data.pageable.sort.sorted").type(JsonFieldType.BOOLEAN).description("정렬 적용 여부"),
-					fieldWithPath("data.pageable.sort.unsorted").type(JsonFieldType.BOOLEAN).description("정렬 미적용 여부"),
-					fieldWithPath("data.pageable.offset").type(JsonFieldType.NUMBER).description("페이지 오프셋"),
-					fieldWithPath("data.pageable.pageNumber").type(JsonFieldType.NUMBER).description("페이지 번호"),
-					fieldWithPath("data.pageable.pageSize").type(JsonFieldType.NUMBER).description("페이지 크기"),
-					fieldWithPath("data.pageable.paged").type(JsonFieldType.BOOLEAN).description("페이징 여부"),
-					fieldWithPath("data.pageable.unpaged").type(JsonFieldType.BOOLEAN).description("페이징 미적용 여부"),
-					fieldWithPath("data.last").type(JsonFieldType.BOOLEAN).description("마지막 페이지 여부"),
-					fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
-					fieldWithPath("data.totalElements").type(JsonFieldType.NUMBER).description("전체 요소 수"),
+					fieldWithPath("data.content[].orderId").type(JsonFieldType.STRING).description
+					("주문 ID"),
+					fieldWithPath("data.content[].restaurantId").type(JsonFieldType.STRING)
+					.description("음식점 ID"),
+					fieldWithPath("data.content[].restaurantName").type(JsonFieldType.STRING)
+					.description("음식점 이름"),
+					fieldWithPath("data.content[].menuName").type(JsonFieldType.STRING)
+					.description("메뉴 이름"),
+					fieldWithPath("data.content[].orderStatus").type(JsonFieldType.STRING)
+					.description("주문 상태"),
+					fieldWithPath("data.content[].orderType").type(JsonFieldType.STRING)
+					.description("주문 타입"),
+					fieldWithPath("data.content[].createdAt").type(JsonFieldType.STRING)
+					.description("주문 생성 시간"),
+					fieldWithPath("data.pageable").type(JsonFieldType.OBJECT).description("페이지
+					정보"),
+					fieldWithPath("data.pageable.sort").type(JsonFieldType.OBJECT).description("정렬
+					 정보"),
+					fieldWithPath("data.pageable.sort.empty").type(JsonFieldType.BOOLEAN)
+					.description("정렬이 비어있는지 여부"),
+					fieldWithPath("data.pageable.sort.sorted").type(JsonFieldType.BOOLEAN)
+					.description("정렬 적용 여부"),
+					fieldWithPath("data.pageable.sort.unsorted").type(JsonFieldType.BOOLEAN)
+					.description("정렬 미적용 여부"),
+					fieldWithPath("data.pageable.offset").type(JsonFieldType.NUMBER).description
+					("페이지 오프셋"),
+					fieldWithPath("data.pageable.pageNumber").type(JsonFieldType.NUMBER)
+					.description("페이지 번호"),
+					fieldWithPath("data.pageable.pageSize").type(JsonFieldType.NUMBER).description
+					("페이지 크기"),
+					fieldWithPath("data.pageable.paged").type(JsonFieldType.BOOLEAN).description
+					("페이징 여부"),
+					fieldWithPath("data.pageable.unpaged").type(JsonFieldType.BOOLEAN).description
+					("페이징 미적용 여부"),
+					fieldWithPath("data.last").type(JsonFieldType.BOOLEAN).description("마지막 페이지
+					여부"),
+					fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER).description("전체
+					페이지 수"),
+					fieldWithPath("data.totalElements").type(JsonFieldType.NUMBER).description("전체
+					 요소 수"),
 					fieldWithPath("data.size").type(JsonFieldType.NUMBER).description("페이지 크기"),
-					fieldWithPath("data.number").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
+					fieldWithPath("data.number").type(JsonFieldType.NUMBER).description("현재 페이지
+					번호"),
 					fieldWithPath("data.sort").type(JsonFieldType.OBJECT).description("정렬 정보"),
-					fieldWithPath("data.sort.empty").type(JsonFieldType.BOOLEAN).description("정렬이 비어있는지 여부"),
-					fieldWithPath("data.sort.sorted").type(JsonFieldType.BOOLEAN).description("정렬 적용 여부"),
-					fieldWithPath("data.sort.unsorted").type(JsonFieldType.BOOLEAN).description("정렬 미적용 여부"),
-					fieldWithPath("data.first").type(JsonFieldType.BOOLEAN).description("첫 페이지 여부"),
-					fieldWithPath("data.numberOfElements").type(JsonFieldType.NUMBER).description("현재 페이지 요소 수"),
-					fieldWithPath("data.empty").type(JsonFieldType.BOOLEAN).description("페이지가 비어있는지 여부")
+					fieldWithPath("data.sort.empty").type(JsonFieldType.BOOLEAN).description("정렬이
+					비어있는지 여부"),
+					fieldWithPath("data.sort.sorted").type(JsonFieldType.BOOLEAN).description("정렬
+					적용 여부"),
+					fieldWithPath("data.sort.unsorted").type(JsonFieldType.BOOLEAN).description
+					("정렬 미적용 여부"),
+					fieldWithPath("data.first").type(JsonFieldType.BOOLEAN).description("첫 페이지
+					여부"),
+					fieldWithPath("data.numberOfElements").type(JsonFieldType.NUMBER).description
+					("현재 페이지 요소 수"),
+					fieldWithPath("data.empty").type(JsonFieldType.BOOLEAN).description("페이지가
+					비어있는지 여부")
 				)));
 	}
 
@@ -412,9 +435,11 @@ class OrderControllerTest {
 			fieldWithPath("data.quantity").type(JsonFieldType.NUMBER).description("주문 수량"),
 			fieldWithPath("data.orderRequest").type(JsonFieldType.STRING).description("주문 요청사항"),
 			fieldWithPath("data.orderType").type(JsonFieldType.STRING).description("주문 타입"),
-			fieldWithPath("data.addressInfo.userAddressId").type(JsonFieldType.STRING).description("주소 ID"),
+			fieldWithPath("data.addressInfo.userAddressId").type(JsonFieldType.STRING)
+				.description("주소 ID"),
 			fieldWithPath("data.addressInfo.address").type(JsonFieldType.STRING).description("주소"),
-			fieldWithPath("data.addressInfo.detail").type(JsonFieldType.STRING).description("상세 주소"),
+			fieldWithPath("data.addressInfo.detail").type(JsonFieldType.STRING)
+				.description("상세 주소"),
 			fieldWithPath("data.orderedAt").type(JsonFieldType.STRING).description("주문 시간"),
 			fieldWithPath("data.restaurantId").type(JsonFieldType.STRING).description("음식점 ID"),
 			fieldWithPath("data.restaurantName").type(JsonFieldType.STRING).description("음식점 이름"),
@@ -423,7 +448,8 @@ class OrderControllerTest {
 			fieldWithPath("data.totalPrice").type(JsonFieldType.NUMBER).description("총 주문 금액"),
 			fieldWithPath("data.paymentStatus").type(JsonFieldType.STRING).description("결제 상태"),
 			fieldWithPath("data.paymentType").type(JsonFieldType.STRING).description("결제 방식"),
-			fieldWithPath("data.externalPaymentId").type(JsonFieldType.STRING).description("외부 결제 ID"),
+			fieldWithPath("data.externalPaymentId").type(JsonFieldType.STRING)
+				.description("외부 결제 ID"),
 			fieldWithPath("data.paidAt").type(JsonFieldType.STRING).description("결제 시간"),
 			fieldWithPath("data.createdBy").type(JsonFieldType.STRING).description("주문 생성자")
 		);
@@ -433,8 +459,10 @@ class OrderControllerTest {
 		List<FieldDescriptor> commonFields = getCommonOrderResponseSnippet();
 
 		List<FieldDescriptor> cancelFields = List.of(
-			fieldWithPath("data.orderStatus").type(JsonFieldType.STRING).description("주문 상태(CANCELLED)"),
-			fieldWithPath("data.paymentStatus").type(JsonFieldType.STRING).description("결제 상태(REFUNDED)"),
+			fieldWithPath("data.orderStatus").type(JsonFieldType.STRING)
+				.description("주문 상태(CANCELLED)"),
+			fieldWithPath("data.paymentStatus").type(JsonFieldType.STRING)
+				.description("결제 상태(REFUNDED)"),
 			fieldWithPath("data.refundedAt").type(JsonFieldType.STRING).description("환불 시간")
 		);
 

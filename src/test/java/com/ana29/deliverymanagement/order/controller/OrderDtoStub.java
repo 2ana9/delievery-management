@@ -16,13 +16,20 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 public class OrderDtoStub {
-	public static final UUID TEST_ORDER_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
-	public static final UUID TEST_MENU_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
-	public static final UUID TEST_RESTAURANT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440002");
-	public static final UUID TEST_USER_ADDRESS_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440003");
-	public static final UUID TEST_EXTERNAL_PAYMENT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440004");
+
+	public static final UUID TEST_ORDER_ID = UUID.fromString(
+		"550e8400-e29b-41d4-a716-446655440000");
+	public static final UUID TEST_MENU_ID = UUID.fromString("550e8400-e29b-41d4-a716"
+		+ "-446655440001");
+	public static final UUID TEST_RESTAURANT_ID = UUID.fromString(
+		"550e8400-e29b-41d4-a716-446655440002");
+	public static final UUID TEST_USER_ADDRESS_ID = UUID.fromString(
+		"550e8400-e29b-41d4-a716-446655440003");
+	public static final UUID TEST_EXTERNAL_PAYMENT_ID = UUID.fromString(
+		"550e8400-e29b-41d4-a716-446655440004");
 
 	public static CreateOrderRequestDto getOrderDetailsResponseDtoStub() {
 		return new CreateOrderRequestDto(
@@ -113,6 +120,18 @@ public class OrderDtoStub {
 			LocalDate.now(),
 			false
 		);
+	}
+
+	public static MockHttpServletRequestBuilder applyDefaultSearchParams(
+		MockHttpServletRequestBuilder request) {
+		return request
+			.param("keyword", "치킨")
+			.param("statuses", "PAID")
+			.param("startDate", "2025-02-14")
+			.param("endDate", "2025-02-21")
+			.param("isAsc", "false")
+			.param("page", "0")
+			.param("size", "10");
 	}
 
 }
