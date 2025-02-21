@@ -9,6 +9,7 @@ import com.ana29.deliverymanagement.order.dto.OrderSearchCondition;
 import com.ana29.deliverymanagement.order.entity.Order;
 import com.ana29.deliverymanagement.order.entity.QOrder;
 import com.ana29.deliverymanagement.user.entity.QUser;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -43,7 +44,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 				menu.name,
 				order.orderStatus,
 				order.orderType,
-				order.createdAt))
+				order.createdAt,
+				order.updatedAt))
 			.from(order)
 			.join(order.menu, menu)
 			.join(menu.restaurant, restaurant)
@@ -54,7 +56,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 				keywordContains(condition.keyword()),
 				statusIn(condition.statuses()),
 				createdAtBetween(condition.startDate(), condition.endDate()))
-			.orderBy(condition.isAsc() ? order.createdAt.asc() : order.createdAt.desc())
+			.orderBy(getOrderSpecifier(condition))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
@@ -91,7 +93,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 				menu.name,
 				order.orderStatus,
 				order.orderType,
-				order.createdAt))
+				order.createdAt,
+				order.updatedAt))
 			.from(order)
 			.join(order.menu, menu)
 			.join(menu.restaurant, restaurant)
@@ -102,7 +105,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 				keywordContains(condition.keyword()),
 				statusIn(condition.statuses()),
 				createdAtBetween(condition.startDate(), condition.endDate()))
-			.orderBy(condition.isAsc() ? order.createdAt.asc() : order.createdAt.desc())
+			.orderBy(getOrderSpecifier(condition))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
@@ -170,5 +173,12 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
 		return order.createdAt.between(startDate.atTime(0, 0, 0),
 			endDate.atTime(23, 59, 59));
+	}
+
+	private OrderSpecifier<?> getOrderSpecifier(OrderSearchCondition condition) {
+		if ("updatedAt".equals(condition.sortBy())) {
+			return condition.isAsc() ? order.updatedAt.asc() : order.updatedAt.desc();
+		}
+		return condition.isAsc() ? order.createdAt.asc() : order.createdAt.desc();
 	}
 }

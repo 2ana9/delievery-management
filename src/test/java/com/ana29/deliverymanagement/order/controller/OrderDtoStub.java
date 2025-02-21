@@ -57,6 +57,7 @@ public class OrderDtoStub {
 			.orderType(OrderTypeEnum.ONLINE)
 			.addressInfo(addressInfo)
 			.orderedAt(LocalDateTime.now())
+			.updatedAt(LocalDateTime.now())
 			.restaurantId(TEST_RESTAURANT_ID)
 			.restaurantName("맛있는 치킨")
 			.menuName("후라이드 치킨")
@@ -79,6 +80,7 @@ public class OrderDtoStub {
 			"후라이드 치킨",
 			OrderStatusEnum.PENDING,
 			OrderTypeEnum.ONLINE,
+			LocalDateTime.now(),
 			LocalDateTime.now()
 		);
 	}
@@ -93,6 +95,7 @@ public class OrderDtoStub {
 			.orderType(baseDto.orderType())
 			.addressInfo(baseDto.addressInfo())
 			.orderedAt(baseDto.orderedAt())
+			.updatedAt(baseDto.updatedAt())
 			.restaurantId(baseDto.restaurantId())
 			.restaurantName(baseDto.restaurantName())
 			.menuName(baseDto.menuName())
@@ -118,7 +121,8 @@ public class OrderDtoStub {
 			List.of(OrderStatusEnum.PAID),
 			LocalDate.now().minusDays(7),
 			LocalDate.now(),
-			false
+			false,
+			null
 		);
 	}
 
