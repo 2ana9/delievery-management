@@ -1,20 +1,42 @@
 package com.ana29.deliverymanagement.restaurant;
 
 import com.ana29.deliverymanagement.restaurant.service.CategoryService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.restdocs.payload.RequestFieldsSnippet;
+import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs
+@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 class CategoryControllerTest {
 
     @Autowired
@@ -22,6 +44,18 @@ class CategoryControllerTest {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private WebApplicationContext context;
+
+    @BeforeEach
+    public void setup(RestDocumentationContextProvider restDocumentation) {
+        mockMvc = MockMvcBuilders.webAppContextSetup(context)
+                .apply(documentationConfiguration(restDocumentation))
+                .defaultRequest(post("/").with(SecurityMockMvcRequestPostProcessors.csrf().asHeader()))
+                .apply(springSecurity())
+                .build();
+    }
 
     private static final String CATEGORY_ID = "660e8400-e29b-41d4-a716-446655440003";
 
@@ -63,7 +97,13 @@ class CategoryControllerTest {
 
                     )
                     .andExpect(status().isOk())// 공통 response여서 200확인
-                    .andExpect(jsonPath("$.data.foodType").value("간식")); //생성값과 비교
+                    .andExpect(jsonPath("$.data.foodType").value("간식"))
+                    .andDo(document("category-create",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            requestHeaders(
+                                    headerWithName("Authorization").description("JWT 토큰")),
+                            getResponseFieldsSnippet()));
         }else{
             System.out.println("JWT Token is missing or empty.");
         }
@@ -122,5 +162,26 @@ class CategoryControllerTest {
             System.out.println("JWT Token is missing or empty.");
         }
     }
+
+    private ResponseFieldsSnippet getResponseFieldsSnippet() {
+        return responseFields(
+                fieldWithPath("code").description("The response code"),
+                fieldWithPath("status").description("The response status"),
+                fieldWithPath("message").description("A message describing the response"),
+                fieldWithPath("data").description("The data object containing category information"),
+                fieldWithPath("data.id").type(JsonFieldType.STRING).description("음식 카테고리 ID"),
+                fieldWithPath("data.foodType").type(JsonFieldType.STRING).description("카테고리 이름"),
+                fieldWithPath("data.deleted").type(JsonFieldType.BOOLEAN).description("삭제 여부")
+                .optional(),
+                fieldWithPath("data.createdAt").description("The creation date and time of the category"),
+                fieldWithPath("data.createdBy").description("The creator of the category"),
+                fieldWithPath("data.updatedAt").description("The last update date and time"),
+                fieldWithPath("data.updatedBy").description("The last person who updated the category"),
+                fieldWithPath("data.deletedAt").description("The deletion date and time (if any)"),
+                fieldWithPath("data.deletedBy").description("The person who deleted the category (if any)")
+        );
+    }
+
+
 
 }
