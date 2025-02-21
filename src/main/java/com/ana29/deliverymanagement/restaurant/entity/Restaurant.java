@@ -1,9 +1,7 @@
 package com.ana29.deliverymanagement.restaurant.entity;
 
-import com.ana29.deliverymanagement.area.entity.Area;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;

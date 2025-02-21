@@ -1,12 +1,11 @@
 package com.ana29.deliverymanagement.restaurant.controller;
 
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
-import com.ana29.deliverymanagement.restaurant.entity.Category;
-import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
-import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.restaurant.dto.CategoryRequestDto;
-import com.ana29.deliverymanagement.security.UserDetailsImpl;
+import com.ana29.deliverymanagement.restaurant.entity.Category;
 import com.ana29.deliverymanagement.restaurant.service.CategoryService;
+import com.ana29.deliverymanagement.security.UserDetailsImpl;
+import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

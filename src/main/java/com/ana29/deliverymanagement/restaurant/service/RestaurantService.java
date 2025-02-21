@@ -1,6 +1,5 @@
 package com.ana29.deliverymanagement.restaurant.service;
 
-import com.ana29.deliverymanagement.area.entity.Area;
 import com.ana29.deliverymanagement.area.repository.AreaRepository;
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
@@ -8,7 +7,6 @@ import com.ana29.deliverymanagement.restaurant.dto.RestaurantWithRatingDto;
 import com.ana29.deliverymanagement.restaurant.entity.Category;
 import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import com.ana29.deliverymanagement.restaurant.repository.CategoryRepository;
-import com.ana29.deliverymanagement.restaurant.repository.CategorySpecification;
 import com.ana29.deliverymanagement.restaurant.repository.RestaurantRepository;
 import com.ana29.deliverymanagement.restaurant.repository.RestaurantSpecification;
 import lombok.RequiredArgsConstructor;

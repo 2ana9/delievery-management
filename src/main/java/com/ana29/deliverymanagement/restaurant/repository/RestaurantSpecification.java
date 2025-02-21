@@ -1,6 +1,5 @@
 package com.ana29.deliverymanagement.restaurant.repository;
 
-import com.ana29.deliverymanagement.restaurant.entity.Category;
 import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import org.springframework.data.jpa.domain.Specification;
 

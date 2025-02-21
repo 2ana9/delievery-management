@@ -1,7 +1,5 @@
 package com.ana29.deliverymanagement.restaurant.dto;
 
-import com.ana29.deliverymanagement.area.entity.Area;
-import com.ana29.deliverymanagement.restaurant.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

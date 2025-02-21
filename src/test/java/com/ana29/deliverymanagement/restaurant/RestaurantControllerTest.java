@@ -1,6 +1,5 @@
 package com.ana29.deliverymanagement.restaurant;
 
-import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import com.ana29.deliverymanagement.restaurant.service.RestaurantService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
