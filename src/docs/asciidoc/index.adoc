@@ -51,6 +51,9 @@ include::{snippets}/order-history-my/http-request.adoc[]
 .request-header
 include::{snippets}/order-history-my/request-headers.adoc[]
 
+.query-parameters
+include::{snippets}/order-history-my/query-parameters.adoc[]
+
 .http-response
 include::{snippets}/order-history-my/http-response.adoc[]
 
