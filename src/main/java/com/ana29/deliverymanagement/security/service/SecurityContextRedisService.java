@@ -1,6 +1,7 @@
 package com.ana29.deliverymanagement.security.service;
 
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
+import com.ana29.deliverymanagement.security.constant.redis.RedisConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +21,6 @@ public class SecurityContextRedisService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper; // 🔹 CacheConfig에서 주입받음
 
-    private static final String SECURITY_CONTEXT_KEY_PREFIX = "SECURITY_CONTEXT:";
-    private static final long EXPIRATION_TIME = 60; // 만료 시간 (분 단위)
-
     /**
      * 🔹 SecurityContext의 UserDetails를 Redis에 저장
      */
@@ -33,10 +31,11 @@ public class SecurityContextRedisService {
             return;
         }
 
-        String key = SECURITY_CONTEXT_KEY_PREFIX + userDetails.getUsername();
+        String key = RedisConfig.SECURITY_CONTEXT_KEY_PREFIX.getGetRedisConfig() + userDetails.getUsername();
         try {
             // ✅ Redis에 UserDetails 객체를 JSON으로 저장
-            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(userDetails), EXPIRATION_TIME, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(userDetails),
+                    Long.parseLong(RedisConfig.EXPIRATION_TIME.getGetRedisConfig()), TimeUnit.MINUTES);
             log.info("✅ UserDetails가 Redis에 저장되었습니다: {}", key);
         } catch (Exception e) {
             log.error("❌ UserDetails 저장 중 오류 발생", e);
@@ -47,7 +46,7 @@ public class SecurityContextRedisService {
      * 🔹 Redis에서 UserDetails 불러오기
      */
     public UserDetails loadUserDetailsFromRedis(String username) {
-        String key = SECURITY_CONTEXT_KEY_PREFIX + username;
+        String key = RedisConfig.SECURITY_CONTEXT_KEY_PREFIX.getGetRedisConfig() + username;
         String userDetailsJson = (String) redisTemplate.opsForValue().get(key);
 
         if (userDetailsJson == null) {
@@ -68,7 +67,7 @@ public class SecurityContextRedisService {
      * 🔹 Redis에서 SecurityContext 삭제 (로그아웃 시 사용)
      */
     public void removeUserDetailsFromRedis(String username) {
-        String key = SECURITY_CONTEXT_KEY_PREFIX + username;
+        String key = RedisConfig.SECURITY_CONTEXT_KEY_PREFIX.getGetRedisConfig() + username;
         redisTemplate.delete(key);
         log.info("✅ Redis에서 UserDetails가 삭제되었습니다. username: {}", username);
     }

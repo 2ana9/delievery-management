@@ -99,8 +99,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 .stream()
                 .map(auth -> new SimpleGrantedAuthority(auth.getAuthority()))
                 .collect(Collectors.toList());
-        log.info("LinkedHashMap 테스트 3");
-        log.info(authorities.toString());
         return new UsernamePasswordAuthenticationToken(cachedUserDetails, null, authorities);
 
     }
