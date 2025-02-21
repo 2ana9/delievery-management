@@ -48,7 +48,7 @@ public class CategoryService {
         return ResponseDto.success(category);
     }
 
-    //음식 카테고리 전체조회(삭제 카테고리 숨김처리 완료!)
+    //음식 카테고리 전체조회
     @Transactional(readOnly = true)
     public ResponseDto<Page<Category>> getAllCategories(Pageable pageable) {
         Page<Category> category = categoryRepository.findByIsDeletedFalse(pageable);
@@ -56,7 +56,7 @@ public class CategoryService {
         return ResponseDto.success(category);
     };
 
-    //음식 카테고리 id로 조회
+    //음식 카테고리 search
     @Transactional
     public ResponseDto<List<Category>> searchCategories(UUID id, String foodType, Pageable pageable) {
         Specification<Category> spec = Specification.where(CategorySpecification.hasId(id)

@@ -40,12 +40,23 @@ public class Restaurant extends Timestamped {
     private boolean isDeleted =false;
 
     public void update(RestaurantRequestDto restaurantRequestDto) {
-        this.name = restaurantRequestDto.getName();
-        this.content = restaurantRequestDto.getContent();
-        this.ownerId = restaurantRequestDto.getOwnerId();
-        this.operatingHours = restaurantRequestDto.getOperatingHours();
-        this.isDeleted = restaurantRequestDto.isDeleted();
+        if (restaurantRequestDto.getName() != null) {
+            this.name = restaurantRequestDto.getName();
+        }
+        if (restaurantRequestDto.getContent() != null) {
+            this.content = restaurantRequestDto.getContent();
+        }
+        if (restaurantRequestDto.getOwnerId() != null) {
+            this.ownerId = restaurantRequestDto.getOwnerId();
+        }
+        if (restaurantRequestDto.getOperatingHours() != null) {
+            this.operatingHours = restaurantRequestDto.getOperatingHours();
+        }
+        if (restaurantRequestDto.isDeleted() != this.isDeleted) {
+            this.isDeleted = restaurantRequestDto.isDeleted();
+        }
     }
+
 
     // 명시적으로 Setter 메서드 추가
     public void setIsDeleted(boolean isDeleted) {
