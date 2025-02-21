@@ -5,6 +5,6 @@
 |{{#tableCellContent}}`+{{path}}+`{{/tableCellContent}}
 |{{#tableCellContent}}`+{{type}}+`{{/tableCellContent}}
 |{{#tableCellContent}}{{description}}{{/tableCellContent}}
-	|{{^optional}}true{{/optional}}
+	|{{#optional}}false{{/optional}}{{^optional}}true{{/optional}}
 {{/fields}}
 |===
