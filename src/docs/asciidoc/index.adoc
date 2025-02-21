@@ -1,0 +1,44 @@
+= 주문 관리 플랫폼
+:toc: left
+:toclevels: 3
+v1.0.0
+
+***
+API 문서 개요
+
+ 이 문서를 통해 주문 관리 플랫폼의 API 사용법을 알 수 있습니다.
+
+***
+== 주문
+
+=== 주문 생성
+
+.http-request
+include::{snippets}/order-create/http-request.adoc[]
+
+.request-header
+include::{snippets}/order-create/request-headers.adoc[]
+
+.request-field
+include::{snippets}/order-create/request-fields.adoc[]
+
+.http-response
+include::{snippets}/order-create/http-response.adoc[]
+
+.response-field
+include::{snippets}/order-create/response-fields.adoc[]
+
+=== 주문 상세조회
+
+.http-request
+include::{snippets}/order-detail/http-request.adoc[]
+
+.request-header
+include::{snippets}/order-detail/request-headers.adoc[]
+
+.http-response
+include::{snippets}/order-detail/http-response.adoc[]
+
+.response-field
+include::{snippets}/order-detail/response-fields.adoc[]
+
