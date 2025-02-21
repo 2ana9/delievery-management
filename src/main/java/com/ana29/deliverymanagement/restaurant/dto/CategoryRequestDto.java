@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.restaurant.dto;
 
+import com.ana29.deliverymanagement.restaurant.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,4 +13,5 @@ import lombok.Setter;
 public class CategoryRequestDto {
     private String foodType;
     private boolean isDeleted; //삭제진행시 사용
+
 }
