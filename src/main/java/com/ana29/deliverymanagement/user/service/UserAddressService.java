@@ -9,14 +9,15 @@ import com.ana29.deliverymanagement.user.exception.DuplicateAddressException;
 import com.ana29.deliverymanagement.user.exception.UserAddressForbiddenException;
 import com.ana29.deliverymanagement.user.exception.UserAddressNotFoundException;
 import com.ana29.deliverymanagement.user.repository.UserAddressRepository;
+import com.ana29.deliverymanagement.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,10 +25,12 @@ import java.util.UUID;
 public class UserAddressService {
 
     private final UserAddressRepository userAddressRepository;
+    private final UserRepository userRepository;
 
     public CreateUserAddressResponseDto createUserAddress(CreateUserAddressRequestDto requestDto, UserDetailsImpl userDetails) {
         // 로그인한 유저 정보 가져오기
-        User user = userDetails.getUser();
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userDetails.getId()));
 
         // 새 주소에서 공백 제거
         String normalizedAddress = removeWhitespace(requestDto.address());
@@ -71,7 +74,8 @@ public class UserAddressService {
 
     public UpdateUserAddressResponseDto updateUserAddresses(UUID id, UpdateUserAddressRequestDto requestDto, UserDetailsImpl userDetails) {
         // 로그인한 유저 정보 가져오기
-        User user = userDetails.getUser();
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userDetails.getId()));
 
         // 전달 받은 id로 배송지 정보가 있는지 체크
         UserAddress findUserAddress = userAddressRepository.findById(id).orElseThrow(UserAddressNotFoundException::new);
@@ -94,7 +98,8 @@ public class UserAddressService {
 
     public DeleteUserAddressResponseDto deleteUserAddresses(UUID id, UserDetailsImpl userDetails) {
         // 로그인한 유저 정보 가져오기
-        User user = userDetails.getUser();
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userDetails.getId()));
 
         // 전달 받은 id로 배송지 정보가 있는지 체크
         UserAddress findUserAddress = userAddressRepository.findById(id).orElseThrow(UserAddressNotFoundException::new);

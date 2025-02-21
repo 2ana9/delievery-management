@@ -89,7 +89,7 @@ public class UserController {
     @PatchMapping("/me")
     @ResponseBody
     public UserInfoDto modifyUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                            @RequestBody @Valid UpdateRequestDto updateDto){
+                                      @RequestBody @Valid UpdateRequestDto updateDto){
         return userService.modifyUserInfo(userDetails, updateDto);
     }
 

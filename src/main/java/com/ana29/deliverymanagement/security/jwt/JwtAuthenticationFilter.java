@@ -2,7 +2,7 @@ package com.ana29.deliverymanagement.security.jwt;
 
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.security.constant.jwt.JwtConfigEnum;
-import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.user.dto.SigninRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -35,6 +35,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         setFilterProcessesUrl("/api/users/sign-in");
     }
 
+//    UsernamePasswordAuthenticationFilter의 동작 방식
+//    UsernamePasswordAuthenticationFilter는 **"로그인 요청을 처리하는 필터"**입니다.
+//            securityFilterChain에서 /api/users/sign-in 경로에 매핑된 필터이기 때문에, 로그인 요청이 아닌 다른 요청은 이 필터를 타지 않습니다.
+//            따라서, 다른 GET 요청(/api/something-else)은 영향받지 않습니다.
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         // POST 방식일때만 동작
@@ -48,8 +53,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
                             requestDto.getId(),
-                            requestDto.getPassword(),
-                            null
+                            requestDto.getPassword()
                     )
             );
         }
@@ -84,7 +88,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
-        UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
+        UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getRole();
 
         String token = jwtUtil.createToken(username, role);
         response.addHeader(JwtConfigEnum.AUTHORIZATION_HEADER.getGetJwtConfig(), token);

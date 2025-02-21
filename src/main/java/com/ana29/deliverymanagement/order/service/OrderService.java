@@ -2,13 +2,7 @@ package com.ana29.deliverymanagement.order.service;
 
 import com.ana29.deliverymanagement.global.constant.OrderTypeEnum;
 import com.ana29.deliverymanagement.global.constant.PaymentTypeEnum;
-import com.ana29.deliverymanagement.order.dto.CreateOrderRequestDto;
-import com.ana29.deliverymanagement.order.dto.OrderDetailResponseDto;
-import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
-import com.ana29.deliverymanagement.order.dto.OrderSearchCondition;
-import com.ana29.deliverymanagement.order.dto.PaymentRequestDto;
-import com.ana29.deliverymanagement.order.dto.PaymentResultDto;
-import com.ana29.deliverymanagement.order.dto.RefundRequestDto;
+import com.ana29.deliverymanagement.order.dto.*;
 import com.ana29.deliverymanagement.order.entity.Order;
 import com.ana29.deliverymanagement.order.entity.Payment;
 import com.ana29.deliverymanagement.order.exception.MissingUserAddressException;
@@ -25,17 +19,18 @@ import com.ana29.deliverymanagement.restaurant.exception.RestaurantNotFoundExcep
 import com.ana29.deliverymanagement.restaurant.repository.MenuRepository;
 import com.ana29.deliverymanagement.restaurant.repository.RestaurantRepository;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
-import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.user.entity.UserAddress;
 import com.ana29.deliverymanagement.user.exception.UserAddressNotFoundException;
 import com.ana29.deliverymanagement.user.repository.UserAddressRepository;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -124,7 +119,7 @@ public class OrderService {
 	}
 
 	private boolean isAdmin(UserDetailsImpl userDetails) {
-		UserRoleEnum role = userDetails.getUser().getRole();
+		UserRoleEnum role = userDetails.getRole();
 		return role.equals(UserRoleEnum.MANAGER) || role.equals(UserRoleEnum.MASTER);
 	}
 
