@@ -1,7 +1,7 @@
 package com.ana29.deliverymanagement.security.jwt;
 
-import com.ana29.deliverymanagement.security.CachedUserDetailsService;
 import com.ana29.deliverymanagement.security.constant.jwt.JwtErrorMessage;
+import com.ana29.deliverymanagement.security.service.CachedUserDetailsService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,13 +11,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j(topic = "JWT 검증 및 인가")
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -48,16 +51,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String token = jwtUtil.getJwtFromHeader(request);
-        //토큰 블랙리스트 검증
+
         if (token != null && !token.isEmpty()) {
+            // ✅ 토큰 블랙리스트 검증
             if (TokenBlacklist.isTokenBlacklisted(token)) {
                 log.info("BLACKLIST VALID");
-                log.info("BLACKLIST INfO : " + TokenBlacklist.getBlacklistedTokens().toString());
+                log.info("BLACKLIST INfO : " + TokenBlacklist.getBlacklistedTokens());
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 return;
             }
-        }
-        if (StringUtils.hasText(token)) {
 
             if (!jwtUtil.validateToken(token)) {
                 log.error(JwtErrorMessage.Error.getGetJwtErrorMessage());
@@ -65,30 +67,43 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
 
             Claims info = jwtUtil.getUserInfoFromToken(token);
+            log.info("Claims info: " + info);
+            setAuthentication(info);
 
-            try {
-                setAuthentication(info.getSubject());
-            } catch (Exception e) {
-                log.error(e.getMessage());
-                return;
-            }
         }
 
         filterChain.doFilter(request, response);
     }
 
-    // 인증 처리
-    public void setAuthentication(String username) {
+    // ✅ 인증 처리 (Claims 정보 기반)
+    public void setAuthentication(Claims claims) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
+
+        // ✅ Claims에서 사용자 정보 가져오기
+        String username = claims.getSubject();
+
         Authentication authentication = createAuthentication(username);
         context.setAuthentication(authentication);
 
         SecurityContextHolder.setContext(context);
     }
 
+
     // 인증 객체 생성
     private Authentication createAuthentication(String username) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        UserDetails cachedUserDetails = userDetailsService.loadUserByUsername(username);
+        log.info("createAuthentication : " + cachedUserDetails.toString());
+
+        // ✅ `String`으로 저장된 권한을 `SimpleGrantedAuthority`로 변환
+        List<GrantedAuthority> authorities = cachedUserDetails.getAuthorities()
+                .stream()
+                .map(auth -> new SimpleGrantedAuthority(auth.getAuthority()))
+                .collect(Collectors.toList());
+        log.info("LinkedHashMap 테스트 3");
+        log.info(authorities.toString());
+        return new UsernamePasswordAuthenticationToken(cachedUserDetails, null, authorities);
+
     }
+
+
 }

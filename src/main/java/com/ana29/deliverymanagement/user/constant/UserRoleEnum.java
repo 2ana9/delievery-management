@@ -1,4 +1,4 @@
-package com.ana29.deliverymanagement.user.constant.user;
+package com.ana29.deliverymanagement.user.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

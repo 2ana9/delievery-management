@@ -1,8 +1,10 @@
 package com.ana29.deliverymanagement.review.entity;
 
 import com.ana29.deliverymanagement.order.entity.Order;
+import com.ana29.deliverymanagement.restaurant.entity.Menu;
 import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
+import com.ana29.deliverymanagement.review.dto.CreateReviewRequestDto;
 import com.ana29.deliverymanagement.review.dto.ReviewRequestDto;
 import com.ana29.deliverymanagement.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,6 +27,14 @@ public class Review extends Timestamped {
 	@Column(name = "review_id", columnDefinition = "uuid")
 	private UUID id;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_id", nullable = false)
+	private Order order;
+
 	@Column(length = 100, nullable = false)
 	private String title;
 
@@ -34,25 +44,29 @@ public class Review extends Timestamped {
 	@Column(nullable = false, columnDefinition = "integer check (rating between 1 and 5)")
 	private Integer rating;
 
-	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
+	@Column(nullable = false)
+	@Builder.Default
+	private boolean isDeleted = false;
 
-	@JsonIgnore
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "order_id", nullable = false)
-	private Order order;
-
-	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "restaurant_id", nullable = false)
-	private Restaurant restaurant;
+	public static Review of(User user, Order order, CreateReviewRequestDto requestDto) {
+		return Review.builder()
+				.user(user)
+				.order(order)
+				.title(requestDto.title())
+				.content(requestDto.content())
+				.rating(requestDto.rating())
+				.build();
+	}
 
 	// 기존 엔티티 값을 업데이트하는 메서드
 	public void updateReview(String title, String content, Integer rating) {
 		this.title = title;
 		this.content = content;
 		this.rating = rating;
+	}
+
+	public void delete(String deletedBy){
+		super.delete(deletedBy);
+		this.isDeleted = true;
 	}
 }

@@ -6,7 +6,7 @@ import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantWithRatingDto;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.restaurant.service.RestaurantService;
-import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +30,7 @@ public class RestaurantController {
     @PostMapping
     public ResponseDto<Restaurant> createRestaurant(@RequestBody RestaurantRequestDto requestDto,
                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
-        UserRoleEnum userRole = userDetails.getUser().getRole();
+        UserRoleEnum userRole = userDetails.getRole();
         if (userRole != UserRoleEnum.MASTER && userRole != UserRoleEnum.MANAGER) {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
@@ -45,7 +45,7 @@ public class RestaurantController {
         //수정은 관리자도 가능하고 가게사장도 가능하게 구현
 
         checkUserAccess(userDetails);
-        String userId = userDetails.getUser().getId();
+        String userId = userDetails.getId();
         return restaurantService.updateRestaurant(id, requestDto, userId);
     };
 
@@ -56,7 +56,7 @@ public class RestaurantController {
                      @AuthenticationPrincipal UserDetailsImpl userDetails)
             throws AccessDeniedException{
         checkUserAccess(userDetails);
-        String userId = userDetails.getUser().getId();
+        String userId = userDetails.getId();
         return restaurantService.deleteRestaurant(id,userId);
     }
 
@@ -97,7 +97,7 @@ public class RestaurantController {
 
     //사용자의 권한확인 메소드
     public void checkUserAccess(UserDetailsImpl userDetails) throws AccessDeniedException {
-        UserRoleEnum userRole = userDetails.getUser().getRole();
+        UserRoleEnum userRole = userDetails.getRole();
         if (userRole != UserRoleEnum.MASTER && userRole != UserRoleEnum.OWNER) {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
