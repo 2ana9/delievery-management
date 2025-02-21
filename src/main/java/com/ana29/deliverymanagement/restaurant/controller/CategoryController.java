@@ -42,7 +42,7 @@ public class CategoryController {
                                                 @AuthenticationPrincipal UserDetailsImpl userDetails)throws AccessDeniedException {
         checkUserAccess(userDetails);
 
-        return categoryService.updateCategory(id,requestDto,userDetails.getUser().getId());
+        return categoryService.updateCategory(id,requestDto,userDetails.getId());
     };
 
     //음식 카테고리 조회(전체)

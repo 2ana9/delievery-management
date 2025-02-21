@@ -1,0 +1,38 @@
+package com.ana29.deliverymanagement.restaurant.repository;
+
+import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.util.UUID;
+
+public class RestaurantSpecification {
+    // 가게 이름으로 필터링
+    public static Specification<Restaurant> hasName(String name) {
+        return (root, query, criteriaBuilder) -> {
+            if (name == null || name.isEmpty()) {
+                return criteriaBuilder.conjunction();  // 조건이 없으면 전체 데이터를 반환
+            }
+            return criteriaBuilder.like(root.get("name"), "%" + name + "%");
+        };
+    }
+
+    // 카테고리 ID로 필터링
+    public static Specification<Restaurant> hasCategory(UUID categoryId) {
+        return (root, query, criteriaBuilder) -> {
+            if (categoryId == null) {
+                return criteriaBuilder.conjunction();  // 조건이 없으면 전체 데이터를 반환
+            }
+            return criteriaBuilder.equal(root.get("category").get("id"), categoryId);
+        };
+    }
+
+    // 지역 ID로 필터링
+    public static Specification<Restaurant> hasArea(Long areaId) {
+        return (root, query, criteriaBuilder) -> {
+            if (areaId == null) {
+                return criteriaBuilder.conjunction();  // 조건이 없으면 전체 데이터를 반환
+            }
+            return criteriaBuilder.equal(root.get("area").get("id"), areaId);
+        };
+    }
+}
