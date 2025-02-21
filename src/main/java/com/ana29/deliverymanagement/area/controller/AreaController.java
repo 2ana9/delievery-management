@@ -1,11 +1,14 @@
 package com.ana29.deliverymanagement.area.controller;
 
 import com.ana29.deliverymanagement.area.dto.AreaRequestDto;
+import com.ana29.deliverymanagement.area.dto.GetAreaRequestDto;
+import com.ana29.deliverymanagement.area.dto.GetAreaResponseDto;
 import com.ana29.deliverymanagement.area.service.AreaServiceFactory;
 import com.ana29.deliverymanagement.area.service.AreaServiceInterface;
 import com.ana29.deliverymanagement.area.service.ElasticSearchService;
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +26,12 @@ public class AreaController {
     private final AreaServiceFactory areaServiceFactory;
 
     @GetMapping("/search")
-    public ResponseEntity<ResponseDto<Map<String, Object>>> elasticSearchAreas(@ModelAttribute AreaRequestDto requestDto, Pageable pageable) throws IOException {
+    public ResponseEntity<ResponseDto<Page<GetAreaResponseDto>>> getAreas(@ModelAttribute GetAreaRequestDto requestDto, Pageable pageable) throws IOException {
         String type = requestDto.type();
 
         AreaServiceInterface areaService = areaServiceFactory.getService(type);
 
-        Map<String, Object> response = areaService.searchArea(requestDto, pageable);
+        Page<GetAreaResponseDto> response = areaService.getArea(requestDto, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseDto<>(HttpStatus.OK, response));

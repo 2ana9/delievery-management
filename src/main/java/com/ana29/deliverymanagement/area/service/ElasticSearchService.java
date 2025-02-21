@@ -1,6 +1,7 @@
 package com.ana29.deliverymanagement.area.service;
 
-import com.ana29.deliverymanagement.area.dto.AreaRequestDto;
+import com.ana29.deliverymanagement.area.dto.GetAreaRequestDto;
+import com.ana29.deliverymanagement.area.dto.GetAreaResponseDto;
 import com.ana29.deliverymanagement.area.entity.Area;
 import com.ana29.deliverymanagement.area.entity.AreaDocument;
 import com.ana29.deliverymanagement.area.repository.AreaRepository;
@@ -17,6 +18,8 @@ import org.opensearch.client.opensearch.core.search.Hit;
 import org.opensearch.client.opensearch.indices.AnalyzeRequest;
 import org.opensearch.client.opensearch.indices.AnalyzeResponse;
 import org.opensearch.client.opensearch.indices.analyze.AnalyzeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +34,9 @@ public class ElasticSearchService implements AreaServiceInterface{
 
     //OpenSearch를 활용한 search 쿼리 생성
     @Override
-    public Map<String, Object> searchArea(AreaRequestDto requestDto, Pageable pageable) throws IOException {
+    public Page<GetAreaResponseDto> getArea(GetAreaRequestDto requestDto, Pageable pageable) throws IOException {
 
-        String search = requestDto.search();
+        String search = requestDto.keyword();
 
         AnalyzeRequest analyzeRequest = AnalyzeRequest.of(a -> a
                 .index(INDEX_NAME)
@@ -127,17 +130,18 @@ public class ElasticSearchService implements AreaServiceInterface{
         SearchResponse<AreaDocument> analyzeResponse2 = openSearchClient.search(searchRequest, AreaDocument.class);
 
         // 검색 결과 목록 가져오기
-        List<Map<String, Object>> documents = analyzeResponse2.hits().hits().stream()
+        List<GetAreaResponseDto> content = analyzeResponse2.hits().hits().stream()
                 .map(ElasticSearchService::convertAreaDocumentToMap)
+                .map(map -> new GetAreaResponseDto(
+                        (String) map.get("jibunAddress"),
+                        (String) map.get("roadAddress")
+                ))
                 .collect(Collectors.toList());
 
-        Map<String, Object> response = new HashMap<>();
+        // 전체 검색 개수 가져오기
+        long totalHits = analyzeResponse2.hits().total().value();
 
-        // 결과를 Map에 저장
-        response.put("totalHits", analyzeResponse2.hits().total().value()); // 전체 검색 개수
-        response.put("documents", documents); // 변환된 문서 리스트
-
-        return response;
+        return new PageImpl<>(content, pageable, totalHits);
     }
 
     private static final int BATCH_SIZE = 30_000;

@@ -1,7 +1,5 @@
 package com.ana29.deliverymanagement.area.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
