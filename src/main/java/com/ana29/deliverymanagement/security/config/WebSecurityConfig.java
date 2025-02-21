@@ -1,6 +1,7 @@
 package com.ana29.deliverymanagement.security.config;
 
 
+import com.ana29.deliverymanagement.global.exception.CustomAccessDeniedHandler;
 import com.ana29.deliverymanagement.security.CachedUserDetailsService;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthenticationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthorizationFilter;
@@ -10,6 +11,8 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -67,11 +70,9 @@ public class WebSecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
                         .requestMatchers("/api/users/**").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
-                        .requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasAnyRole("MANAGER", "MASTER")
-//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")  // 관리자 전용 API 보호
-//                        .requestMatchers("/api/users/**").authenticated()  // 일반 유저 API는 JWT 필요
-//                        .requestMatchers("/api/reviews").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
+        ).exceptionHandling(ex -> ex
+            .accessDeniedHandler(new CustomAccessDeniedHandler())
         );
 
 //        http.formLogin((formLogin) ->

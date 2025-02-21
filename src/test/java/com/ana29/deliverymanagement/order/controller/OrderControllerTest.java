@@ -132,12 +132,9 @@ class OrderControllerTest {
 			.andDo(document("order-create",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
-
 				requestHeaders(
 					headerWithName("Authorization").description("JWT 토큰")),
-
 				getRequestFieldsSnippet(),
-
 				getOrderDetailResponseSnippet()));
 	}
 
