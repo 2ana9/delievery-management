@@ -12,7 +12,7 @@ import com.ana29.deliverymanagement.review.entity.Review;
 import com.ana29.deliverymanagement.review.exception.ReviewAccessDeniedException;
 import com.ana29.deliverymanagement.review.repository.ReviewRepository;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
-import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -95,7 +95,7 @@ public class ReviewService {
     }
 
     private boolean isAdmin(UserDetailsImpl userDetails) {
-        UserRoleEnum role = userDetails.getUser().getRole();
+        UserRoleEnum role = userDetails.getRole();
         return role.equals(UserRoleEnum.MASTER);
     }
 }
