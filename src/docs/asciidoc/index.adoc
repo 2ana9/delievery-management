@@ -91,3 +91,18 @@ include::{snippets}/order-cancel/http-response.adoc[]
 
 .response-field
 include::{snippets}/order-cancel/response-fields.adoc[]
+
+
+=== 주문 삭제
+
+.http-request
+include::{snippets}/order-delete/http-request.adoc[]
+
+.request-header
+include::{snippets}/order-delete/request-headers.adoc[]
+
+.http-response
+include::{snippets}/order-delete/http-response.adoc[]
+
+.response-field
+include::{snippets}/order-delete/response-fields.adoc[]
