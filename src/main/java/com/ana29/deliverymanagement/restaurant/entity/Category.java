@@ -30,6 +30,7 @@ public class Category extends Timestamped {
     @Builder.Default
     private boolean isDeleted =false;
 
+
     public void update(CategoryRequestDto requestDto) {
         this.foodType = requestDto.getFoodType();
     }

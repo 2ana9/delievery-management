@@ -8,7 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,7 +23,7 @@ class RestaurantControllerFullTest {
     @Autowired
     private RestaurantService restaurantService;
 
-    private String RESTAURANT_ID = "b6a724f8-7eb8-49ef-aa79-59c4b17444ca";
+    private static final String RESTAURANT_ID = "b6a724f8-7eb8-49ef-aa79-59c4b17444ca";
 
     //관리자 로그인하여 jwt 토큰생성
     private String getJwtToken() throws Exception {

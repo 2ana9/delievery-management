@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Description;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,7 +25,7 @@ class CategoryControllerFullTest {
 
     //public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
 
-    private final String CATEGORY_ID = "660e8400-e29b-41d4-a716-446655440003";
+    private static final String CATEGORY_ID = "660e8400-e29b-41d4-a716-446655440003";
 
     //관리자 로그인하여 jwt 토큰생성
     private String getJwtToken() throws Exception {
@@ -40,6 +41,7 @@ class CategoryControllerFullTest {
 
     //통합테스트
     @Test
+    @Description("음식 카테고리 생성테스트")
     void testCreateCategory() throws Exception{
         String jwtToken = getJwtToken();
 
@@ -60,6 +62,7 @@ class CategoryControllerFullTest {
     }
 
     @Test
+    @Description("음식 카테고리 생성테스트")
     void testUpdateCategory() throws Exception{
         String jwtToken = getJwtToken();
         mockMvc.perform(put("/api/categories/"+CATEGORY_ID) //url타입,매핑
