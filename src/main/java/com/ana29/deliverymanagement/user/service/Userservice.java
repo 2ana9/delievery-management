@@ -4,6 +4,7 @@ import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.security.config.AuthorityConfig;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;
 import com.ana29.deliverymanagement.security.jwt.TokenBlacklist;
+import com.ana29.deliverymanagement.security.service.SecurityContextRedisService;
 import com.ana29.deliverymanagement.user.controller.user.UserRoleEnum;
 import com.ana29.deliverymanagement.user.dto.SignupRequestDto;
 import com.ana29.deliverymanagement.user.dto.UpdateRequestDto;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,14 +37,30 @@ public class Userservice {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthorityConfig authorityConfig;
-
     private final JwtUtil jwtUtil;
+    private final SecurityContextRedisService redisService; // ✅ Redis 서비스 추가
 
     @Transactional
     public String signup(SignupRequestDto requestDto) {
-        // 중복 체크: 한 번의 쿼리로 모든 필드를 동시에 확인
         validateDuplicateValue(requestDto);
-        userRepository.save(createUserDto(requestDto));
+        User savedUser = userRepository.save(createUserDto(requestDto));
+
+
+        // ✅ UserDetails 생성
+        UserDetailsImpl userDetails = new UserDetailsImpl(savedUser);
+
+        // ✅ Authentication 객체 생성
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                userDetails,     // UserDetails 객체
+                savedUser.getPassword(),            // 비밀번호 (null로 설정 가능)
+                userDetails.getAuthorities() // 권한 리스트
+        );
+
+        // ✅ SecurityContext에 설정
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        redisService.saveUserDetailsToRedis(); // 🔹 Redis 저장
+
         return "/api/users/sign-in";
     }
 
@@ -54,6 +73,11 @@ public class Userservice {
         } else {
             throw new IllegalArgumentException("Token is Empty, 유효하지 않은 접근입니다.");
         }
+
+        // ✅ 로그아웃 시 Redis에서 삭제
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        redisService.removeUserDetailsFromRedis(userDetails.getUsername());
+
         SecurityContextHolder.clearContext();
         return "/api/users/sign-in";
     }
@@ -64,15 +88,11 @@ public class Userservice {
         List<UserInfoDto> userInfoDtoList = new ArrayList<>();
 
         if (isAdmin) {
-            // Admin이면 모든 유저 정보를 가져옴 (페이징 적용)
             List<User> userList = userInfoPaging(page, size, sortBy, isAsc);
-
-            // User -> UserInfoDto 변환하여 리스트에 추가
             userInfoDtoList = userList.stream()
                     .map(u -> new UserInfoDto(u.getId(), u.getNickname(), u.getEmail(), u.getPhone(), u.getRole()))
                     .collect(Collectors.toList());
         } else {
-            // 일반 사용자는 자신의 정보만 반환
             userInfoDtoList.add(new UserInfoDto(userDetails.getUsername(), userDetails.getNickname(),
                     userDetails.getEmail(), userDetails.getPhone(), userDetails.getRole()));
         }
@@ -82,17 +102,16 @@ public class Userservice {
 
     @Transactional
     public UserInfoDto modifyUserInfo(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
-
-        // 업데이트 DTO의 정보로 필드 검증
         validateDuplicateValue(updateDto);
 
-        // JWT로부터 현재 로그인한 사용자 엔티티 가져오기
         User user = userRepository.findById(userDetails.getId())
-                .orElseThrow();
-        // DB에 변경 사항 저장
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userDetails.getId()));
+
         userRepository.save(user);
 
-        // 수정된 회원 정보를 DTO로 변환하여 반환
+        // ✅ 사용자 정보 변경 후 Redis 업데이트
+        redisService.saveUserDetailsToRedis();
+
         return new UserInfoDto(user.getId(), user.getNickname(), user.getEmail(), user.getPhone(), user.getRole());
     }
 
@@ -100,11 +119,14 @@ public class Userservice {
     public void deleteUser(UserDetailsImpl userDetails) {
         User user = userRepository.findById(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userDetails.getUsername()));
+
+        // ✅ 사용자 삭제 전 Redis에서 제거
+        redisService.removeUserDetailsFromRedis(userDetails.getUsername());
+
         userRepository.delete(user);
     }
 
-    private void validateDuplicateValue(SignupRequestDto requestDto){
-        // 중복 체크: 한 번의 쿼리로 모든 필드를 동시에 확인
+    private void validateDuplicateValue(SignupRequestDto requestDto) {
         Optional<User> duplicateUserOpt = userRepository.findAnyDuplicate(
                 requestDto.getId(),
                 requestDto.getEmail(),
@@ -115,8 +137,8 @@ public class Userservice {
             getUser(requestDto, duplicateUserOpt);
         }
     }
-    private void validateDuplicateValue(UpdateRequestDto requestDto){
-        // 중복 체크: 한 번의 쿼리로 모든 필드를 동시에 확인
+
+    private void validateDuplicateValue(UpdateRequestDto requestDto) {
         Optional<User> duplicateUserOpt = userRepository.findAnyDuplicate(
                 requestDto.getEmail(),
                 requestDto.getNickname(),
@@ -129,7 +151,6 @@ public class Userservice {
 
     private void getUser(SignupRequestDto requestDto, Optional<User> duplicateUserOpt) {
         User duplicateUser = duplicateUserOpt.get();
-        // 중복된 필드를 확인하고, 해당하는 예외 메시지를 던집니다.
         if (duplicateUser.getId().equals(requestDto.getId())) {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
@@ -146,7 +167,6 @@ public class Userservice {
 
     private void getUser(UpdateRequestDto requestDto, Optional<User> duplicateUserOpt) {
         User duplicateUser = duplicateUserOpt.get();
-        // 중복된 필드를 확인하고, 해당하는 예외 메시지를 던집니다.
         if (duplicateUser.getEmail().equals(requestDto.getEmail())) {
             throw new IllegalArgumentException("중복된 Email 입니다.");
         }
@@ -159,45 +179,35 @@ public class Userservice {
     }
 
     private User createUserDto(SignupRequestDto requestDto) {
-        // 8. 사용자 등록 (여기서는 필요한 필드만 사용 - 엔티티 수정은 불가능하므로 DTO와 맞춰서 작성)
         return User.builder()
                 .Id(requestDto.getId())
                 .nickname(requestDto.getNickname())
                 .email(requestDto.getEmail())
-                .password(passwordEncoder.encode(requestDto.getPassword())) // 비밀번호 암호화
+                .password(passwordEncoder.encode(requestDto.getPassword()))
                 .phone(requestDto.getPhone())
-                .role(checkUserRole(requestDto)) // 유저 권한 부여
-//                .currentAddress(checkCurrentAddress(requestDto.getCurrentAddress())) // 상세 주소 확인
+                .role(checkUserRole(requestDto))
                 .build();
     }
 
-
-     // 사용자 역할 확인 (관리자 요청인 경우 관리자 키 검증)
     private UserRoleEnum checkUserRole(SignupRequestDto requestDto) {
         if (authorityConfig.getMasterSignupKey().equals(requestDto.getTokenValue())) {
             return UserRoleEnum.MASTER;
-        } else if (authorityConfig.getManagerSignupKey().equals(requestDto.getTokenValue())){
+        } else if (authorityConfig.getManagerSignupKey().equals(requestDto.getTokenValue())) {
             return UserRoleEnum.MANAGER;
         } else if (authorityConfig.getOwnerSignupKey().equals(requestDto.getTokenValue())) {
             return UserRoleEnum.OWNER;
-        }else {
+        } else {
             return UserRoleEnum.CUSTOMER;
         }
     }
 
-
-    private List<User> userInfoPaging(int page, int size, String sortBy, boolean isAsc){
-        // 10, 30, 50 중에서 선택된 값만 허용
+    private List<User> userInfoPaging(int page, int size, String sortBy, boolean isAsc) {
         if (size != 10 && size != 30 && size != 50) {
-            size = 10; // 기본값
+            size = 10;
         }
-        // 정렬 기준 설정 (기본: 생성일)
         Sort sort = Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC,
                 sortBy.equals("updatedAt") ? "updatedAt" : "createdAt");
-        // 페이징 및 정렬 적용하여 유저 리스트 조회
         Pageable pageable = PageRequest.of(page, size, sort);
-
-        // 페이징 및 정렬 적용하여 유저 리스트 조회
         return userRepository.findAll(pageable).getContent();
     }
 }

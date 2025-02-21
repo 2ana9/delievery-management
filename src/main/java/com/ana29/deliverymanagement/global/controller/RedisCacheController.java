@@ -1,5 +1,6 @@
 package com.ana29.deliverymanagement.global.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -8,14 +9,13 @@ import java.util.Set;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/redis")
 public class RedisCacheController {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public RedisCacheController(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
+
 
     /**
      * ✅ 현재 Redis에 저장된 모든 캐시 키 조회

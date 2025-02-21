@@ -1,10 +1,7 @@
 package com.ana29.deliverymanagement.security.jwt;
 
-import com.ana29.deliverymanagement.security.service.CachedUserDetailsService;
-import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.security.constant.jwt.JwtErrorMessage;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.ana29.deliverymanagement.security.service.CachedUserDetailsService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,11 +16,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,65 +51,58 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String token = jwtUtil.getJwtFromHeader(request);
-        //토큰 블랙리스트 검증
+
         if (token != null && !token.isEmpty()) {
+            // ✅ 토큰 블랙리스트 검증
             if (TokenBlacklist.isTokenBlacklisted(token)) {
                 log.info("BLACKLIST VALID");
-                log.info("BLACKLIST INfO : " + TokenBlacklist.getBlacklistedTokens().toString());
+                log.info("BLACKLIST INfO : " + TokenBlacklist.getBlacklistedTokens());
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 return;
             }
-        }
-        if (StringUtils.hasText(token)) {
-            log.info("token : " + token);
+
             if (!jwtUtil.validateToken(token)) {
                 log.error(JwtErrorMessage.Error.getGetJwtErrorMessage());
                 return;
             }
 
             Claims info = jwtUtil.getUserInfoFromToken(token);
-            log.info("Claims : " + info);
-            try {
-                setAuthentication(info.getSubject());
-            } catch (Exception e) {
-                log.error(e.getMessage());
-                return;
-            }
+            log.info("Claims info: " + info);
+            setAuthentication(info);
+
         }
 
         filterChain.doFilter(request, response);
     }
 
-    // 인증 처리
-    public void setAuthentication(String username) {
+    // ✅ 인증 처리 (Claims 정보 기반)
+    public void setAuthentication(Claims claims) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
+
+        // ✅ Claims에서 사용자 정보 가져오기
+        String username = claims.getSubject();
+
         Authentication authentication = createAuthentication(username);
         context.setAuthentication(authentication);
 
         SecurityContextHolder.setContext(context);
     }
 
+
     // 인증 객체 생성
     private Authentication createAuthentication(String username) {
-        Object cachedUserDetails = userDetailsService.loadUserByUsername(username);
+        UserDetails cachedUserDetails = userDetailsService.loadUserByUsername(username);
         log.info("createAuthentication : " + cachedUserDetails.toString());
 
-        if (cachedUserDetails instanceof LinkedHashMap<?, ?> map) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new JavaTimeModule()); // ✅ LocalDateTime 지원
+        // ✅ `String`으로 저장된 권한을 `SimpleGrantedAuthority`로 변환
+        List<GrantedAuthority> authorities = cachedUserDetails.getAuthorities()
+                .stream()
+                .map(auth -> new SimpleGrantedAuthority(auth.getAuthority()))
+                .collect(Collectors.toList());
+        log.info("LinkedHashMap 테스트 3");
+        log.info(authorities.toString());
+        return new UsernamePasswordAuthenticationToken(cachedUserDetails, null, authorities);
 
-            // ✅ Redis에서 역직렬화된 데이터 → `UserDetailsImpl` 변환
-            UserDetailsImpl userDetails = objectMapper.convertValue(map, UserDetailsImpl.class);
-            // ✅ `String`으로 저장된 권한을 `SimpleGrantedAuthority`로 변환
-            List<GrantedAuthority> authorities = userDetails.getAuthorities().stream()
-                    .map(grantedAuthority -> new SimpleGrantedAuthority(grantedAuthority.getAuthority()))
-                    .collect(Collectors.toList());
-
-            userDetails.setAuthorities(authorities.stream().map(GrantedAuthority::getAuthority).toList());
-            return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        }
-
-        return new UsernamePasswordAuthenticationToken(cachedUserDetails, null, ((UserDetails) cachedUserDetails).getAuthorities());
     }
 
 

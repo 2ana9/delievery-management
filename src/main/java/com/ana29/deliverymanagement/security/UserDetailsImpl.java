@@ -1,10 +1,12 @@
 package com.ana29.deliverymanagement.security;
 
+import com.ana29.deliverymanagement.security.config.AuthorityDeserializer;
 import com.ana29.deliverymanagement.user.controller.user.UserRoleEnum;
 import com.ana29.deliverymanagement.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,13 +16,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true) // 🔹 Jackson 역직렬화 오류 방지
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDetailsImpl implements UserDetails, Serializable {
 
     @Serial
@@ -34,11 +37,12 @@ public class UserDetailsImpl implements UserDetails, Serializable {
     private UserRoleEnum role;
     private boolean enabled;
 
-    // 🔹 권한을 `String`으로 저장하여 Redis에서 직렬화 오류 방지
+    // authorities를 List<String>으로 유지하고, 각 요소에 대해 AuthorityDeserializer 적용
+    @JsonDeserialize(contentUsing = AuthorityDeserializer.class)
     private List<String> authorities;
 
     /**
-     * 🔹 `User` 엔티티를 기반으로 UserDetailsImpl 생성
+     * User 엔티티를 기반으로 생성
      */
     public UserDetailsImpl(User user) {
         this.id = user.getId();
@@ -48,13 +52,12 @@ public class UserDetailsImpl implements UserDetails, Serializable {
         this.phone = user.getPhone();
         this.role = user.getRole();
         this.enabled = true;
-
-        // 🔹 `GrantedAuthority` -> `String`으로 변환하여 Redis에 저장
+        // 저장할 때는 단일 문자열로 저장 (예: "ROLE_MASTER")
         this.authorities = List.of(user.getRole().getAuthority());
     }
 
     /**
-     * 🔹 JSON 역직렬화 지원 (Redis에서 불러올 때 사용)
+     * JSON 역직렬화 지원 생성자
      */
     @JsonCreator
     public UserDetailsImpl(
@@ -63,6 +66,7 @@ public class UserDetailsImpl implements UserDetails, Serializable {
             @JsonProperty("password") String password,
             @JsonProperty("email") String email,
             @JsonProperty("phone") String phone,
+            @JsonProperty("role") UserRoleEnum role,
             @JsonProperty("enabled") boolean enabled,
             @JsonProperty("authorities") List<String> authorities) {
         this.id = id;
@@ -70,17 +74,26 @@ public class UserDetailsImpl implements UserDetails, Serializable {
         this.password = password;
         this.email = email;
         this.phone = phone;
+        this.role = role;
         this.enabled = enabled;
-        this.authorities = authorities;
+        this.authorities = authorities != null ? authorities : Collections.emptyList();
+    }
+
+    public UserDetailsImpl(String username, List<GrantedAuthority> authorities) {
+        this.id = username;
+        this.enabled = true;
+        this.authorities = authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
     }
 
     /**
-     * 🔹 `List<String>` -> `List<GrantedAuthority>` 변환
+     * List<String> → List<GrantedAuthority> 변환
      */
     @Override
     public List<GrantedAuthority> getAuthorities() {
         return authorities.stream()
-                .map(SimpleGrantedAuthority::new) // 🔹 역직렬화 시 `SimpleGrantedAuthority`로 변환
+                .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
 
