@@ -33,6 +33,7 @@ import com.ana29.deliverymanagement.order.dto.OrderDetailResponseDto;
 import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
 import com.ana29.deliverymanagement.order.dto.OrderSearchCondition;
 import com.ana29.deliverymanagement.order.service.OrderService;
+import com.ana29.deliverymanagement.review.service.ReviewService;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.security.config.WebSecurityConfig;
 import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
@@ -97,6 +98,8 @@ class OrderControllerTest {
 
 	private final String TEST_USERNAME = "testuser";
 	private final String MOCK_JWT_TOKEN = "Bearer jwt-token";
+	@Autowired
+	private ReviewService reviewService;
 
 	@BeforeEach
 	public void setup(RestDocumentationContextProvider restDocumentation) {
@@ -112,9 +115,9 @@ class OrderControllerTest {
 	void createOrder() throws Exception {
 		// Given
 		CreateOrderRequestDto requestDto = getOrderDetailsResponseDtoStub();
-		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.CUSTOMER);
 		OrderDetailResponseDto responseDto
 			= getOrderDetailsResponseDtoStub(TEST_USERNAME);
+		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.CUSTOMER);
 
 		when(orderService.createOrder(any(CreateOrderRequestDto.class), anyString()))
 			.thenReturn(responseDto);
@@ -129,9 +132,12 @@ class OrderControllerTest {
 			.andDo(document("order-create",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
+
 				requestHeaders(
 					headerWithName("Authorization").description("JWT 토큰")),
+
 				getRequestFieldsSnippet(),
+
 				getOrderDetailResponseSnippet()));
 	}
 
@@ -273,7 +279,7 @@ class OrderControllerTest {
 				getNoContentResponseSnippet()));
 	}
 
-	private static ResponseFieldsSnippet getNoContentResponseSnippet() {
+	private ResponseFieldsSnippet getNoContentResponseSnippet() {
 		return responseFields(
 			fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
 			fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
@@ -300,7 +306,7 @@ class OrderControllerTest {
 		return queryParameters(allParameters.toArray(new ParameterDescriptor[0]));
 	}
 
-	private static ResponseFieldsSnippet getMyOrderResponseSnippet() {
+	private ResponseFieldsSnippet getMyOrderResponseSnippet() {
 		return responseFields(
 			fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
 			fieldWithPath("status").type(JsonFieldType.STRING).description("응답 상태"),
@@ -355,7 +361,7 @@ class OrderControllerTest {
 		);
 	}
 
-	private static RequestFieldsSnippet getRequestFieldsSnippet() {
+	private RequestFieldsSnippet getRequestFieldsSnippet() {
 		return requestFields(
 			fieldWithPath("menuId").type(JsonFieldType.STRING).description("메뉴 ID"),
 			fieldWithPath("quantity").type(JsonFieldType.NUMBER).description("주문 수량"),
@@ -370,7 +376,7 @@ class OrderControllerTest {
 		);
 	}
 
-	public static UserDetailsImpl createUserDetails(String username, UserRoleEnum role) {
+	public UserDetailsImpl createUserDetails(String username, UserRoleEnum role) {
 		return new UserDetailsImpl(User.builder()
 			.Id(username)
 			.password("password")
