@@ -33,7 +33,6 @@ import com.ana29.deliverymanagement.order.dto.OrderDetailResponseDto;
 import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
 import com.ana29.deliverymanagement.order.dto.OrderSearchCondition;
 import com.ana29.deliverymanagement.order.service.OrderService;
-import com.ana29.deliverymanagement.review.service.ReviewService;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.security.config.WebSecurityConfig;
 import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
@@ -66,6 +65,7 @@ import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.restdocs.request.QueryParametersSnippet;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -81,7 +81,7 @@ import org.springframework.web.context.WebApplicationContext;
 		)
 	})
 @AutoConfigureRestDocs
-@ExtendWith(RestDocumentationExtension.class)
+@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 class OrderControllerTest {
 
 	@Autowired
@@ -98,8 +98,6 @@ class OrderControllerTest {
 
 	private final String TEST_USERNAME = "testuser";
 	private final String MOCK_JWT_TOKEN = "Bearer jwt-token";
-	@Autowired
-	private ReviewService reviewService;
 
 	@BeforeEach
 	public void setup(RestDocumentationContextProvider restDocumentation) {
