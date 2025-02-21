@@ -1,6 +1,8 @@
 package com.ana29.deliverymanagement.order.controller;
 
 import static com.ana29.deliverymanagement.order.controller.OrderDtoStub.TEST_ORDER_ID;
+import static com.ana29.deliverymanagement.order.controller.OrderDtoStub.TEST_RESTAURANT_ID;
+import static com.ana29.deliverymanagement.order.controller.OrderDtoStub.getCanceledOrderResponseDtoStub;
 import static com.ana29.deliverymanagement.order.controller.OrderDtoStub.getOrderDetailsResponseDtoStub;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -11,6 +13,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
@@ -24,6 +27,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ana29.deliverymanagement.global.constant.OrderStatusEnum;
+import com.ana29.deliverymanagement.global.constant.PaymentStatusEnum;
 import com.ana29.deliverymanagement.order.dto.CreateOrderRequestDto;
 import com.ana29.deliverymanagement.order.dto.OrderDetailResponseDto;
 import com.ana29.deliverymanagement.order.dto.OrderHistoryResponseDto;
@@ -34,6 +39,10 @@ import com.ana29.deliverymanagement.security.config.WebSecurityConfig;
 import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
 import com.ana29.deliverymanagement.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +55,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
@@ -55,7 +66,9 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.restdocs.request.QueryParametersSnippet;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -182,6 +195,85 @@ class OrderControllerTest {
 				getMyOrderResponseSnippet()));
 	}
 
+
+	@Test
+	@DisplayName("레스토랑 주문 내역 조회 API")
+	@WithMockUser(username = TEST_USERNAME)
+	void getRestaurantOrderHistory() throws Exception {
+		// Given
+		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.CUSTOMER);
+		OrderSearchCondition condition = OrderDtoStub.createOrderSearchCondition();
+		Page<OrderHistoryResponseDto> pageResult = OrderDtoStub.createOrderHistoryPage();
+
+		when(orderService.getRestaurantOrderHistory(
+			any(OrderSearchCondition.class),
+			any(Pageable.class),
+			any(UserDetailsImpl.class),
+			eq(TEST_RESTAURANT_ID)))
+			.thenReturn(pageResult);
+
+		// When & Then
+		mockMvc.perform(
+				OrderDtoStub.applyDefaultSearchParams(
+					get("/api/orders/restaurant"))
+				.param("restaurantId", TEST_RESTAURANT_ID.toString())
+					.header("Authorization", MOCK_JWT_TOKEN)
+					.with(SecurityMockMvcRequestPostProcessors.user(userDetails)))
+			.andExpect(status().isOk())
+			.andDo(document("order-history-restaurant",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("JWT 토큰")),
+				getQueryParametersSnippet(
+					parameterWithName("restaurantId").description("레스토랑 ID")),
+				getMyOrderResponseSnippet()));
+	}
+
+	@Test
+	@DisplayName("주문 취소 API")
+	void cancelOrder() throws Exception {
+		// Given
+		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.CUSTOMER);
+		OrderDetailResponseDto responseDto = getCanceledOrderResponseDtoStub(TEST_USERNAME);
+
+		when(orderService.cancelOrder(eq(TEST_ORDER_ID), anyString()))
+			.thenReturn(responseDto);
+
+		// When & Then
+		mockMvc.perform(patch("/api/orders/{id}/cancel", TEST_ORDER_ID)
+				.header("Authorization", MOCK_JWT_TOKEN)
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails)))
+			.andExpect(status().isOk())
+			.andDo(document("order-cancel",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("JWT 토큰")),
+				pathParameters(
+					parameterWithName("id").description("주문 ID")
+				),
+				getOrderCancelResponseSnippet()));
+	}
+
+
+	private QueryParametersSnippet getQueryParametersSnippet(ParameterDescriptor... additionalParameters) {
+		List<ParameterDescriptor> commonParameters = Arrays.asList(
+			parameterWithName("keyword").description("검색 키워드").optional(),
+			parameterWithName("statuses").description("주문 상태 필터 (쉼표로 구분)").optional(),
+			parameterWithName("startDate").description("시작 날짜 (yyyy-MM-dd)").optional(),
+			parameterWithName("endDate").description("종료 날짜 (yyyy-MM-dd)").optional(),
+			parameterWithName("isAsc").description("오름차순 정렬 여부 (기본값: false)").optional(),
+			parameterWithName("page").description("페이지 번호").optional(),
+			parameterWithName("size").description("페이지 크기").optional()
+		);
+
+		List<ParameterDescriptor> allParameters = new ArrayList<>(commonParameters);
+		allParameters.addAll(Arrays.asList(additionalParameters));
+
+		return queryParameters(allParameters.toArray(new ParameterDescriptor[0]));
+	}
+
 	private static ResponseFieldsSnippet getMyOrderResponseSnippet() {
 		return responseFields(
 			fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
@@ -237,18 +329,6 @@ class OrderControllerTest {
 		);
 	}
 
-	private static QueryParametersSnippet getQueryParametersSnippet() {
-		return queryParameters(
-			parameterWithName("keyword").description("검색 키워드").optional(),
-			parameterWithName("statuses").description("주문 상태 필터 (쉼표로 구분)").optional(),
-			parameterWithName("startDate").description("시작 날짜 (yyyy-MM-dd)").optional(),
-			parameterWithName("endDate").description("종료 날짜 (yyyy-MM-dd)").optional(),
-			parameterWithName("isAsc").description("오름차순 정렬 여부 (기본값: false)").optional(),
-			parameterWithName("page").description("페이지 번호").optional(),
-			parameterWithName("size").description("페이지 크기").optional()
-		);
-	}
-
 	private static RequestFieldsSnippet getRequestFieldsSnippet() {
 		return requestFields(
 			fieldWithPath("menuId").type(JsonFieldType.STRING).description("메뉴 ID"),
@@ -271,159 +351,6 @@ class OrderControllerTest {
 			.role(role)
 			.build());
 	}
-
-/*
-
-	@Test
-	@DisplayName("레스토랑 주문 내역 조회 API")
-	@WithMockUser(username = TEST_USERNAME)
-	void getRestaurantOrderHistory() throws Exception {
-		// Given
-		List<OrderHistoryResponseDto> orders = List.of(createMockOrderHistoryResponseDto());
-		Page<OrderHistoryResponseDto> pageResult = new PageImpl<>(
-			orders, PageRequest.of(0, 10), 1);
-
-		UserDetailsImpl userDetails = new UserDetailsImpl(User.builder().username(TEST_USERNAME)
-		.build());
-
-		when(orderService.getRestaurantOrderHistory(
-			any(OrderSearchCondition.class),
-			any(Pageable.class),
-			any(UserDetailsImpl.class),
-			eq(TEST_RESTAURANT_ID)))
-			.thenReturn(pageResult);
-
-		// When & Then
-		mockMvc.perform(get("/api/orders/restaurant")
-				.param("restaurantId", TEST_RESTAURANT_ID.toString())
-				.param("keyword", "치킨")
-				.param("statuses", OrderStatusEnum.PAID.name())
-				.param("startDate", LocalDate.now().minusDays(7).toString())
-				.param("endDate", LocalDate.now().toString())
-				.param("isAsc", "false")
-				.param("page", "0")
-				.param("size", "10")
-				.with(SecurityMockMvcRequestPostProcessors.csrf()))
-			.andExpect(status().isOk())
-			.andDo(document("order-history-restaurant",
-				preprocessRequest(prettyPrint()),
-				preprocessResponse(prettyPrint()),
-				queryParameters(
-					parameterWithName("restaurantId").description("레스토랑 ID"),
-					parameterWithName("keyword").description("검색 키워드").optional(),
-					parameterWithName("statuses").description("주문 상태 필터 (쉼표로 구분)").optional(),
-					parameterWithName("startDate").description("시작 날짜 (yyyy-MM-dd)").optional(),
-					parameterWithName("endDate").description("종료 날짜 (yyyy-MM-dd)").optional(),
-					parameterWithName("isAsc").description("오름차순 정렬 여부 (기본값: false)").optional(),
-					parameterWithName("page").description("페이지 번호").optional(),
-					parameterWithName("size").description("페이지 크기").optional()
-				),
-				responseFields(
-					fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
-					fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-					fieldWithPath("data.content[]").type(JsonFieldType.ARRAY).description("주문 목록"),
-					fieldWithPath("data.content[].orderId").type(JsonFieldType.STRING).description
-					("주문 ID"),
-					fieldWithPath("data.content[].restaurantId").type(JsonFieldType.STRING)
-					.description("음식점 ID"),
-					fieldWithPath("data.content[].restaurantName").type(JsonFieldType.STRING)
-					.description("음식점 이름"),
-					fieldWithPath("data.content[].menuName").type(JsonFieldType.STRING)
-					.description("메뉴 이름"),
-					fieldWithPath("data.content[].orderStatus").type(JsonFieldType.STRING)
-					.description("주문 상태"),
-					fieldWithPath("data.content[].orderType").type(JsonFieldType.STRING)
-					.description("주문 타입"),
-					fieldWithPath("data.content[].createdAt").type(JsonFieldType.STRING)
-					.description("주문 생성 시간"),
-					fieldWithPath("data.pageable").type(JsonFieldType.OBJECT).description("페이지
-					정보"),
-					fieldWithPath("data.pageable.sort").type(JsonFieldType.OBJECT).description("정렬
-					 정보"),
-					fieldWithPath("data.pageable.sort.empty").type(JsonFieldType.BOOLEAN)
-					.description("정렬이 비어있는지 여부"),
-					fieldWithPath("data.pageable.sort.sorted").type(JsonFieldType.BOOLEAN)
-					.description("정렬 적용 여부"),
-					fieldWithPath("data.pageable.sort.unsorted").type(JsonFieldType.BOOLEAN)
-					.description("정렬 미적용 여부"),
-					fieldWithPath("data.pageable.offset").type(JsonFieldType.NUMBER).description
-					("페이지 오프셋"),
-					fieldWithPath("data.pageable.pageNumber").type(JsonFieldType.NUMBER)
-					.description("페이지 번호"),
-					fieldWithPath("data.pageable.pageSize").type(JsonFieldType.NUMBER).description
-					("페이지 크기"),
-					fieldWithPath("data.pageable.paged").type(JsonFieldType.BOOLEAN).description
-					("페이징 여부"),
-					fieldWithPath("data.pageable.unpaged").type(JsonFieldType.BOOLEAN).description
-					("페이징 미적용 여부"),
-					fieldWithPath("data.last").type(JsonFieldType.BOOLEAN).description("마지막 페이지
-					여부"),
-					fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER).description("전체
-					페이지 수"),
-					fieldWithPath("data.totalElements").type(JsonFieldType.NUMBER).description("전체
-					 요소 수"),
-					fieldWithPath("data.size").type(JsonFieldType.NUMBER).description("페이지 크기"),
-					fieldWithPath("data.number").type(JsonFieldType.NUMBER).description("현재 페이지
-					번호"),
-					fieldWithPath("data.sort").type(JsonFieldType.OBJECT).description("정렬 정보"),
-					fieldWithPath("data.sort.empty").type(JsonFieldType.BOOLEAN).description("정렬이
-					비어있는지 여부"),
-					fieldWithPath("data.sort.sorted").type(JsonFieldType.BOOLEAN).description("정렬
-					적용 여부"),
-					fieldWithPath("data.sort.unsorted").type(JsonFieldType.BOOLEAN).description
-					("정렬 미적용 여부"),
-					fieldWithPath("data.first").type(JsonFieldType.BOOLEAN).description("첫 페이지
-					여부"),
-					fieldWithPath("data.numberOfElements").type(JsonFieldType.NUMBER).description
-					("현재 페이지 요소 수"),
-					fieldWithPath("data.empty").type(JsonFieldType.BOOLEAN).description("페이지가
-					비어있는지 여부")
-				)));
-	}
-
-	@Test
-	@DisplayName("주문 취소 API")
-	@WithMockUser(username = TEST_USERNAME)
-	void cancelOrder() throws Exception {
-		// Given
-		OrderDetailResponseDto responseDto = getOrderDetailsResponseDtoStub();
-		responseDto = OrderDetailResponseDto.builder()
-			.orderId(responseDto.orderId())
-			.orderStatus(OrderStatusEnum.CANCELED)
-			.quantity(responseDto.quantity())
-			.orderRequest(responseDto.orderRequest())
-			.orderType(responseDto.orderType())
-			.addressInfo(responseDto.addressInfo())
-			.orderedAt(responseDto.orderedAt())
-			.restaurantId(responseDto.restaurantId())
-			.restaurantName(responseDto.restaurantName())
-			.menuName(responseDto.menuName())
-			.menuPrice(responseDto.menuPrice())
-			.totalPrice(responseDto.totalPrice())
-			.paymentStatus(PaymentStatusEnum.REFUNDED)
-			.paymentType(responseDto.paymentType())
-			.externalPaymentId(responseDto.externalPaymentId())
-			.paidAt(responseDto.paidAt())
-			.refundedAt(LocalDateTime.now())
-			.createdBy(responseDto.createdBy())
-			.build();
-
-		when(orderService.cancelOrder(eq(TEST_ORDER_ID), anyString()))
-			.thenReturn(responseDto);
-
-		// When & Then
-		mockMvc.perform(patch("/api/orders/{id}/cancel", TEST_ORDER_ID)
-				.with(SecurityMockMvcRequestPostProcessors.csrf()))
-			.andExpect(status().isOk())
-			.andDo(document("order-cancel",
-				preprocessRequest(prettyPrint()),
-				preprocessResponse(prettyPrint()),
-				pathParameters(
-					parameterWithName("id").description("주문 ID")
-				),
-				getOrderCancelResponseSnippet()));
-	}
-*/
 
 	private List<FieldDescriptor> getCommonOrderResponseSnippet() {
 		return List.of(
