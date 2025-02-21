@@ -5,7 +5,7 @@ import com.ana29.deliverymanagement.restaurant.dto.CategoryRequestDto;
 import com.ana29.deliverymanagement.restaurant.entity.Category;
 import com.ana29.deliverymanagement.restaurant.service.CategoryService;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
-import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -41,7 +41,7 @@ public class CategoryController {
                                               @AuthenticationPrincipal UserDetailsImpl userDetails)throws AccessDeniedException {
         checkUserAccess(userDetails);
 
-        return categoryService.updateCategory(id,requestDto,userDetails.getUser().getId());
+        return categoryService.updateCategory(id,requestDto,userDetails.getId());
     };
 
     //음식 카테고리 조회(전체)
@@ -51,7 +51,7 @@ public class CategoryController {
         return categoryService.getAllCategories(pageable);
     };
 
-    //search (삭제처리된 카테고리의경우 조회안되게 숨김처리)
+    //search
     @GetMapping("/search")
     public ResponseDto<List<Category>> searchCategories(
             @PathVariable(required = false) UUID id,
@@ -76,13 +76,13 @@ public class CategoryController {
                                               @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         checkUserAccess(userDetails);
 
-        return categoryService.deleteCategory(id,userDetails.getUser().getId());
+        return categoryService.deleteCategory(id,userDetails.getId());
     };
     
     //사용자의 권한확인 메소드
     public void checkUserAccess(UserDetailsImpl userDetails) throws AccessDeniedException {
-        UserRoleEnum userRole = userDetails.getUser().getRole();
-        if (userRole != UserRoleEnum.MASTER && userRole != UserRoleEnum.MANAGER) {
+        UserRoleEnum userRole = userDetails.getRole();
+        if (userRole != UserRoleEnum.MASTER) {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
     };
