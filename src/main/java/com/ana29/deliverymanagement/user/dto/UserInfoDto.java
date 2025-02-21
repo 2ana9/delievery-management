@@ -1,6 +1,6 @@
 package com.ana29.deliverymanagement.user.dto;
 
-import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
