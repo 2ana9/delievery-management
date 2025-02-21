@@ -1,23 +1,29 @@
 package com.ana29.deliverymanagement.data;
 
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-@Slf4j
+
+import java.util.Set;
+
 @Component
-@RequiredArgsConstructor
 public class RedisCacheInitializer {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
+    public RedisCacheInitializer(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
     @PostConstruct
     public void clearRedisCache() {
-        // 현재 선택된 DB의 모든 데이터를 삭제 (flushDb)
-        redisTemplate.getConnectionFactory().getConnection().flushDb();
-        // 전체 Redis 서버의 모든 DB 데이터를 삭제하려면 flushAll()을 사용
-        // redisTemplate.getConnectionFactory().getConnection().flushAll();
-        log.info("Redis 저장소가 초기화되었습니다.");
+        // 전체 키 조회 (클러스터 환경에서는 주의 필요)
+        Set<String> keys = redisTemplate.keys("*");
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+            System.out.println("Redis 저장소가 초기화되었습니다.");
+        } else {
+            System.out.println("Redis에 삭제할 키가 없습니다.");
+        }
     }
 }
