@@ -1,0 +1,108 @@
+= 주문 관리 플랫폼
+:toc: left
+:toclevels: 3
+v1.0.0
+
+***
+API 문서 개요
+
+ 이 문서를 통해 주문 관리 플랫폼의 API 사용법을 알 수 있습니다.
+
+***
+
+== 주문
+
+=== 주문 생성
+
+.http-request
+include::{snippets}/order-create/http-request.adoc[]
+
+.request-header
+include::{snippets}/order-create/request-headers.adoc[]
+
+.request-field
+include::{snippets}/order-create/request-fields.adoc[]
+
+.http-response
+include::{snippets}/order-create/http-response.adoc[]
+
+.response-field
+include::{snippets}/order-create/response-fields.adoc[]
+
+=== 주문 상세조회
+
+.http-request
+include::{snippets}/order-detail/http-request.adoc[]
+
+.request-header
+include::{snippets}/order-detail/request-headers.adoc[]
+
+.http-response
+include::{snippets}/order-detail/http-response.adoc[]
+
+.response-field
+include::{snippets}/order-detail/response-fields.adoc[]
+
+=== 내 주문 내역 조회
+
+.http-request
+include::{snippets}/order-history-my/http-request.adoc[]
+
+.request-header
+include::{snippets}/order-history-my/request-headers.adoc[]
+
+.query-parameters
+include::{snippets}/order-history-my/query-parameters.adoc[]
+
+.http-response
+include::{snippets}/order-history-my/http-response.adoc[]
+
+.response-field
+include::{snippets}/order-history-my/response-fields.adoc[]
+
+
+=== 식당의 주문 내역 조회
+
+.http-request
+include::{snippets}/order-history-restaurant/http-request.adoc[]
+
+.request-header
+include::{snippets}/order-history-restaurant/request-headers.adoc[]
+
+.query-parameters
+include::{snippets}/order-history-restaurant/query-parameters.adoc[]
+
+.http-response
+include::{snippets}/order-history-restaurant/http-response.adoc[]
+
+.response-field
+include::{snippets}/order-history-restaurant/response-fields.adoc[]
+
+=== 주문 취소
+
+.http-request
+include::{snippets}/order-cancel/http-request.adoc[]
+
+.request-header
+include::{snippets}/order-cancel/request-headers.adoc[]
+
+.http-response
+include::{snippets}/order-cancel/http-response.adoc[]
+
+.response-field
+include::{snippets}/order-cancel/response-fields.adoc[]
+
+
+=== 주문 삭제
+
+.http-request
+include::{snippets}/order-delete/http-request.adoc[]
+
+.request-header
+include::{snippets}/order-delete/request-headers.adoc[]
+
+.http-response
+include::{snippets}/order-delete/http-response.adoc[]
+
+.response-field
+include::{snippets}/order-delete/response-fields.adoc[]

@@ -2,6 +2,8 @@ package com.ana29.deliverymanagement.mvc;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.List;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -21,5 +23,9 @@ public class MockSpringSecurityFilter implements Filter {
     @Override
     public void destroy() {
         SecurityContextHolder.clearContext();
+    }
+
+    public List<Filter> getFilters(HttpServletRequest request) {
+        return Collections.singletonList(this);
     }
 }

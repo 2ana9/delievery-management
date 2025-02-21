@@ -1,6 +1,7 @@
 package com.ana29.deliverymanagement.security.config;
 
 
+import com.ana29.deliverymanagement.global.exception.CustomAccessDeniedHandler;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthenticationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthorizationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;
@@ -73,6 +74,8 @@ public class WebSecurityConfig {
 //                        .requestMatchers("/api/users/**").authenticated()  // 일반 유저 API는 JWT 필요
 //                        .requestMatchers("/api/reviews").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
+        ).exceptionHandling(ex -> ex
+            .accessDeniedHandler(new CustomAccessDeniedHandler())
         );
 
 //        http.formLogin((formLogin) ->
