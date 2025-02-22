@@ -40,6 +40,10 @@ public class User extends Timestamped implements Serializable{
 
     @Column(length = 20, nullable = false)
     private String phone; // 연락처
+    // soft delete 여부를 나타내는 필드 추가 (기본값 false)
+
+    @Column
+    private boolean isDeleted = false;
 
     public User(String id, String nickname, String email, String password, String phone, UserRoleEnum role) {
         Id = id;
@@ -62,9 +66,9 @@ public class User extends Timestamped implements Serializable{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAddress> addresses = new ArrayList<>();
 
-    // 주소 추가 메서드
-    public void addAddress(UserAddress address) {
-        addresses.add(address);
-        address.setUser(this);
+    public void softDelete(String deletedBy) {
+        this.isDeleted = true;
+        // Timestamped의 delete() 메서드를 활용하여 deletedAt, deletedBy 설정
+        super.delete(deletedBy);
     }
 }

@@ -81,7 +81,7 @@ public class Userservice {
     public UpdateRequestDto modifyUserInfo(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
         validateDuplicateValue(updateDto);
 
-        //닉네임, 이메일, 전화번호
+        //닉네임, 이메일, 전화번호만 수정
         modifyUser(userDetails, updateDto);
 
         // 사용자 정보 변경 후, Redis에 저장된 정보를 업데이트
@@ -97,7 +97,7 @@ public class Userservice {
 
         // 삭제 전 Redis에서 사용자 정보 제거
         redisService.removeUserDetailsFromRedis(userDetails.getUsername());
-        userRepository.delete(user);
+        user.softDelete(userDetails.getUsername());
     }
 
 
@@ -195,6 +195,7 @@ public class Userservice {
         user.setNickname(updateDto.getNickname());
         user.setEmail(updateDto.getEmail());
         user.setPhone(updateDto.getPhone());
+        user.setUpdatedBy(userDetails.getUsername());
     }
 
     private void validTokenBlackList(String token) {
