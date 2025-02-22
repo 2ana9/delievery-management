@@ -39,7 +39,7 @@ public class CategoryService {
                 new IllegalArgumentException("Category not found"));
         category.update(requestDto);
         category.setUpdatedAt(LocalDateTime.now());
-        category.setDeletedBy(userId);
+        category.setUpdatedBy(userId);
         categoryRepository.save(category);
 
         return ResponseDto.success(category);
