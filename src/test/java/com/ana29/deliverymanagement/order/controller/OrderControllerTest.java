@@ -186,7 +186,7 @@ class OrderControllerTest {
 	@DisplayName("레스토랑 주문 내역 조회 API")
 	void getRestaurantOrderHistory() throws Exception {
 		// Given
-		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.CUSTOMER);
+		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.OWNER);
 		OrderSearchCondition condition = OrderDtoStub.createOrderSearchCondition();
 		Page<OrderHistoryResponseDto> pageResult = OrderDtoStub.createOrderHistoryPage();
 
@@ -245,7 +245,7 @@ class OrderControllerTest {
 	@DisplayName("주문 삭제 API")
 	void deleteOrder() throws Exception {
 		// Given
-		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.CUSTOMER);
+		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.MASTER);
 		doNothing().when(orderService).deleteOrder(eq(TEST_ORDER_ID), anyString());
 
 		// When & Then
