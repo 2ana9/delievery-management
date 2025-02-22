@@ -8,8 +8,10 @@ import java.util.UUID;
 public record OrderHistoryResponseDto(UUID orderId,
 									  UUID restaurantId,
 									  String restaurantName,
+									  String foodType,
 									  String menuName,
 									  OrderStatusEnum orderStatus,
 									  OrderTypeEnum orderType,
-									  LocalDateTime createdAt
+									  LocalDateTime createdAt,
+									  LocalDateTime updatedAt
 ) {}

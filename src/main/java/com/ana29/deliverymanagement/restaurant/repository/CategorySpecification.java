@@ -24,4 +24,10 @@ public class CategorySpecification {
             return criteriaBuilder.like(root.get("foodType"), "%" + foodType + "%"); //부분만 작성해도 조회되도록
         };
     }
+
+    public static Specification<Category> isNotDeleted() {
+        return (root, query, criteriaBuilder) ->
+            criteriaBuilder.equal(root.get("isDeleted"),false);//삭제가 안된 값들만 조회되도록
+
+    }
 }

@@ -8,12 +8,15 @@ import com.ana29.deliverymanagement.order.dto.OrderSearchCondition;
 import com.ana29.deliverymanagement.order.service.OrderService;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import jakarta.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,15 +63,17 @@ public class OrderController {
 	@GetMapping("/my")
 	public ResponseEntity<ResponseDto<Page<OrderHistoryResponseDto>>> getOrderHistory(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@RequestParam(required = false) List<String> foodTypes,
 		@ModelAttribute OrderSearchCondition condition, Pageable pageable) {
 
 		Page<OrderHistoryResponseDto> response =
-			orderService.getOrderHistory(condition, pageable, userDetails.getUsername());
+			orderService.getOrderHistory(condition, pageable, userDetails.getUsername(), foodTypes);
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(ResponseDto.success(HttpStatus.OK, response));
 	}
 
 	@GetMapping("/restaurant")
+	@PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MASTER', 'ROLE_OWNER')")
 	public ResponseEntity<ResponseDto<Page<OrderHistoryResponseDto>>> getRestaurantOrderHistory(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestParam UUID restaurantId,
@@ -93,6 +98,7 @@ public class OrderController {
 			.body(ResponseDto.success(HttpStatus.OK, response));
 	}
 
+	@PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MASTER')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ResponseDto<OrderDetailResponseDto>> deleteOrder(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,

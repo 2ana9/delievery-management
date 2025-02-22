@@ -20,6 +20,7 @@ public record OrderDetailResponseDto(
 	OrderTypeEnum orderType,
 	GetUserAddressesResponseDto addressInfo,
 	LocalDateTime orderedAt,
+	LocalDateTime updatedAt,
 	UUID restaurantId,
 	String restaurantName,
 	String menuName,
@@ -41,6 +42,7 @@ public record OrderDetailResponseDto(
 			.orderType(order.getOrderType())
 			.addressInfo(GetUserAddressesResponseDto.from(order.getUserAddress()))
 			.orderedAt(order.getCreatedAt())
+			.updatedAt(order.getUpdatedAt())
 			.restaurantId(order.getMenu().getRestaurant().getId())
 			.restaurantName(order.getMenu().getRestaurant().getName())
 			.menuName(order.getMenu().getName())

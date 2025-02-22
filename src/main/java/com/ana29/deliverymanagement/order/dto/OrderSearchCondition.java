@@ -9,9 +9,11 @@ public record OrderSearchCondition(String keyword,
 								   List<OrderStatusEnum> statuses,
 								   LocalDate startDate,
 								   LocalDate endDate,
-								   Boolean isAsc) {
+								   Boolean isAsc,
+								   String sortBy) {
 	public OrderSearchCondition {
 		statuses = statuses != null ? statuses : new ArrayList<>();
 		isAsc = isAsc != null ? isAsc : false;
+		sortBy = sortBy != null ? sortBy : "createdAt";
 	}
 }

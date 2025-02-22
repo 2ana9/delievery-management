@@ -59,3 +59,50 @@ include::{snippets}/order-history-my/http-response.adoc[]
 
 .response-field
 include::{snippets}/order-history-my/response-fields.adoc[]
+
+
+=== 식당의 주문 내역 조회
+
+.http-request
+include::{snippets}/order-history-restaurant/http-request.adoc[]
+
+.request-header
+include::{snippets}/order-history-restaurant/request-headers.adoc[]
+
+.query-parameters
+include::{snippets}/order-history-restaurant/query-parameters.adoc[]
+
+.http-response
+include::{snippets}/order-history-restaurant/http-response.adoc[]
+
+.response-field
+include::{snippets}/order-history-restaurant/response-fields.adoc[]
+
+=== 주문 취소
+
+.http-request
+include::{snippets}/order-cancel/http-request.adoc[]
+
+.request-header
+include::{snippets}/order-cancel/request-headers.adoc[]
+
+.http-response
+include::{snippets}/order-cancel/http-response.adoc[]
+
+.response-field
+include::{snippets}/order-cancel/response-fields.adoc[]
+
+
+=== 주문 삭제
+
+.http-request
+include::{snippets}/order-delete/http-request.adoc[]
+
+.request-header
+include::{snippets}/order-delete/request-headers.adoc[]
+
+.http-response
+include::{snippets}/order-delete/http-response.adoc[]
+
+.response-field
+include::{snippets}/order-delete/response-fields.adoc[]

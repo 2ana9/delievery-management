@@ -6,11 +6,9 @@ import com.ana29.deliverymanagement.review.entity.QReview;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-
 
 import java.util.List;
 
@@ -39,7 +37,7 @@ public class RestaurantRepositoryCustomImpl implements RestaurantRepositoryCusto
                                 review.rating.avg().as("averageRating")
                         ))
                 .from(restaurant)
-                .leftJoin(review).on(review.restaurant.id.eq(restaurant.id)) // 리뷰와 가게 연결
+                .leftJoin(review).on(review.order.menu.restaurant.id.eq(restaurant.id)) // 리뷰와 가게 연결
                 .where(restaurant.isDeleted.isFalse()) // 삭제되지 않은 가게만 조회
                 .groupBy(restaurant.id);
 

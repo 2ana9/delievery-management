@@ -1,7 +1,7 @@
 package com.ana29.deliverymanagement.restaurant.entity;
 
-import com.ana29.deliverymanagement.restaurant.dto.CategoryRequestDto;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
+import com.ana29.deliverymanagement.restaurant.dto.CategoryRequestDto;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,7 +23,7 @@ public class Category extends Timestamped {
     @Column(name = "category_id", nullable = false)
     private UUID id;
 
-    @Column(name = "food_type", nullable = false, length = 50)
+    @Column(name = "food_type", nullable = false, length = 50, unique=true)
     private String foodType;
 
     @Column(name = "is_deleted",nullable = false)
