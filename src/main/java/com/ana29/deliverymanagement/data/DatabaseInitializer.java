@@ -21,9 +21,9 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 public class DatabaseInitializer implements ApplicationRunner {
 
-    private static final int TOTAL_USERS = 300;        // 생성할 사용자 수
-    private static final int TOTAL_RESTAURANTS = 100;  // 생성할 식당 수
-    private static final int MENUS_PER_RESTAURANT = 5; // 각 식당당 메뉴 개수
+    private static final int TOTAL_USERS = 50;        // 생성할 사용자 수
+    private static final int TOTAL_RESTAURANTS = 10;  // 생성할 식당 수
+    private static final int MENUS_PER_RESTAURANT = 3; // 각 식당당 메뉴 개수
     @PersistenceContext
     private EntityManager entityManager;
 

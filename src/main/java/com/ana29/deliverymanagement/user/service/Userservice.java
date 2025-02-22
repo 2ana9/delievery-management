@@ -19,7 +19,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,28 +47,11 @@ public class Userservice {
     @Transactional
     public String signup(SignupRequestDto requestDto) {
         validateDuplicateValue(requestDto);
-        User savedUser = userRepository.save(createUserDto(requestDto));
-
-
-        // ✅ UserDetails 생성
-        UserDetailsImpl userDetails = new UserDetailsImpl(savedUser);
-
-        // ✅ Authentication 객체 생성
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                userDetails,     // UserDetails 객체
-                savedUser.getPassword(),            // 비밀번호 (null로 설정 가능)
-                userDetails.getAuthorities() // 권한 리스트
-        );
-
-        // ✅ SecurityContext에 설정
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        redisService.saveUserDetailsToRedis(); // 🔹 Redis 저장
-
+        userRepository.save(createUserDto(requestDto));
         return "/api/users/sign-in";
     }
 
-    public String signOut(HttpServletRequest request) {
+    public String signOut(UserDetailsImpl userDetails, HttpServletRequest request) {
         String token = jwtUtil.getJwtFromHeader(request);
         log.info("Sign Out Token Value   : " + token);
 
@@ -73,9 +60,7 @@ public class Userservice {
         } else {
             throw new IllegalArgumentException("Token is Empty, 유효하지 않은 접근입니다.");
         }
-
-        // ✅ 로그아웃 시 Redis에서 삭제
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // 로그아웃 시, Redis에서 사용자 정보 삭제
         redisService.removeUserDetailsFromRedis(userDetails.getUsername());
 
         SecurityContextHolder.clearContext();
@@ -84,7 +69,6 @@ public class Userservice {
 
     public List<UserInfoDto> getUserInfo(UserDetailsImpl userDetails, int page, int size, String sortBy, boolean isAsc) {
         boolean isAdmin = (userDetails.getRole() == UserRoleEnum.MASTER || userDetails.getRole() == UserRoleEnum.MANAGER);
-
         List<UserInfoDto> userInfoDtoList = new ArrayList<>();
 
         if (isAdmin) {
@@ -96,23 +80,20 @@ public class Userservice {
             userInfoDtoList.add(new UserInfoDto(userDetails.getUsername(), userDetails.getNickname(),
                     userDetails.getEmail(), userDetails.getPhone(), userDetails.getRole()));
         }
-
         return userInfoDtoList;
     }
 
     @Transactional
-    public UserInfoDto modifyUserInfo(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
+    public UpdateRequestDto modifyUserInfo(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
         validateDuplicateValue(updateDto);
 
-        User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userDetails.getId()));
+        //닉네임, 이메일, 전화번호
+        modifyUser(userDetails, updateDto);
 
-        userRepository.save(user);
-
-        // ✅ 사용자 정보 변경 후 Redis 업데이트
+        // 사용자 정보 변경 후, Redis에 저장된 정보를 업데이트
         redisService.saveUserDetailsToRedis();
 
-        return new UserInfoDto(user.getId(), user.getNickname(), user.getEmail(), user.getPhone(), user.getRole());
+        return updateDto;
     }
 
     @Transactional
@@ -120,11 +101,11 @@ public class Userservice {
         User user = userRepository.findById(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userDetails.getUsername()));
 
-        // ✅ 사용자 삭제 전 Redis에서 제거
+        // 삭제 전 Redis에서 사용자 정보 제거
         redisService.removeUserDetailsFromRedis(userDetails.getUsername());
-
         userRepository.delete(user);
     }
+
 
     private void validateDuplicateValue(SignupRequestDto requestDto) {
         Optional<User> duplicateUserOpt = userRepository.findAnyDuplicate(
@@ -185,18 +166,19 @@ public class Userservice {
                 .email(requestDto.getEmail())
                 .password(passwordEncoder.encode(requestDto.getPassword()))
                 .phone(requestDto.getPhone())
-                .role(checkUserRole(requestDto))
+                .role(checkUserRole(requestDto.getTokenValue()))
                 .build();
     }
 
-    private UserRoleEnum checkUserRole(SignupRequestDto requestDto) {
-        if (authorityConfig.getMasterSignupKey().equals(requestDto.getTokenValue())) {
+    private UserRoleEnum checkUserRole(String tokenValue) {
+        if (authorityConfig.getMasterSignupKey().equals(tokenValue)) {
             return UserRoleEnum.MASTER;
-        } else if (authorityConfig.getManagerSignupKey().equals(requestDto.getTokenValue())) {
+        } else if (authorityConfig.getManagerSignupKey().equals(tokenValue)) {
             return UserRoleEnum.MANAGER;
-        } else if (authorityConfig.getOwnerSignupKey().equals(requestDto.getTokenValue())) {
+        } else if (authorityConfig.getOwnerSignupKey().equals(tokenValue)) {
             return UserRoleEnum.OWNER;
         } else {
+            log.info(tokenValue);
             return UserRoleEnum.CUSTOMER;
         }
     }
@@ -209,5 +191,16 @@ public class Userservice {
                 sortBy.equals("updatedAt") ? "updatedAt" : "createdAt");
         Pageable pageable = PageRequest.of(page, size, sort);
         return userRepository.findAll(pageable).getContent();
+    }
+
+    private void modifyUser(UserDetailsImpl userDetails, UpdateRequestDto updateDto){
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userDetails.getId()));
+
+//        닉네임, 이메일, 전화번호
+        user.setNickname(updateDto.getNickname());
+        user.setEmail(updateDto.getEmail());
+        user.setPhone(updateDto.getPhone());
+
     }
 }

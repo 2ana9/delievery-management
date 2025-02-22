@@ -38,9 +38,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 //        /api/users/sign-in 의 Get 접속은 검증하지 않음
-        return path.equals("/api/users/sign-in");
+        return path.equals("/api/users/sign-in") || path.equals("/api/users/sign-up");
         // 로그인/로그아웃 엔드포인트는 검증하지 않음
-        // sign-in의 POST 방식도 검증해야 하나?
+        // sign-in의 POST 방식도 검증해야 하나? No, post 방식에서도 토큰을 가지고 있지 않아야 하므로.
         // shouldNotFilter가 없으면 'sign-out' 메소드 후 리다이렉트 되는 'sing-in' (GET) 에서
         // JWT 검증을 하게 됨. sign-out 메소드는 토큰 블랙리스트를 등록하므로
         // sign-in 페이지에서 블랙리스트에 걸려 401 권한 에러.
