@@ -1,6 +1,5 @@
 package com.ana29.deliverymanagement.restaurant.service;
 
-import com.ana29.deliverymanagement.area.entity.Area;
 import com.ana29.deliverymanagement.area.repository.AreaRepository;
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
@@ -34,8 +33,6 @@ public class RestaurantService {
 
     @Transactional
     public ResponseDto<Restaurant> createRestaurant(RestaurantRequestDto requestDto) {
-        Area area = areaRepository.findById(requestDto.getArea())
-                .orElseThrow(() -> new RuntimeException("Area not found"));
         Category category = categoryRepository.findById(requestDto.getCategory())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
@@ -44,7 +41,7 @@ public class RestaurantService {
                         .name(requestDto.getName())
                         .ownerId(requestDto.getOwnerId())
                         .content(requestDto.getContent())
-//                        .area(area)
+                        .legalCode(requestDto.getLegalCode())
                         .category(category)
                         .operatingHours(requestDto.getOperatingHours())
                         .build()
@@ -88,13 +85,14 @@ public class RestaurantService {
 
     @Transactional
     public ResponseDto<List<Restaurant>> searchRestaurants(
-            String name, UUID categoryId, Long areaId, Pageable pageable) {
-        //가게이름,음식카테고리,지역위치로 필터링 진행 (+ 페이징처리)
+            String name, UUID categoryId, String legalCode, Pageable pageable) {
+        //가게이름,음식카테고리,지역위치로 필터링 진행 (+ 페이징처리 / 삭제처리된 가게의경우 숨김)
 
         // 동적 쿼리 조건 생성
         Specification<Restaurant> spec = Specification.where(RestaurantSpecification.hasName(name))
                 .and(RestaurantSpecification.hasCategory(categoryId))
-                .and(RestaurantSpecification.hasArea(areaId));
+                .and(RestaurantSpecification.haslegalCode(legalCode))
+                .and(RestaurantSpecification.isNotDeleted());
 
         // 조건에 맞는 데이터를 페이징 처리하여 가져오기
         Page<Restaurant> restaurantPage = restaurantRepository.findAll(spec, pageable);

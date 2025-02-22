@@ -65,7 +65,7 @@ public class RestaurantController {
     public ResponseDto<List<Restaurant>> searchRestaurants(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) UUID categoryId,
-            @RequestParam(required = false) Long areaId,
+            @RequestParam(required = false) String legalCode,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt,desc") String sort){
@@ -78,7 +78,7 @@ public class RestaurantController {
 
         Pageable pageable = PageRequest.of(page, size, sortValue);
 
-        return restaurantService.searchRestaurants(name,categoryId,areaId,pageable);
+        return restaurantService.searchRestaurants(name,categoryId,legalCode,pageable);
     }
 
     //생성일순,수정일순 정렬체크
