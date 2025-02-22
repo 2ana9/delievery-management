@@ -29,7 +29,7 @@ public class UserAddressService {
 
     public CreateUserAddressResponseDto createUserAddress(CreateUserAddressRequestDto requestDto, UserDetailsImpl userDetails) {
         // 로그인한 유저 정보 가져오기
-        User user = userRepository.findById(userDetails.getId())
+        User user = userRepository.findByIdAndIsDeletedFalse(userDetails.getId())
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userDetails.getId()));
 
         // 새 주소에서 공백 제거
@@ -74,7 +74,7 @@ public class UserAddressService {
 
     public UpdateUserAddressResponseDto updateUserAddresses(UUID id, UpdateUserAddressRequestDto requestDto, UserDetailsImpl userDetails) {
         // 로그인한 유저 정보 가져오기
-        User user = userRepository.findById(userDetails.getId())
+        User user = userRepository.findByIdAndIsDeletedFalse(userDetails.getId())
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userDetails.getId()));
 
         // 전달 받은 id로 배송지 정보가 있는지 체크
@@ -98,7 +98,7 @@ public class UserAddressService {
 
     public DeleteUserAddressResponseDto deleteUserAddresses(UUID id, UserDetailsImpl userDetails) {
         // 로그인한 유저 정보 가져오기
-        User user = userRepository.findById(userDetails.getId())
+        User user = userRepository.findByIdAndIsDeletedFalse(userDetails.getId())
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userDetails.getId()));
 
         // 전달 받은 id로 배송지 정보가 있는지 체크

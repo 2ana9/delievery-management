@@ -92,7 +92,7 @@ public class Userservice {
 
     @Transactional
     public void deleteUser(UserDetailsImpl userDetails) {
-        User user = userRepository.findById(userDetails.getUsername())
+        User user = userRepository.findByIdAndIsDeletedFalse(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userDetails.getUsername()));
 
         // 삭제 전 Redis에서 사용자 정보 제거
@@ -188,7 +188,7 @@ public class Userservice {
     }
 
     private void modifyUser(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
-        User user = userRepository.findById(userDetails.getId())
+        User user = userRepository.findByIdAndIsDeletedFalse(userDetails.getId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userDetails.getId()));
 
 //        닉네임, 이메일, 전화번호
