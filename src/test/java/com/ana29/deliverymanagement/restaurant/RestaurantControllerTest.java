@@ -100,13 +100,13 @@ class RestaurantControllerTest {
     @Description("가게 검색필터링 테스트")
     void testSearchRestaurant() throws Exception{
         String jwtToken = getJwtToken();
-
-        mockMvc.perform(get("/api/restaurants/search?name=레스토랑 14")
+        dummyRestaurant();
+        mockMvc.perform(get("/api/restaurants/search?name=가게1")
                         .contentType(MediaType.APPLICATION_JSON) //받는 요청의 타입
                         .header("Authorization", jwtToken)
                 )
-                .andExpect(status().isOk())// 공통 response여서 200확인
-                .andExpect(jsonPath("$.data[0].name").value("레스토랑 14"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].name").value("가게1"));
 
     }
 
