@@ -154,14 +154,14 @@ public class Userservice {
     }
 
     private User createUserDto(SignupRequestDto requestDto) {
-        return User.builder()
-                .Id(requestDto.getId())
-                .nickname(requestDto.getNickname())
-                .email(requestDto.getEmail())
-                .password(passwordEncoder.encode(requestDto.getPassword()))
-                .phone(requestDto.getPhone())
-                .role(checkUserRole(requestDto.getTokenValue()))
-                .build();
+        User user = new User(requestDto.getId(),
+                requestDto.getNickname(),
+                requestDto.getEmail(),
+                passwordEncoder.encode(requestDto.getPassword()),
+                requestDto.getPhone(),
+                checkUserRole(requestDto.getTokenValue()));
+        user.setCreatedBy(user.getId());
+        return user;
     }
 
     private UserRoleEnum checkUserRole(String tokenValue) {

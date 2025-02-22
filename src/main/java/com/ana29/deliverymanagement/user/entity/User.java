@@ -17,7 +17,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
+//@AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
+@AllArgsConstructor // 빌더를 통한 생성만 허용
 @Builder
 @Table(name = "p_users")
 @JsonIgnoreProperties(ignoreUnknown = true) // ✅ 정의되지 않은 필드는 무시하여 Jackson 역직렬화 오류 방지
@@ -39,6 +40,15 @@ public class User extends Timestamped implements Serializable{
 
     @Column(length = 20, nullable = false)
     private String phone; // 연락처
+
+    public User(String id, String nickname, String email, String password, String phone, UserRoleEnum role) {
+        Id = id;
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.role = role;
+    }
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
