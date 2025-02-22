@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface MenuRepository extends JpaRepository<Menu, UUID> {
-	@Query("SELECT m FROM Menu m JOIN FETCH m.restaurant WHERE m.id = :menuId")
+	@Query("SELECT m FROM Menu m JOIN FETCH m.restaurant WHERE m.id = :menuId AND m.isDeleted = FALSE ")
 	Optional<Menu> findMenuWithRestaurant(@Param("menuId") UUID menuId);
 
 }
