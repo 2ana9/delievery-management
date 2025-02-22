@@ -8,6 +8,8 @@ import com.ana29.deliverymanagement.order.dto.OrderSearchCondition;
 import com.ana29.deliverymanagement.order.service.OrderService;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import jakarta.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -61,10 +63,11 @@ public class OrderController {
 	@GetMapping("/my")
 	public ResponseEntity<ResponseDto<Page<OrderHistoryResponseDto>>> getOrderHistory(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@RequestParam(required = false) List<String> foodTypes,
 		@ModelAttribute OrderSearchCondition condition, Pageable pageable) {
 
 		Page<OrderHistoryResponseDto> response =
-			orderService.getOrderHistory(condition, pageable, userDetails.getUsername());
+			orderService.getOrderHistory(condition, pageable, userDetails.getUsername(), foodTypes);
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(ResponseDto.success(HttpStatus.OK, response));
 	}
