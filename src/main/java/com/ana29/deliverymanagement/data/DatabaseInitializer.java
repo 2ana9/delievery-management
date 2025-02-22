@@ -50,8 +50,8 @@ public class DatabaseInitializer implements ApplicationRunner {
             UserRoleEnum randomRole = roles[ThreadLocalRandom.current().nextInt(roles.length)];
 
             entityManager.createNativeQuery(
-                            "INSERT INTO p_users (id, nickname, email, password, phone, role, created_at, created_by) " +
-                                    "SELECT :id, :nickname, :email, :password, :phone, :role, CURRENT_TIMESTAMP, :createdBy " +
+                            "INSERT INTO p_users (id, nickname, email, password, phone, role, created_at, created_by, is_deleted) " +
+                                    "SELECT :id, :nickname, :email, :password, :phone, :role, CURRENT_TIMESTAMP, :createdBy, :isDeleted " +
                                     "WHERE NOT EXISTS (SELECT 1 FROM p_users WHERE id = :id)"
                     )
                     .setParameter("id", "user" + i)
@@ -61,6 +61,7 @@ public class DatabaseInitializer implements ApplicationRunner {
                     .setParameter("phone", phone)
                     .setParameter("role", randomRole.name())  // 🔹 랜덤 권한 설정
                     .setParameter("createdBy", "user" + i)
+                    .setParameter("isDeleted", false)
                     .executeUpdate();
         }
     }

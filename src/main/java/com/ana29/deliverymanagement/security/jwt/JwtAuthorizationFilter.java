@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,15 +24,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j(topic = "JWT 검증 및 인가")
+@RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final CachedUserDetailsService userDetailsService;
+    private final RedisTokenBlacklist redisTokenBlacklist;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, CachedUserDetailsService userDetailsService) {
-        this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
-    }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -53,10 +52,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String token = jwtUtil.getJwtFromHeader(request);
         log.info("jwtUtil.getJwtFromHeader : " + token);
         if (token != null && !token.isEmpty()) {
-            // ✅ 토큰 블랙리스트 검증
-            if (TokenBlacklist.isTokenBlacklisted(token)) {
+            // ✅ Redis 기반 토큰 블랙리스트 검증
+            if (redisTokenBlacklist.isTokenBlacklisted(token)) {
                 log.info("BLACKLIST VALID");
-                log.info("BLACKLIST INfO : " + TokenBlacklist.getBlacklistedTokens());
+                log.info("BLACKLIST INFO : " + redisTokenBlacklist.getBlacklistedTokens());
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 return;
             }

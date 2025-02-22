@@ -4,7 +4,6 @@ import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,7 +39,7 @@ public class CachedUserDetailsService implements UserDetailsService {
 
         if (cachedUser == null) {
             log.warn("Redis에서 캐싱된 사용자 정보 없음, DB에서 조회");
-            return userRepository.findById(username)
+            return userRepository.findByIdAndIsDeletedFalse(username)
                     .map(UserDetailsImpl::new)
                     .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
         }

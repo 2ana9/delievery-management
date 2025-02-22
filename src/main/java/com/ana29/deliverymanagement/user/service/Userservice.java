@@ -3,7 +3,7 @@ package com.ana29.deliverymanagement.user.service;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.security.config.AuthorityConfig;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;
-import com.ana29.deliverymanagement.security.jwt.TokenBlacklist;
+import com.ana29.deliverymanagement.security.jwt.RedisTokenBlacklist;
 import com.ana29.deliverymanagement.security.service.SecurityContextRedisService;
 import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.user.dto.SignupRequestDto;
@@ -11,19 +11,14 @@ import com.ana29.deliverymanagement.user.dto.UpdateRequestDto;
 import com.ana29.deliverymanagement.user.dto.UserInfoDto;
 import com.ana29.deliverymanagement.user.entity.User;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +38,7 @@ public class Userservice {
     private final AuthorityConfig authorityConfig;
     private final JwtUtil jwtUtil;
     private final SecurityContextRedisService redisService; // ✅ Redis 서비스 추가
+    private final RedisTokenBlacklist redisTokenBlacklist;
 
     @Transactional
     public String signup(SignupRequestDto requestDto) {
@@ -55,17 +51,15 @@ public class Userservice {
         String token = jwtUtil.getJwtFromHeader(request);
         log.info("Sign Out Token Value   : " + token);
 
-        if (token != null && !token.isEmpty()) {
-            TokenBlacklist.addToken(token);
-        } else {
-            throw new IllegalArgumentException("Token is Empty, 유효하지 않은 접근입니다.");
-        }
+        validTokenBlackList(token);
+
         // 로그아웃 시, Redis에서 사용자 정보 삭제
         redisService.removeUserDetailsFromRedis(userDetails.getUsername());
 
         SecurityContextHolder.clearContext();
         return "/api/users/sign-in";
     }
+
 
     public List<UserInfoDto> getUserInfo(UserDetailsImpl userDetails, int page, int size, String sortBy, boolean isAsc) {
         boolean isAdmin = (userDetails.getRole() == UserRoleEnum.MASTER || userDetails.getRole() == UserRoleEnum.MANAGER);
@@ -87,7 +81,7 @@ public class Userservice {
     public UpdateRequestDto modifyUserInfo(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
         validateDuplicateValue(updateDto);
 
-        //닉네임, 이메일, 전화번호
+        //닉네임, 이메일, 전화번호만 수정
         modifyUser(userDetails, updateDto);
 
         // 사용자 정보 변경 후, Redis에 저장된 정보를 업데이트
@@ -98,12 +92,12 @@ public class Userservice {
 
     @Transactional
     public void deleteUser(UserDetailsImpl userDetails) {
-        User user = userRepository.findById(userDetails.getUsername())
+        User user = userRepository.findByIdAndIsDeletedFalse(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userDetails.getUsername()));
 
         // 삭제 전 Redis에서 사용자 정보 제거
         redisService.removeUserDetailsFromRedis(userDetails.getUsername());
-        userRepository.delete(user);
+        user.softDelete(userDetails.getUsername());
     }
 
 
@@ -160,14 +154,14 @@ public class Userservice {
     }
 
     private User createUserDto(SignupRequestDto requestDto) {
-        return User.builder()
-                .Id(requestDto.getId())
-                .nickname(requestDto.getNickname())
-                .email(requestDto.getEmail())
-                .password(passwordEncoder.encode(requestDto.getPassword()))
-                .phone(requestDto.getPhone())
-                .role(checkUserRole(requestDto.getTokenValue()))
-                .build();
+        User user = new User(requestDto.getId(),
+                requestDto.getNickname(),
+                requestDto.getEmail(),
+                passwordEncoder.encode(requestDto.getPassword()),
+                requestDto.getPhone(),
+                checkUserRole(requestDto.getTokenValue()));
+        user.setCreatedBy(user.getId());
+        return user;
     }
 
     private UserRoleEnum checkUserRole(String tokenValue) {
@@ -193,14 +187,30 @@ public class Userservice {
         return userRepository.findAll(pageable).getContent();
     }
 
-    private void modifyUser(UserDetailsImpl userDetails, UpdateRequestDto updateDto){
-        User user = userRepository.findById(userDetails.getId())
+    private void modifyUser(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
+        User user = userRepository.findByIdAndIsDeletedFalse(userDetails.getId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userDetails.getId()));
 
 //        닉네임, 이메일, 전화번호
         user.setNickname(updateDto.getNickname());
         user.setEmail(updateDto.getEmail());
         user.setPhone(updateDto.getPhone());
+        user.setUpdatedBy(userDetails.getUsername());
+    }
 
+    private void validTokenBlackList(String token) {
+        if (token != null && !token.isEmpty()) {
+            // 토큰의 만료 시간(exp)을 클레임에서 추출
+            Claims claims = jwtUtil.getUserInfoFromToken(token);
+            long expirationTimeMillis = claims.getExpiration().getTime();
+            long tokenExpirationMillis = expirationTimeMillis - System.currentTimeMillis();
+
+            // tokenExpirationMillis가 음수가 아니고, 남은 유효시간이 있다면 블랙리스트에 추가
+            if (tokenExpirationMillis > 0) {
+                redisTokenBlacklist.addToken(token, tokenExpirationMillis);
+            }
+        } else {
+            throw new IllegalArgumentException("Token is Empty, 유효하지 않은 접근입니다.");
+        }
     }
 }
