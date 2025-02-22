@@ -43,6 +43,7 @@ public class User extends Timestamped implements Serializable{
     // soft delete 여부를 나타내는 필드 추가 (기본값 false)
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean isDeleted = false;
 
     public User(String id, String nickname, String email, String password, String phone, UserRoleEnum role) {
