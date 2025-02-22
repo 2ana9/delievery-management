@@ -2,7 +2,6 @@ package com.ana29.deliverymanagement.user.controller;
 
 
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
-import com.ana29.deliverymanagement.security.jwt.TokenBlacklist;
 import com.ana29.deliverymanagement.user.dto.SignupRequestDto;
 import com.ana29.deliverymanagement.user.dto.UpdateRequestDto;
 import com.ana29.deliverymanagement.user.dto.UserInfoDto;

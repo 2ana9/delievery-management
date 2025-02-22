@@ -5,6 +5,7 @@ import com.ana29.deliverymanagement.global.exception.CustomAccessDeniedHandler;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthenticationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtAuthorizationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;
+import com.ana29.deliverymanagement.security.jwt.RedisTokenBlacklist;
 import com.ana29.deliverymanagement.security.service.CachedUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -30,6 +31,7 @@ public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
     private final CachedUserDetailsService userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final RedisTokenBlacklist redisTokenBlacklist;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -50,7 +52,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
+        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, redisTokenBlacklist);
     }
 
     @Bean
