@@ -156,7 +156,6 @@ class OrderControllerTest {
 	void getOrderHistory() throws Exception {
 		// Given
 		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.CUSTOMER);
-		OrderSearchCondition condition = OrderDtoStub.createOrderSearchCondition();
 		Page<OrderHistoryResponseDto> pageResult = OrderDtoStub.createOrderHistoryPage();
 
 		when(orderService.getOrderHistory(any(OrderSearchCondition.class), any(Pageable.class),
@@ -187,7 +186,6 @@ class OrderControllerTest {
 	void getRestaurantOrderHistory() throws Exception {
 		// Given
 		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.OWNER);
-		OrderSearchCondition condition = OrderDtoStub.createOrderSearchCondition();
 		Page<OrderHistoryResponseDto> pageResult = OrderDtoStub.createOrderHistoryPage();
 
 		when(orderService.getRestaurantOrderHistory(
