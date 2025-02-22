@@ -38,9 +38,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 //        /api/users/sign-in 의 Get 접속은 검증하지 않음
-        return path.equals("/api/users/sign-in") && "GET".equalsIgnoreCase(request.getMethod());
+        return path.equals("/api/users/sign-in") || path.equals("/api/users/sign-up");
         // 로그인/로그아웃 엔드포인트는 검증하지 않음
-        // sign-in의 POST 방식도 검증해야 하나?
+        // sign-in의 POST 방식도 검증해야 하나? No, post 방식에서도 토큰을 가지고 있지 않아야 하므로.
         // shouldNotFilter가 없으면 'sign-out' 메소드 후 리다이렉트 되는 'sing-in' (GET) 에서
         // JWT 검증을 하게 됨. sign-out 메소드는 토큰 블랙리스트를 등록하므로
         // sign-in 페이지에서 블랙리스트에 걸려 401 권한 에러.
@@ -51,7 +51,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String token = jwtUtil.getJwtFromHeader(request);
-
+        log.info("jwtUtil.getJwtFromHeader : " + token);
         if (token != null && !token.isEmpty()) {
             // ✅ 토큰 블랙리스트 검증
             if (TokenBlacklist.isTokenBlacklisted(token)) {
@@ -69,9 +69,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             Claims info = jwtUtil.getUserInfoFromToken(token);
             log.info("Claims info: " + info);
             setAuthentication(info);
-
+            log.info("인증된 토큰을 가지고 있는 사용자입니다.");
+            log.info("SecurityContextHolder content : " + SecurityContextHolder.getContext().toString());
+        }else {
+            // 토큰이 존재하지 않는 경우
+            log.info("인증된 토큰이 없습니다.");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return;
         }
-
         filterChain.doFilter(request, response);
     }
 
@@ -99,8 +104,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 .stream()
                 .map(auth -> new SimpleGrantedAuthority(auth.getAuthority()))
                 .collect(Collectors.toList());
-        log.info("LinkedHashMap 테스트 3");
-        log.info(authorities.toString());
         return new UsernamePasswordAuthenticationToken(cachedUserDetails, null, authorities);
 
     }
