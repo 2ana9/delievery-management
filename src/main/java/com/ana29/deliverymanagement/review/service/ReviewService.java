@@ -14,14 +14,12 @@ import com.ana29.deliverymanagement.review.repository.ReviewRepository;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

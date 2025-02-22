@@ -280,7 +280,8 @@ class OrderControllerTest {
 			parameterWithName("endDate").description("종료 날짜 (yyyy-MM-dd)").optional(),
 			parameterWithName("isAsc").description("오름차순 정렬 여부 (기본값: false)").optional(),
 			parameterWithName("page").description("페이지 번호").optional(),
-			parameterWithName("size").description("페이지 크기").optional()
+			parameterWithName("size").description("페이지 크기").optional(),
+			parameterWithName("sortBy").description("정렬기준 (기본값: 생성일자)").optional()
 		);
 
 		List<ParameterDescriptor> allParameters = new ArrayList<>(commonParameters);
@@ -309,6 +310,8 @@ class OrderControllerTest {
 				.description("주문 타입"),
 			fieldWithPath("data.content[].createdAt").type(JsonFieldType.STRING)
 				.description("주문 생성 시간"),
+			fieldWithPath("data.content[].updatedAt").type(JsonFieldType.STRING)
+				.description("주문 수정 시간"),
 			fieldWithPath("data.pageable").type(JsonFieldType.OBJECT).description("페이지 정보"),
 			fieldWithPath("data.pageable.sort").type(JsonFieldType.OBJECT).description("정렬 정보"),
 			fieldWithPath("data.pageable.sort.empty").type(JsonFieldType.BOOLEAN)
@@ -383,6 +386,7 @@ class OrderControllerTest {
 			fieldWithPath("data.addressInfo.detail").type(JsonFieldType.STRING)
 				.description("상세 주소"),
 			fieldWithPath("data.orderedAt").type(JsonFieldType.STRING).description("주문 시간"),
+			fieldWithPath("data.updatedAt").type(JsonFieldType.STRING).description("주문 업데이트 시간"),
 			fieldWithPath("data.restaurantId").type(JsonFieldType.STRING).description("음식점 ID"),
 			fieldWithPath("data.restaurantName").type(JsonFieldType.STRING).description("음식점 이름"),
 			fieldWithPath("data.menuName").type(JsonFieldType.STRING).description("메뉴 이름"),

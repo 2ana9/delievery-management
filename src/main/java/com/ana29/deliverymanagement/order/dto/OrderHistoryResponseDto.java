@@ -11,5 +11,6 @@ public record OrderHistoryResponseDto(UUID orderId,
 									  String menuName,
 									  OrderStatusEnum orderStatus,
 									  OrderTypeEnum orderType,
-									  LocalDateTime createdAt
+									  LocalDateTime createdAt,
+									  LocalDateTime updatedAt
 ) {}
