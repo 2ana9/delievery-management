@@ -24,6 +24,7 @@ import com.ana29.deliverymanagement.user.entity.UserAddress;
 import com.ana29.deliverymanagement.user.exception.UserAddressNotFoundException;
 import com.ana29.deliverymanagement.user.repository.UserAddressRepository;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -100,8 +101,8 @@ public class OrderService {
 
 	@Transactional(readOnly = true)
 	public Page<OrderHistoryResponseDto> getOrderHistory(OrderSearchCondition condition,
-		Pageable pageable, String userId) {
-		return orderRepository.findOrderHistory(userId, condition, pageable);
+		Pageable pageable, String userId, List<String> foodTypes) {
+		return orderRepository.findOrderHistory(userId, condition, pageable, foodTypes);
 	}
 
 	@Transactional(readOnly = true)

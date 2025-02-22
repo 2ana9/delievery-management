@@ -77,6 +77,7 @@ public class OrderDtoStub {
 			TEST_ORDER_ID,
 			TEST_RESTAURANT_ID,
 			"맛있는 치킨",
+			"한식",
 			"후라이드 치킨",
 			OrderStatusEnum.PENDING,
 			OrderTypeEnum.ONLINE,

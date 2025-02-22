@@ -160,13 +160,14 @@ class OrderControllerTest {
 		Page<OrderHistoryResponseDto> pageResult = OrderDtoStub.createOrderHistoryPage();
 
 		when(orderService.getOrderHistory(any(OrderSearchCondition.class), any(Pageable.class),
-			anyString()))
+			anyString(), anyList()))
 			.thenReturn(pageResult);
 
 		// When & Then
 		mockMvc.perform(
 				OrderDtoStub.applyDefaultSearchParams(
 						get("/api/orders/my"))
+					.param("foodTypes", "한식", "중식")
 					.header("Authorization", MOCK_JWT_TOKEN)
 					.with(SecurityMockMvcRequestPostProcessors.user(userDetails)))
 			.andExpect(status().isOk())
@@ -175,7 +176,8 @@ class OrderControllerTest {
 				preprocessResponse(prettyPrint()),
 				requestHeaders(
 					headerWithName("Authorization").description("JWT 토큰")),
-				getQueryParametersSnippet(),
+				getQueryParametersSnippet()
+					.and(parameterWithName("foodTypes").description("카테고리 필터 (쉼표로 구분)").optional()),
 				getMyOrderResponseSnippet()));
 	}
 
@@ -302,6 +304,8 @@ class OrderControllerTest {
 				.description("음식점 ID"),
 			fieldWithPath("data.content[].restaurantName").type(JsonFieldType.STRING)
 				.description("음식점 이름"),
+			fieldWithPath("data.content[].foodType").type(JsonFieldType.STRING)
+				.description("식당 카테고리"),
 			fieldWithPath("data.content[].menuName").type(JsonFieldType.STRING)
 				.description("메뉴 이름"),
 			fieldWithPath("data.content[].orderStatus").type(JsonFieldType.STRING)
