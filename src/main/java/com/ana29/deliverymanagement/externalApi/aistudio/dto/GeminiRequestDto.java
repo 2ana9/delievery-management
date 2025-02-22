@@ -1,4 +1,4 @@
-package com.ana29.deliverymanagement.externalApi.aistudio;
+package com.ana29.deliverymanagement.externalApi.aistudio.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

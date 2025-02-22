@@ -8,6 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode
+@Builder
 public class SignupRequestDto {
 
     @NotBlank
@@ -35,7 +36,7 @@ public class SignupRequestDto {
 
     private String currentAddress;
 
-    private boolean admin = false;
+    private boolean admin;
 
     private String tokenValue;
 }

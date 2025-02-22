@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
 @Builder
@@ -19,7 +20,16 @@ public class Gemini extends Timestamped {
     @Column(name = "gemini_id", columnDefinition = "uuid")
     private UUID id;
 
+
+    @Column(length = 255)
+    private String question; // 요청한 질문(프롬프트)
+
+
     @Column(length = 500)
-    private String content;
+    private String answer;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isDeleted = false;
 
 }
