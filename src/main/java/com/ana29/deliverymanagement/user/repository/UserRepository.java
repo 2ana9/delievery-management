@@ -8,19 +8,15 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, String> {
-    Optional<User> findById(String id);
-    Optional<User> findByEmail(String email);
-    Optional<User> findByNickname(String nickname);
-    Optional<User> findByPhone(String phone);
-    @Query("select u from User u where u.Id = :id or u.email = :email or u.nickname = :nickname or u.phone = :phone")
+    Optional<User> findByIdAndIsDeletedFalse(String id);
+    @Query("select u from User u where (u.Id = :id or u.email = :email or u.nickname = :nickname or u.phone = :phone) and u.isDeleted = false")
     Optional<User> findAnyDuplicate(@Param("id") String id,
                                     @Param("email") String email,
                                     @Param("nickname") String nickname,
                                     @Param("phone") String phone);
-    @Query("select u from User u where u.email = :email or u.nickname = :nickname or u.phone = :phone")
+    @Query("select u from User u where (u.email = :email or u.nickname = :nickname or u.phone = :phone) and u.isDeleted = false")
     Optional<User> findAnyDuplicate(@Param("email") String email,
                                     @Param("nickname") String nickname,
                                     @Param("phone") String phone);
 
-//    Optional<User> findByKakaoId(Long kakaoId);
 }
