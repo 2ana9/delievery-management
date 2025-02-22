@@ -15,7 +15,7 @@ public enum JwtConfigEnum {
     // Token 식별자 제거
     BEARER_PREFIX_COUNT(Integer.toString(7)),
     // 발급 토큰 만료시간
-    TOKEN_TIME(Long.toString(60 * 60 * 1000L)); // 60분 , 사용시 Long 변환
+    TOKEN_TIME(Long.toString(15 * 60 * 1000L)); // 15분 , 사용시 Long 변환
 
     private final String getJwtConfig;
 }
