@@ -7,6 +7,7 @@ import com.ana29.deliverymanagement.security.jwt.JwtAuthorizationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;
 import com.ana29.deliverymanagement.security.jwt.RedisTokenBlacklist;
 import com.ana29.deliverymanagement.security.service.CachedUserDetailsService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +33,7 @@ public class WebSecurityConfig {
     private final CachedUserDetailsService userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final RedisTokenBlacklist redisTokenBlacklist;
-
+    private final ObjectMapper objectMapper;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -52,7 +53,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, redisTokenBlacklist);
+        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, redisTokenBlacklist, objectMapper);
     }
 
     @Bean
