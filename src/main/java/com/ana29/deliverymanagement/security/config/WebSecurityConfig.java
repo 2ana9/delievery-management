@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,6 +25,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.NullSecurityContextRepository;
+
+import java.net.http.HttpRequest;
 
 @Configuration
 @EnableWebSecurity // Spring Security 지원을 가능하게 함
@@ -71,8 +74,11 @@ public class WebSecurityConfig {
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/").permitAll()
-                        .requestMatchers("/api/users/sign-in", "/api/users/sign-up", "/api/users/kakao/**", "/api/v2/**").permitAll()
+                        .requestMatchers("/api/users/sign-in", "/api/users/sign-up", "/api/users/kakao/**", "/api/v2/**",
+                                "/api/users/me"
+                        ).permitAll()
                         .requestMatchers("/api/gemini/**").hasAuthority(UserRoleEnum.OWNER.getAuthority())
+                        .requestMatchers("/api/redis/**").hasAuthority(UserRoleEnum.MASTER.getAuthority())
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         ).exceptionHandling(ex -> ex
             .accessDeniedHandler(new CustomAccessDeniedHandler())
