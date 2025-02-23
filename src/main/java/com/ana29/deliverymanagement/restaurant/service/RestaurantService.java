@@ -4,7 +4,6 @@ import com.ana29.deliverymanagement.area.repository.AreaRepository;
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import com.ana29.deliverymanagement.restaurant.dto.PaginationDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
-import com.ana29.deliverymanagement.restaurant.dto.RestaurantWithRatingDto;
 import com.ana29.deliverymanagement.restaurant.entity.Category;
 import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import com.ana29.deliverymanagement.restaurant.repository.CategoryRepository;
@@ -12,7 +11,6 @@ import com.ana29.deliverymanagement.restaurant.repository.RestaurantRepository;
 import com.ana29.deliverymanagement.restaurant.repository.RestaurantSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -68,16 +66,6 @@ public class RestaurantService {
         return ResponseDto.success(restaurant);
     }
 
-    public ResponseDto<Page<RestaurantWithRatingDto>> getRestaurantsWithAverageRating(int page, int size) {
-        PageRequest pageable = PageRequest.of(page, size);
-
-        // QueryDSL을 이용해 데이터를 조회
-        Page<RestaurantWithRatingDto> restaurantWithRatingDtos = restaurantRepository.getRestaurantsWithAverageRating(pageable);
-
-        // ResponseDto로 감싸서 반환
-        return ResponseDto.success(restaurantWithRatingDtos);
-    }
-
     public ResponseDto<Restaurant> deleteRestaurant(UUID id,String userId) {
         Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(()->
                 new IllegalArgumentException("restaurant not found"));
@@ -102,6 +90,18 @@ public class RestaurantService {
 
         // 조건에 맞는 데이터를 페이징 처리하여 가져오기
         Page<Restaurant> restaurantPage = restaurantRepository.findAll(spec, pageable);
+
+        // 각 Restaurant에 대해 평균 평점 계산
+        for (Restaurant restaurant : restaurantPage) {
+            // restaurantId를 사용해서 평균 평점을 계산
+            Double averageRating = restaurantRepository.getRestaurantAverageRating(restaurant.getId());
+            if (averageRating == null){
+                averageRating = 0.0;
+            }
+            // DTO 생성하여 추가
+            restaurant.setRatingAverage(averageRating);
+        }
+
 
         // 페이징 정보 생성
         PaginationDto pagination = new PaginationDto(

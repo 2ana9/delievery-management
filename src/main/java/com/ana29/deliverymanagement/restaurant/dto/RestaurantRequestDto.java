@@ -1,9 +1,12 @@
 package com.ana29.deliverymanagement.restaurant.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.UUID;
 
 @Getter
@@ -17,4 +20,5 @@ public class RestaurantRequestDto {
     private String content;
     private String operatingHours;
     private boolean isDeleted; //삭제진행시 사용
+
 }

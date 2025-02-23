@@ -2,14 +2,18 @@ package com.ana29.deliverymanagement.restaurant.entity;
 
 import com.ana29.deliverymanagement.global.entity.Timestamped;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
+import com.ana29.deliverymanagement.review.entity.Review;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
 @Builder
@@ -36,6 +40,8 @@ public class Restaurant extends Timestamped {
     @Column(name = "is_deleted",nullable = false)
     @Builder.Default
     private boolean isDeleted =false;
+
+    private Double ratingAverage;
 
     public void update(RestaurantRequestDto restaurantRequestDto) {
         if (restaurantRequestDto.getName() != null) {

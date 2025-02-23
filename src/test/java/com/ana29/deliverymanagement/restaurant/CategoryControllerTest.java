@@ -98,7 +98,7 @@ class CategoryControllerTest {
                             .header("Authorization", jwtToken)// 발급받은 JWT 토큰 추가
 
                     )
-                    .andExpect(status().isCreated())// 공통 response여서 200확인
+                    .andExpect(status().isOk())// 공통 response여서 200확인
                     .andExpect(jsonPath("$.data.foodType").value("간식"))
                     .andDo(document("category-create",
                             preprocessRequest(prettyPrint()),
