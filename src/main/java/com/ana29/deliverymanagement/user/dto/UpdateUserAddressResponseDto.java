@@ -7,13 +7,15 @@ import java.util.UUID;
 public record UpdateUserAddressResponseDto(
 		UUID userAddressId,
 		String address,
-		String detail
+		String detail,
+		Boolean defaultAddress
 ) {
 	public static UpdateUserAddressResponseDto from(UserAddress userAddress) {
 		return new UpdateUserAddressResponseDto(
 				userAddress.getId(),
 				userAddress.getAddress(),
-				userAddress.getDetail()
+				userAddress.getDetail(),
+				userAddress.getDefaultAddress()
 		);
 	}
 }

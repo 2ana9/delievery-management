@@ -78,16 +78,16 @@ public class Userservice {
     }
 
     @Transactional
-    public UpdateRequestDto modifyUserInfo(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
+    public UserInfoDto modifyUserInfo(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
         validateDuplicateValue(updateDto);
 
         //닉네임, 이메일, 전화번호만 수정
-        modifyUser(userDetails, updateDto);
+        User user = modifyUser(userDetails, updateDto);
 
         // 사용자 정보 변경 후, Redis에 저장된 정보를 업데이트
         redisService.saveUserDetailsToRedis();
 
-        return updateDto;
+        return new UserInfoDto(user.getId(), user.getNickname(), user.getEmail(), user.getPhone(), user.getRole());
     }
 
     @Transactional
@@ -187,7 +187,7 @@ public class Userservice {
         return userRepository.findAll(pageable).getContent();
     }
 
-    private void modifyUser(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
+    private User modifyUser(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
         User user = userRepository.findByIdAndIsDeletedFalse(userDetails.getId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userDetails.getId()));
 
@@ -196,6 +196,8 @@ public class Userservice {
         user.setEmail(updateDto.getEmail());
         user.setPhone(updateDto.getPhone());
         user.setUpdatedBy(userDetails.getUsername());
+
+        return user;
     }
 
     private void validTokenBlackList(String token) {

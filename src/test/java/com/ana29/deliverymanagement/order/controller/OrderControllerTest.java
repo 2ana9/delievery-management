@@ -156,7 +156,6 @@ class OrderControllerTest {
 	void getOrderHistory() throws Exception {
 		// Given
 		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.CUSTOMER);
-		OrderSearchCondition condition = OrderDtoStub.createOrderSearchCondition();
 		Page<OrderHistoryResponseDto> pageResult = OrderDtoStub.createOrderHistoryPage();
 
 		when(orderService.getOrderHistory(any(OrderSearchCondition.class), any(Pageable.class),
@@ -186,8 +185,7 @@ class OrderControllerTest {
 	@DisplayName("레스토랑 주문 내역 조회 API")
 	void getRestaurantOrderHistory() throws Exception {
 		// Given
-		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.CUSTOMER);
-		OrderSearchCondition condition = OrderDtoStub.createOrderSearchCondition();
+		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.OWNER);
 		Page<OrderHistoryResponseDto> pageResult = OrderDtoStub.createOrderHistoryPage();
 
 		when(orderService.getRestaurantOrderHistory(
@@ -245,7 +243,7 @@ class OrderControllerTest {
 	@DisplayName("주문 삭제 API")
 	void deleteOrder() throws Exception {
 		// Given
-		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.CUSTOMER);
+		UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.MASTER);
 		doNothing().when(orderService).deleteOrder(eq(TEST_ORDER_ID), anyString());
 
 		// When & Then

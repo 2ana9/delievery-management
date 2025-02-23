@@ -18,7 +18,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 //@AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
-@AllArgsConstructor // 빌더를 통한 생성만 허용
+@AllArgsConstructor
 @Builder
 @Table(name = "p_users")
 @JsonIgnoreProperties(ignoreUnknown = true) // ✅ 정의되지 않은 필드는 무시하여 Jackson 역직렬화 오류 방지
@@ -43,6 +43,7 @@ public class User extends Timestamped implements Serializable{
     // soft delete 여부를 나타내는 필드 추가 (기본값 false)
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean isDeleted = false;
 
     public User(String id, String nickname, String email, String password, String phone, UserRoleEnum role) {

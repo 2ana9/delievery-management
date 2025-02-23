@@ -52,14 +52,23 @@ public class UserAddressService {
             throw new DuplicateAddressException(requestDto.address());
         }
 
-        // 중복이 없으면 새로운 배송지 저장
-        UserAddress userAddress = userAddressRepository.save(UserAddress.builder()
+        // 설정한 주소가 없으면 기본 주소로 설정
+        boolean isDefault = userAddressList.isEmpty();
+
+        UserAddress userAddress = UserAddress.builder()
                 .user(user)
                 .address(requestDto.address())
                 .detail(requestDto.detail())
-                .build());
+                .defaultAddress(isDefault)
+                .build();
 
-        return new CreateUserAddressResponseDto(userAddress.getId(), userAddress.getAddress(), userAddress.getDetail());
+        UserAddress savedAddress = userAddressRepository.save(userAddress);
+
+        return new CreateUserAddressResponseDto(
+                savedAddress.getId(),
+                savedAddress.getAddress(),
+                savedAddress.getDetail(),
+                savedAddress.getDefaultAddress());
     }
 
     // 문자열 공백 제거 메서드
@@ -91,9 +100,13 @@ public class UserAddressService {
         }
 
         // 기존 배송지 업데이트
-        UserAddress resultUserAddress = userAddressRepository.save(findUserAddress);
+        UserAddress savedAddress = userAddressRepository.save(findUserAddress);
 
-        return new UpdateUserAddressResponseDto(resultUserAddress.getId(), resultUserAddress.getAddress(), resultUserAddress.getDetail());
+        return new UpdateUserAddressResponseDto(
+                savedAddress.getId(),
+                savedAddress.getAddress(),
+                savedAddress.getDetail(),
+                savedAddress.getDefaultAddress());
     }
 
     public DeleteUserAddressResponseDto deleteUserAddresses(UUID id, UserDetailsImpl userDetails) {
@@ -116,5 +129,38 @@ public class UserAddressService {
         UserAddress resultUserAddress = userAddressRepository.save(findUserAddress);
 
         return new DeleteUserAddressResponseDto(resultUserAddress.getId());
+    }
+
+    public UpdateUserAddressResponseDto setDefaultAddress(UUID id, UserDetailsImpl userDetails) {
+        // 로그인한 유저 정보 가져오기
+        User user = userDetails.getUser();
+
+        // 전달 받은 id로 배송지 정보가 있는지 체크
+        UserAddress findUserAddress = userAddressRepository.findById(id).orElseThrow(UserAddressNotFoundException::new);
+
+        // 전달 받은 id가 자신이 등록한 주소인지 검증
+        if (!findUserAddress.getUser().getId().equals(user.getId())) {
+            throw new UserAddressForbiddenException();
+        }
+
+        // 전달 받은 id로 배송지 정보가 있는지 체크
+        Optional<UserAddress> defaultUserAddressOpt = userAddressRepository.findByUserAndDefaultAddressTrue(user);
+
+        // 대표 배송지가 존재하면 defaultAddress를 해제
+        defaultUserAddressOpt.ifPresent(userAddress -> {
+            userAddress.updateDefaultAddress(false);
+            userAddressRepository.save(userAddress);
+        });
+
+        findUserAddress.updateDefaultAddress(true);
+
+        // 기존 배송지 업데이트
+        UserAddress savedAddress = userAddressRepository.save(findUserAddress);
+
+        return new UpdateUserAddressResponseDto(
+                savedAddress.getId(),
+                savedAddress.getAddress(),
+                savedAddress.getDetail(),
+                savedAddress.getDefaultAddress());
     }
 }

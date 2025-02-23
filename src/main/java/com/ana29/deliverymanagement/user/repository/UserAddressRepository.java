@@ -10,4 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserAddressRepository extends JpaRepository<UserAddress, UUID>, UserAddressRepositoryCustom {
     List<UserAddress> findByUserAndIsDeletedFalse(User user);
     Optional<UserAddress> findByIdAndUserIdAndIsDeletedFalse(UUID id, String userId);
+    Optional<UserAddress> findByUserAndDefaultAddressTrue(User user);
 }
