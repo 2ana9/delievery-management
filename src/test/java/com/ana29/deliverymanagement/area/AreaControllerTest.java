@@ -4,7 +4,7 @@ import com.ana29.deliverymanagement.order.dto.CreateOrderRequestDto;
 import com.ana29.deliverymanagement.order.dto.OrderDetailResponseDto;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.security.config.WebSecurityConfig;
-import com.ana29.deliverymanagement.user.constant.user.UserRoleEnum;
+import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.user.controller.UserAddressController;
 import com.ana29.deliverymanagement.user.dto.CreateUserAddressRequestDto;
 import com.ana29.deliverymanagement.user.dto.CreateUserAddressResponseDto;

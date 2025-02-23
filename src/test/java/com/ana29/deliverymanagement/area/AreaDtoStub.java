@@ -28,7 +28,8 @@ public class AreaDtoStub {
 		return new CreateUserAddressResponseDto(
 				TEST_USER_ADDRESS_ID,
 				"대구 서구 북비산로 생성34",
-				"522-13번지 3층"
+				"522-13번지 3층",
+				false
 		);
 	}
 }
