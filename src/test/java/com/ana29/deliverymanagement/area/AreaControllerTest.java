@@ -125,7 +125,9 @@ class AreaControllerTest {
 				fieldWithPath("data.address").type(JsonFieldType.STRING)
 						.description("주소지"),
 				fieldWithPath("data.detail").type(JsonFieldType.STRING)
-						.description("상세주소")
+						.description("상세주소"),
+				fieldWithPath("data.defaultAddress").type(JsonFieldType.BOOLEAN)
+				.description("대표주소지설정")
 		);
 
 		return responseFields(Stream.concat(commonFields.stream(), createFields.stream()).toList());
