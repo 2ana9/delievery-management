@@ -15,6 +15,7 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.restdocs.request.QueryParametersSnippet;
 import org.springframework.restdocs.snippet.Snippet;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -95,7 +96,7 @@ class RestaurantControllerTest {
         .andExpect(status().isOk())// 공통 response여서 200확인
         .andExpect(jsonPath("$.data.name").value("햄햄버거"))
         .andExpect(jsonPath("$.data.content").value("햄버거집!")) //생성값과 비교
-                .andDo(document("category-delete",
+                .andDo(document("restaurant-update",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestHeaders(
@@ -126,13 +127,13 @@ class RestaurantControllerTest {
                 )
                 .andExpect(status().isOk())// 공통 response여서 200확인
                 .andExpect(jsonPath("$.data.deleted").value(true))
-                .andDo(document("category-delete",
+                .andDo(document("restaurant-delete",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestHeaders(
                                 headerWithName("Authorization").description("JWT 토큰")),
                         pathParameters(
-                                parameterWithName("id").description("가게 ID")
+                                parameterWithName("id").description("음식점 ID")
                         ),
                         getResponseFieldsSnippet()));
 
@@ -205,31 +206,31 @@ class RestaurantControllerTest {
                 fieldWithPath("code").description("응답 코드"),
                 fieldWithPath("status").description("응답 상태"),
                 fieldWithPath("message").description("응답 메시지"),
-                fieldWithPath("data.id").type(JsonFieldType.STRING).description("가게 ID"),
-                fieldWithPath("data.name").type(JsonFieldType.STRING).description("가게이름"),
-                fieldWithPath("data.ownerId").type(JsonFieldType.STRING).description("가게 사장 ID"),
-                fieldWithPath("data.category").type(JsonFieldType.STRING).description("가게 음식유형"),
-                fieldWithPath("data.legalCode").type(JsonFieldType.STRING).description("가게 지역코드"),
-                fieldWithPath("data.content").type(JsonFieldType.STRING).description("가게 소개내용"),
-                fieldWithPath("data.operatingHours").type(JsonFieldType.STRING).description("가게 영업시간"),
-                fieldWithPath("data.deleted").type(JsonFieldType.BOOLEAN).description("가게 삭제 여부"),
-                fieldWithPath("data.createdAt").description("가게 생성시간"),
-                fieldWithPath("data.createdBy").description("가게 생성자"),
-                fieldWithPath("data.updatedAt").description("가게 수정시간"),
-                fieldWithPath("data.updatedBy").description("가게 수정자"),
-                fieldWithPath("data.deletedAt").description("가게 삭제시간"),
-                fieldWithPath("data.deletedBy").description("가게 삭제자")
+                fieldWithPath("data.id").type(JsonFieldType.STRING).description("음식점 ID"),
+                fieldWithPath("data.name").type(JsonFieldType.STRING).description("음식점"),
+                fieldWithPath("data.ownerId").type(JsonFieldType.STRING).description("음식점 사장 ID"),
+                fieldWithPath("data.category").type(JsonFieldType.STRING).description("음식점 음식유형"),
+                fieldWithPath("data.legalCode").type(JsonFieldType.STRING).description("음식점 지역코드"),
+                fieldWithPath("data.content").type(JsonFieldType.STRING).description("음식점 소개내용"),
+                fieldWithPath("data.operatingHours").type(JsonFieldType.STRING).description("음식점 영업시간"),
+                fieldWithPath("data.deleted").type(JsonFieldType.BOOLEAN).description("음식점 삭제 여부"),
+                fieldWithPath("data.createdAt").description("음식점 생성시간"),
+                fieldWithPath("data.createdBy").description("음식점 생성자"),
+                fieldWithPath("data.updatedAt").description("음식점 수정시간"),
+                fieldWithPath("data.updatedBy").description("음식점 수정자"),
+                fieldWithPath("data.deletedAt").description("음식점 삭제시간"),
+                fieldWithPath("data.deletedBy").description("음식점 삭제자")
         );
     }
 
     private RequestFieldsSnippet getRequestFieldsSnippet() {
         return requestFields(
-                fieldWithPath("data.name").type(JsonFieldType.STRING).description("가게이름"),
-                fieldWithPath("data.ownerId").type(JsonFieldType.STRING).description("가게 사장 ID"),
-                fieldWithPath("data.category").type(JsonFieldType.STRING).description("가게 음식유형"),
-                fieldWithPath("data.legalCode").type(JsonFieldType.STRING).description("가게 지역코드"),
-                fieldWithPath("data.content").type(JsonFieldType.STRING).description("가게 소개내용"),
-                fieldWithPath("data.operatingHours").type(JsonFieldType.STRING).description("가게 영업시간")
+                fieldWithPath("data.name").type(JsonFieldType.STRING).description("음식점 이름"),
+                fieldWithPath("data.ownerId").type(JsonFieldType.STRING).description("음식점 사장 ID"),
+                fieldWithPath("data.category").type(JsonFieldType.STRING).description("음식점 음식유형"),
+                fieldWithPath("data.legalCode").type(JsonFieldType.STRING).description("음식점 지역코드"),
+                fieldWithPath("data.content").type(JsonFieldType.STRING).description("음식점 소개내용"),
+                fieldWithPath("data.operatingHours").type(JsonFieldType.STRING).description("음식점 영업시간")
         );
     }
 

@@ -98,7 +98,7 @@ class CategoryControllerTest {
                             .header("Authorization", jwtToken)// 발급받은 JWT 토큰 추가
 
                     )
-                    .andExpect(status().isOk())// 공통 response여서 200확인
+                    .andExpect(status().isCreated())// 공통 response여서 200확인
                     .andExpect(jsonPath("$.data.foodType").value("간식"))
                     .andDo(document("category-create",
                             preprocessRequest(prettyPrint()),
@@ -175,7 +175,7 @@ class CategoryControllerTest {
     void testSearchCategory() throws Exception{
         String jwtToken = getJwtToken();
         if (jwtToken != null && !jwtToken.trim().isEmpty()) {
-            mockMvc.perform(get("/api/categories/search")
+            mockMvc.perform(get("/api/categories/search?foodType=한식")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", jwtToken)
             )
