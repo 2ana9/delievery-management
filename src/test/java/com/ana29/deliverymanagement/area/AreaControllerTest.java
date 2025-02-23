@@ -124,7 +124,7 @@ class AreaControllerTest {
     }
 
     @Test
-    @DisplayName("유저 배송지 상세 조회 API")
+    @DisplayName("유저 배송지 조회 API")
     void getOrderDetail() throws Exception {
         // Given
         UserDetailsImpl userDetails = createUserDetails(TEST_USERNAME, UserRoleEnum.CUSTOMER);
@@ -192,7 +192,7 @@ class AreaControllerTest {
                         .header("Authorization", MOCK_JWT_TOKEN)
                         .with(SecurityMockMvcRequestPostProcessors.user(userDetails)))
                 .andExpect(status().isOk())
-                .andDo(document("set-default-address",
+                .andDo(document("user-address-delete",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestHeaders(
