@@ -1,6 +1,7 @@
 package com.ana29.deliverymanagement.user.service;
 
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
+import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.user.dto.*;
 import com.ana29.deliverymanagement.user.entity.User;
 import com.ana29.deliverymanagement.user.entity.UserAddress;
@@ -134,18 +135,20 @@ public class UserAddressService {
 
     public UpdateUserAddressResponseDto setDefaultAddress(UUID id, UserDetailsImpl userDetails) {
         // 로그인한 유저 정보 가져오기
-        String userId = userDetails.getId();
+        User user = User.builder()
+                .Id(userDetails.getId())
+                .build();
 
         // 전달 받은 id로 배송지 정보가 있는지 체크
         UserAddress findUserAddress = userAddressRepository.findById(id).orElseThrow(UserAddressNotFoundException::new);
 
         // 전달 받은 id가 자신이 등록한 주소인지 검증
-        if (!findUserAddress.getUser().getId().equals(userId)) {
+        if (!findUserAddress.getUser().getId().equals(user.getId())) {
             throw new UserAddressForbiddenException();
         }
-        Optional<User> user = userRepository.findById(userId);
+
         // 전달 받은 id로 배송지 정보가 있는지 체크
-        Optional<UserAddress> defaultUserAddressOpt = userAddressRepository.findByUserIdAndDefaultAddressTrue(user);
+        Optional<UserAddress> defaultUserAddressOpt = userAddressRepository.findByUserAndDefaultAddressTrue(user);
 
         // 대표 배송지가 존재하면 defaultAddress를 해제
         defaultUserAddressOpt.ifPresent(userAddress -> {

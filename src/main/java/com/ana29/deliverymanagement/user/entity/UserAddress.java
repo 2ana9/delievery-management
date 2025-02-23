@@ -1,10 +1,7 @@
 package com.ana29.deliverymanagement.user.entity;
 
-import com.ana29.deliverymanagement.global.constant.OrderStatusEnum;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
-import com.ana29.deliverymanagement.order.exception.OrderStatusChangeException;
 import com.ana29.deliverymanagement.user.dto.UpdateUserAddressRequestDto;
-import com.ana29.deliverymanagement.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

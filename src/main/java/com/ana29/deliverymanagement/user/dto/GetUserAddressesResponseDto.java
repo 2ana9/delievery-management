@@ -5,13 +5,14 @@ import java.util.UUID;
 
 public record GetUserAddressesResponseDto(UUID userAddressId,
 										  String address,
-										  String detail
+										  String detail,
+										  boolean defaultAddress
 ) {
 
 	public static GetUserAddressesResponseDto from(UserAddress userAddress) {
 		return userAddress != null ?
 			new GetUserAddressesResponseDto
-				(userAddress.getId(), userAddress.getAddress(), userAddress.getDetail())
+				(userAddress.getId(), userAddress.getAddress(), userAddress.getDetail(), userAddress.getDefaultAddress())
 			: null;
 	}
 }
