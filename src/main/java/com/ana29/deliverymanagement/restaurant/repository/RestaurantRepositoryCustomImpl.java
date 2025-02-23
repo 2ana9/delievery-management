@@ -41,6 +41,17 @@ public class RestaurantRepositoryCustomImpl implements RestaurantRepositoryCusto
                 .where(restaurant.isDeleted.isFalse()) // 삭제되지 않은 가게만 조회
                 .groupBy(restaurant.id);
 
+        // fetchCount 대체
+        JPAQuery<Long> countQuery = queryFactory
+                .select(restaurant.count())
+                .from(restaurant)
+                .leftJoin(review).on(review.order.menu.restaurant.id.eq(restaurant.id))
+                .where(restaurant.isDeleted.isFalse());
+
+        // 총 개수 가져오기
+        long totalCount = countQuery.fetchOne();
+
+
         // 페이징 처리
         query.offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
@@ -49,6 +60,7 @@ public class RestaurantRepositoryCustomImpl implements RestaurantRepositoryCusto
         List<RestaurantWithRatingDto> results = query.fetch();
 
         // 페이징 처리된 결과 반환
-        return new PageImpl<>(results, pageable, query.fetchCount());
+        return new PageImpl<>(results, pageable, totalCount);
+        //fetchCount 사용시 deprereated Note 발생
     }
 }

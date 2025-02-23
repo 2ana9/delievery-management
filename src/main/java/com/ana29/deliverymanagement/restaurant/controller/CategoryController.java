@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,32 +29,34 @@ public class CategoryController {
 
     //음식 카테고리 추가
     @PostMapping
-    public ResponseDto<Category> createCategory(@RequestBody @Valid CategoryRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
+    public ResponseEntity<ResponseDto<Category>> createCategory(@RequestBody @Valid CategoryRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         checkUserAccess(userDetails);
+        Category category = categoryService.createCategory(requestDto);
 
-        return categoryService.createCategory(requestDto);
+        return ResponseEntity.ok(ResponseDto.success(category));
     };
 
     //음식 카테고리 수정
     @PutMapping("/{id}") //카테고리 이름수정
-    public ResponseDto<Category> updateCategory(@PathVariable UUID id,
+    public ResponseEntity<ResponseDto<Category>> updateCategory(@PathVariable UUID id,
                                               @RequestBody CategoryRequestDto requestDto,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails)throws AccessDeniedException {
         checkUserAccess(userDetails);
+        Category category = categoryService.updateCategory(id,requestDto,userDetails.getId());
 
-        return categoryService.updateCategory(id,requestDto,userDetails.getId());
+        return ResponseEntity.ok(ResponseDto.success(category));
     };
 
     //음식 카테고리 조회(전체)
     @GetMapping
-    public ResponseDto<Page<Category>> getAllCategories(Pageable pageable) {
+    public ResponseEntity<ResponseDto<Page<Category>>> getAllCategories(Pageable pageable) {
 
-        return categoryService.getAllCategories(pageable);
+        return ResponseEntity.ok(categoryService.getAllCategories(pageable));
     };
 
     //search
     @GetMapping("/search")
-    public ResponseDto<List<Category>> searchCategories(
+    public ResponseDto<List<Object>> searchCategories(
             @PathVariable(required = false) UUID id,
             @RequestParam(required = false) String foodType,
             @RequestParam(defaultValue = "0") int page,

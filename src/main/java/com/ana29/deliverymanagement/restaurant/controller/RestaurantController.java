@@ -62,7 +62,7 @@ public class RestaurantController {
 
     //search
     @GetMapping("/search")
-    public ResponseDto<List<Restaurant>> searchRestaurants(
+    public ResponseDto<List<Object>> searchRestaurants(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) String legalCode,

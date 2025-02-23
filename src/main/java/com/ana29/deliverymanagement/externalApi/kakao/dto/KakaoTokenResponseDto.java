@@ -1,4 +1,4 @@
-package com.ana29.deliverymanagement.externalApi.kakao;
+package com.ana29.deliverymanagement.externalApi.kakao.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;

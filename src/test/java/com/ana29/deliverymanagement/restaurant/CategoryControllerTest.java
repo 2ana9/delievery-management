@@ -15,6 +15,7 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.restdocs.snippet.Snippet;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,8 +27,9 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -96,32 +98,44 @@ class CategoryControllerTest {
                             .header("Authorization", jwtToken)// 발급받은 JWT 토큰 추가
 
                     )
-                    .andExpect(status().isOk())// 공통 response여서 200확인
+                    .andExpect(status().isCreated())// 공통 response여서 200확인
                     .andExpect(jsonPath("$.data.foodType").value("간식"))
                     .andDo(document("category-create",
                             preprocessRequest(prettyPrint()),
                             preprocessResponse(prettyPrint()),
                             requestHeaders(
                                     headerWithName("Authorization").description("JWT 토큰")),
+                            getRequestFieldSnippet(),
                             getResponseFieldsSnippet()));
         }else{
             System.out.println("JWT Token is missing or empty.");
         }
     }
 
+
     @Test
     @Description("음식 카테고리 수정테스트")
     void testUpdateCategory() throws Exception{
         String jwtToken = getJwtToken();
         if (jwtToken != null && !jwtToken.trim().isEmpty()) {
-            mockMvc.perform(put("/api/categories/"+CATEGORY_ID) //url타입,매핑
+            mockMvc.perform(put("/api/categories/{id}",CATEGORY_ID) //url타입,매핑
                         .contentType(MediaType.APPLICATION_JSON) //받는 요청의 타입
                         .content("{\"foodType\":\"후식\"}") //전달할 json내용
                         .header("Authorization", jwtToken)// 발급받은 JWT 토큰 추가
 
                 )
                 .andExpect(status().isOk())// 공통 response여서 200확인
-                .andExpect(jsonPath("$.data.foodType").value("후식")); //생성값과 비교
+                .andExpect(jsonPath("$.data.foodType").value("후식")) //생성값과 비교
+                .andDo(document("category-update",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization").description("JWT 토큰")),
+                        pathParameters(
+                                parameterWithName("id").description("음식 카테고리 ID")
+                        ),
+                        getRequestFieldSnippet(),
+                        getResponseFieldsSnippet()));
 
         }else{
             System.out.println("JWT Token is missing or empty.");
@@ -133,12 +147,21 @@ class CategoryControllerTest {
     void testDeleteCategory() throws Exception{
         String jwtToken = getJwtToken();
         if (jwtToken != null && !jwtToken.trim().isEmpty()) {
-            mockMvc.perform(delete("/api/categories/"+CATEGORY_ID) //url타입,매핑
+            mockMvc.perform(delete("/api/categories/{id}",CATEGORY_ID) //url타입,매핑
                             .contentType(MediaType.APPLICATION_JSON) //받는 요청의 타입
                             .header("Authorization", jwtToken)// 발급받은 JWT 토큰 추가
                     )
                     .andExpect(status().isOk())// 공통 response여서 200확인
-                    .andExpect(jsonPath("$.data.deleted").value(true)); //생성값과 비교
+                    .andExpect(jsonPath("$.data.deleted").value(true)) //생성값과 비교
+                    .andDo(document("category-delete",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            requestHeaders(
+                                    headerWithName("Authorization").description("JWT 토큰")),
+                            pathParameters(
+                                    parameterWithName("id").description("음식 카테고리 ID")
+                            ),
+                            getResponseFieldsSnippet()));
         }else{
 
             System.out.println("JWT Token is missing or empty.");
@@ -152,7 +175,7 @@ class CategoryControllerTest {
     void testSearchCategory() throws Exception{
         String jwtToken = getJwtToken();
         if (jwtToken != null && !jwtToken.trim().isEmpty()) {
-            mockMvc.perform(get("/api/categories/search")
+            mockMvc.perform(get("/api/categories/search?foodType=한식")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", jwtToken)
             )
@@ -165,20 +188,24 @@ class CategoryControllerTest {
 
     private ResponseFieldsSnippet getResponseFieldsSnippet() {
         return responseFields(
-                fieldWithPath("code").description("The response code"),
-                fieldWithPath("status").description("The response status"),
-                fieldWithPath("message").description("A message describing the response"),
-                fieldWithPath("data").description("The data object containing category information"),
+                fieldWithPath("code").description("응답 코드"),
+                fieldWithPath("status").description("응답 상태"),
+                fieldWithPath("message").description("응답 메시지"),
                 fieldWithPath("data.id").type(JsonFieldType.STRING).description("음식 카테고리 ID"),
-                fieldWithPath("data.foodType").type(JsonFieldType.STRING).description("카테고리 이름"),
-                fieldWithPath("data.deleted").type(JsonFieldType.BOOLEAN).description("삭제 여부")
-                .optional(),
-                fieldWithPath("data.createdAt").description("The creation date and time of the category"),
-                fieldWithPath("data.createdBy").description("The creator of the category"),
-                fieldWithPath("data.updatedAt").description("The last update date and time"),
-                fieldWithPath("data.updatedBy").description("The last person who updated the category"),
-                fieldWithPath("data.deletedAt").description("The deletion date and time (if any)"),
-                fieldWithPath("data.deletedBy").description("The person who deleted the category (if any)")
+                fieldWithPath("data.foodType").type(JsonFieldType.STRING).description("음식 카테고리 이름"),
+                fieldWithPath("data.deleted").type(JsonFieldType.BOOLEAN).description("음식 카테고리 삭제 여부"),
+                fieldWithPath("data.createdAt").description("음식 카테고리 생성시간"),
+                fieldWithPath("data.createdBy").description("음식 카테고리 생성자"),
+                fieldWithPath("data.updatedAt").description("음식 카테고리 수정시간"),
+                fieldWithPath("data.updatedBy").description("음식 카테고리 수정자"),
+                fieldWithPath("data.deletedAt").description("음식 카테고리 삭제시간"),
+                fieldWithPath("data.deletedBy").description("음식 카테고리 삭제자")
+        );
+    }
+
+    private RequestFieldsSnippet getRequestFieldSnippet() {
+        return requestFields(
+                fieldWithPath("foodType").description("음식 카테고리 이름")
         );
     }
 

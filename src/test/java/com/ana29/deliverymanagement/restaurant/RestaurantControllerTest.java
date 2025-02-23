@@ -12,10 +12,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.restdocs.payload.RequestFieldsSnippet;
+import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.restdocs.request.QueryParametersSnippet;
+import org.springframework.restdocs.snippet.Snippet;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,12 +64,20 @@ class RestaurantControllerTest {
                                 ",\"operatingHours\":\"10:00~17:00\""+
                                 "}") //전달할 json내용
                         .header("Authorization", jwtToken)// 발급받은 JWT 토큰 추가
-
                 )
                 .andExpect(status().isOk())// 공통 response여서 200확인
-                .andExpect(jsonPath("$.data.name").value("돈가스 와와")); //생성값과 비교
+                .andExpect(jsonPath("$.data.name").value("돈가스 와와")) //생성값과 비교
+                .andDo(document("restaurant-create",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization").description("JWT 토큰")),
+                        getRequestFieldsSnippet(),
+                        getResponseFieldsSnippet()));
 
     }
+
+
 
     @Test
     @Description("가게 수정테스트")
@@ -65,7 +87,7 @@ class RestaurantControllerTest {
         String restaurantId = dummyRestaurant();
 
         //when-then
-        mockMvc.perform(put("/api/restaurants/"+restaurantId)
+        mockMvc.perform(put("/api/restaurants/{id}",restaurantId)
                 .contentType(MediaType.APPLICATION_JSON) //받는 요청의 타입
                 .content("{\"name\": \"햄햄버거\"" +
                         ",\"content\": \"햄버거집!\"}")
@@ -73,9 +95,22 @@ class RestaurantControllerTest {
         )
         .andExpect(status().isOk())// 공통 response여서 200확인
         .andExpect(jsonPath("$.data.name").value("햄햄버거"))
-        .andExpect(jsonPath("$.data.content").value("햄버거집!")); //생성값과 비교
+        .andExpect(jsonPath("$.data.content").value("햄버거집!")) //생성값과 비교
+                .andDo(document("restaurant-update",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization").description("JWT 토큰")),
+                        pathParameters(
+                                parameterWithName("id").description("음식 카테고리 ID")
+                        ),
+                        getRequestUpdateFieldSnippet(),
+                        getResponseFieldsSnippet()));
 
+    }
 
+    private RequestFieldsSnippet getRequestUpdateFieldSnippet() {
+        return null;
     }
 
     @Test
@@ -86,13 +121,21 @@ class RestaurantControllerTest {
         String restaurantId = dummyRestaurant();
 
         //when-then
-        mockMvc.perform(delete("/api/restaurants/"+restaurantId)
+        mockMvc.perform(delete("/api/restaurants/{id}", restaurantId)
                         .contentType(MediaType.APPLICATION_JSON) //받는 요청의 타입
                         .header("Authorization", jwtToken)
                 )
                 .andExpect(status().isOk())// 공통 response여서 200확인
-                .andExpect(jsonPath("$.data.deleted").value(true));
-
+                .andExpect(jsonPath("$.data.deleted").value(true))
+                .andDo(document("restaurant-delete",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization").description("JWT 토큰")),
+                        pathParameters(
+                                parameterWithName("id").description("음식점 ID")
+                        ),
+                        getResponseFieldsSnippet()));
 
     }
 
@@ -100,13 +143,13 @@ class RestaurantControllerTest {
     @Description("가게 검색필터링 테스트")
     void testSearchRestaurant() throws Exception{
         String jwtToken = getJwtToken();
-
-        mockMvc.perform(get("/api/restaurants/search?name=레스토랑 14")
+        dummyRestaurant();
+        mockMvc.perform(get("/api/restaurants/search?name=가게1")
                         .contentType(MediaType.APPLICATION_JSON) //받는 요청의 타입
                         .header("Authorization", jwtToken)
                 )
-                .andExpect(status().isOk())// 공통 response여서 200확인
-                .andExpect(jsonPath("$.data[0].name").value("레스토랑 14"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].name").value("가게1"));
 
     }
 
@@ -156,6 +199,39 @@ class RestaurantControllerTest {
                 .andReturn().getResponse().getHeader("Authorization");  // Authorization 헤더에서 JWT 토큰 추출
         System.out.println("JWT Token: " + jwtToken);
         return jwtToken;
+    }
+
+    private ResponseFieldsSnippet getResponseFieldsSnippet() {
+        return responseFields(
+                fieldWithPath("code").description("응답 코드"),
+                fieldWithPath("status").description("응답 상태"),
+                fieldWithPath("message").description("응답 메시지"),
+                fieldWithPath("data.id").type(JsonFieldType.STRING).description("음식점 ID"),
+                fieldWithPath("data.name").type(JsonFieldType.STRING).description("음식점"),
+                fieldWithPath("data.ownerId").type(JsonFieldType.STRING).description("음식점 사장 ID"),
+                fieldWithPath("data.category").type(JsonFieldType.STRING).description("음식점 음식유형"),
+                fieldWithPath("data.legalCode").type(JsonFieldType.STRING).description("음식점 지역코드"),
+                fieldWithPath("data.content").type(JsonFieldType.STRING).description("음식점 소개내용"),
+                fieldWithPath("data.operatingHours").type(JsonFieldType.STRING).description("음식점 영업시간"),
+                fieldWithPath("data.deleted").type(JsonFieldType.BOOLEAN).description("음식점 삭제 여부"),
+                fieldWithPath("data.createdAt").description("음식점 생성시간"),
+                fieldWithPath("data.createdBy").description("음식점 생성자"),
+                fieldWithPath("data.updatedAt").description("음식점 수정시간"),
+                fieldWithPath("data.updatedBy").description("음식점 수정자"),
+                fieldWithPath("data.deletedAt").description("음식점 삭제시간"),
+                fieldWithPath("data.deletedBy").description("음식점 삭제자")
+        );
+    }
+
+    private RequestFieldsSnippet getRequestFieldsSnippet() {
+        return requestFields(
+                fieldWithPath("data.name").type(JsonFieldType.STRING).description("음식점 이름"),
+                fieldWithPath("data.ownerId").type(JsonFieldType.STRING).description("음식점 사장 ID"),
+                fieldWithPath("data.category").type(JsonFieldType.STRING).description("음식점 음식유형"),
+                fieldWithPath("data.legalCode").type(JsonFieldType.STRING).description("음식점 지역코드"),
+                fieldWithPath("data.content").type(JsonFieldType.STRING).description("음식점 소개내용"),
+                fieldWithPath("data.operatingHours").type(JsonFieldType.STRING).description("음식점 영업시간")
+        );
     }
 
 }

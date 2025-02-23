@@ -1,11 +1,14 @@
 package com.ana29.deliverymanagement.security.service;
 
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
+import com.ana29.deliverymanagement.security.config.SimpleGrantedAuthorityMixin;
 import com.ana29.deliverymanagement.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,7 +28,7 @@ public class CachedUserDetailsService implements UserDetailsService {
         this.redisTemplate = redisTemplate;
         this.objectMapper = new ObjectMapper();
     }
-//    RedisConfig 클래스의 CacheManager의 코드에서
+    //    RedisConfig 클래스의 CacheManager의 코드에서
 //    redisCacheConfigurationMap.put("UserCacheStore", redisCacheConfiguration);
 //     이 부분이 Cacheable 사용하는 설정. "UserCacheStore" 이 부분이 value와 같아야 함.
 //       key 는 redis에서 찾아올 설정이므로 유니크한 값 아무거나 넣기.

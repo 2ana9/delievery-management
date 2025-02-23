@@ -2,6 +2,7 @@ package com.ana29.deliverymanagement.restaurant.service;
 
 import com.ana29.deliverymanagement.area.repository.AreaRepository;
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
+import com.ana29.deliverymanagement.restaurant.dto.PaginationDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantWithRatingDto;
 import com.ana29.deliverymanagement.restaurant.entity.Category;
@@ -18,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -54,6 +57,9 @@ public class RestaurantService {
     public ResponseDto<Restaurant> updateRestaurant(UUID id, RestaurantRequestDto requestDto,String userId) {
         Restaurant restaurant =  restaurantRepository.findById(id).orElseThrow(()->
                 new IllegalArgumentException("Restaurant not found")); //고유id값으로 가게정보 찾기
+        Optional<Category> categoryOptional = categoryRepository.findById(requestDto.getCategory());
+        Category category = categoryOptional.get();
+        restaurant.setCategory(category);
         restaurant.update(requestDto);
         restaurant.setUpdatedAt(LocalDateTime.now());
         restaurant.setUpdatedBy(userId);
@@ -84,7 +90,7 @@ public class RestaurantService {
     }
 
     @Transactional
-    public ResponseDto<List<Restaurant>> searchRestaurants(
+    public ResponseDto<List<Object>> searchRestaurants(
             String name, UUID categoryId, String legalCode, Pageable pageable) {
         //가게이름,음식카테고리,지역위치로 필터링 진행 (+ 페이징처리 / 삭제처리된 가게의경우 숨김)
 
@@ -97,6 +103,22 @@ public class RestaurantService {
         // 조건에 맞는 데이터를 페이징 처리하여 가져오기
         Page<Restaurant> restaurantPage = restaurantRepository.findAll(spec, pageable);
 
-        return ResponseDto.success(restaurantPage.getContent());
+        // 페이징 정보 생성
+        PaginationDto pagination = new PaginationDto(
+                restaurantPage.getTotalElements(),
+                restaurantPage.getTotalPages(),
+                restaurantPage.getNumber(),
+                restaurantPage.getSize(),
+                restaurantPage.isFirst(),
+                restaurantPage.isLast(),
+                restaurantPage.getNumberOfElements(),
+                restaurantPage.isEmpty()
+        );
+
+        // Restaurant 리스트와 PaginationDto를 하나의 리스트에 담기
+        List<Object> responseData = new ArrayList<>(restaurantPage.getContent());
+        responseData.add(pagination);
+
+        return ResponseDto.success(responseData);
     };
 }
