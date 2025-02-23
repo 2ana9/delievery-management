@@ -3,6 +3,7 @@ package com.ana29.deliverymanagement.user.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
 public class UpdateRequestDto {
     @NotBlank(message = "닉네임은 필수 입력값입니다.")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[0-9])[a-z0-9^\\s]{4,10}$", message = "닉네임은 4자 이상 10자 이하로 입력해주세요.")
@@ -24,6 +26,4 @@ public class UpdateRequestDto {
     @Pattern(regexp = "^010-?\\d{4}-?\\d{4}$", message = "유효한 전화번호를 입력하세요.")
     private String phone;
 
-    // 선택적으로 추가 필드
-    private String currentAddress;
 }
