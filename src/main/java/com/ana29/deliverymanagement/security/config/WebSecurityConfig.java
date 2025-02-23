@@ -7,6 +7,7 @@ import com.ana29.deliverymanagement.security.jwt.JwtAuthorizationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;
 import com.ana29.deliverymanagement.security.jwt.RedisTokenBlacklist;
 import com.ana29.deliverymanagement.security.service.CachedUserDetailsService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +33,7 @@ public class WebSecurityConfig {
     private final CachedUserDetailsService userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final RedisTokenBlacklist redisTokenBlacklist;
-
+    private final ObjectMapper objectMapper;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -52,7 +53,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, redisTokenBlacklist);
+        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, redisTokenBlacklist, objectMapper);
     }
 
     @Bean
@@ -68,15 +69,8 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-                        .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
-                        .requestMatchers("/api/users/**").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
-                        .requestMatchers("/api/gemini/**").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
-                        .requestMatchers("/api/menus/**").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
-
-                        .requestMatchers("/redis/**").permitAll()
-//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")  // 관리자 전용 API 보호
-//                        .requestMatchers("/api/users/**").authenticated()  // 일반 유저 API는 JWT 필요
-//                        .requestMatchers("/api/reviews").permitAll()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/api/users/sign-in", "/api/users/sign-up", "/api/users/kakao/**", "/api/v2/**").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         ).exceptionHandling(ex -> ex
             .accessDeniedHandler(new CustomAccessDeniedHandler())

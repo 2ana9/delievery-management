@@ -1,7 +1,9 @@
 package com.ana29.deliverymanagement.security.jwt;
 
+import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import com.ana29.deliverymanagement.security.constant.jwt.JwtErrorMessage;
 import com.ana29.deliverymanagement.security.service.CachedUserDetailsService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,14 +34,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final CachedUserDetailsService userDetailsService;
     private final RedisTokenBlacklist redisTokenBlacklist;
-
+    private final ObjectMapper objectMapper;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-
         String path = request.getRequestURI();
+        log.info("shouldNotFilter check, path: " + path);
 //        /api/users/sign-in 의 Get 접속은 검증하지 않음
-        return path.equals("/api/users/sign-in") || path.equals("/api/users/sign-up");
+        return path.equals("/favicon.ico")
+                || path.equals("/api/users/sign-in")
+                || path.equals("/api/users/sign-up")
+                || path.startsWith("/api/users/kakao")
+                || path.startsWith("/api/v2");
         // 로그인/로그아웃 엔드포인트는 검증하지 않음
         // sign-in의 POST 방식도 검증해야 하나? No, post 방식에서도 토큰을 가지고 있지 않아야 하므로.
         // shouldNotFilter가 없으면 'sign-out' 메소드 후 리다이렉트 되는 'sing-in' (GET) 에서
@@ -74,6 +82,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             // 토큰이 존재하지 않는 경우
             log.info("인증된 토큰이 없습니다.");
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
+            ResponseDto responseDto = ResponseDto.failure(
+                    HttpStatus.UNAUTHORIZED,
+                    "인증이 필요한 서비스입니다."
+            );
+
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
+            response.getWriter().write(objectMapper.writeValueAsString(responseDto));
             return;
         }
         filterChain.doFilter(request, response);
