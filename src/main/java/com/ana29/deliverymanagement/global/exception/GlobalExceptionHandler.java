@@ -7,21 +7,21 @@ import com.ana29.deliverymanagement.order.exception.PaymentFailException;
 import com.ana29.deliverymanagement.review.exception.AlreadyReviewedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 
 @ControllerAdvice
@@ -110,10 +110,10 @@ public class GlobalExceptionHandler {
 			.body(ResponseDto.failure(HttpStatus.FORBIDDEN, e.getMessage()));
 	}
 
-	@ExceptionHandler(CustomAccessDeniedException.class)
+	@ExceptionHandler({CustomAccessDeniedException.class, AuthorizationDeniedException.class})
 	@ResponseBody
 	public ResponseEntity<ResponseDto> handleCustomAccessDeniedException(
-		CustomAccessDeniedException e) {
+		Exception e) {
 
 		return ResponseEntity.status(HttpStatus.FORBIDDEN)
 			.body(ResponseDto.failure(HttpStatus.FORBIDDEN, e.getMessage()));
@@ -161,6 +161,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	@ResponseBody
 	public ResponseEntity<ResponseDto> handleException(Exception e) {
+		e.printStackTrace();
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body(ResponseDto.failure(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."));
 	}

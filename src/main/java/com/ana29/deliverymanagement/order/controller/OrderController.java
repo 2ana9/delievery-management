@@ -72,8 +72,8 @@ public class OrderController {
 			.body(ResponseDto.success(HttpStatus.OK, response));
 	}
 
+	@PreAuthorize("hasAnyRole('MANAGER', 'MASTER', 'OWNER')")
 	@GetMapping("/restaurant")
-	@PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MASTER', 'ROLE_OWNER')")
 	public ResponseEntity<ResponseDto<Page<OrderHistoryResponseDto>>> getRestaurantOrderHistory(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestParam UUID restaurantId,
@@ -98,7 +98,7 @@ public class OrderController {
 			.body(ResponseDto.success(HttpStatus.OK, response));
 	}
 
-	@PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_MASTER')")
+	@PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ResponseDto<OrderDetailResponseDto>> deleteOrder(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,

@@ -2,6 +2,7 @@ package com.ana29.deliverymanagement.review.entity;
 
 import com.ana29.deliverymanagement.order.entity.Order;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
+import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
 import com.ana29.deliverymanagement.review.dto.CreateReviewRequestDto;
 import com.ana29.deliverymanagement.user.entity.User;
 import jakarta.persistence.*;
