@@ -102,12 +102,12 @@ class CategoryControllerTest {
             //로그인 jwt 토큰을 가지고 카테고리 생성(관리자)
             mockMvc.perform(post("/api/categories") //url타입,매핑
                             .contentType(MediaType.APPLICATION_JSON) //받는 요청의 타입
-                            .content("{\"foodType\":\"호랑이\"}") //전달할 json내용
+                            .content("{\"foodType\":\"간식\"}") //전달할 json내용
                             .header("Authorization", jwtToken)// 발급받은 JWT 토큰 추가
 
                     )
-                    .andExpect(status().is2xxSuccessful())// 공통 response여서 200확인
-                    .andExpect(jsonPath("$.data.foodType").value("호랑이"))
+                    .andExpect(status().isOk())// 공통 response여서 200확인
+                    .andExpect(jsonPath("$.data.foodType").value("간식"))
                     .andDo(document("category-create",
                             preprocessRequest(prettyPrint()),
                             preprocessResponse(prettyPrint()),
@@ -126,26 +126,26 @@ class CategoryControllerTest {
     void testUpdateCategory() throws Exception {
         String jwtToken = getJwtToken();
         if (jwtToken != null && !jwtToken.trim().isEmpty()) {
-            mockMvc.perform(put("/api/categories/{id}", CATEGORY_ID) //url타입,매핑
-                            .contentType(MediaType.APPLICATION_JSON) //받는 요청의 타입
-                            .content("{\"foodType\":\"후식\"}") //전달할 json내용
-                            .header("Authorization", jwtToken)// 발급받은 JWT 토큰 추가
+            mockMvc.perform(put("/api/categories/{id}",CATEGORY_ID) //url타입,매핑
+                        .contentType(MediaType.APPLICATION_JSON) //받는 요청의 타입
+                        .content("{\"foodType\":\"후식\"}") //전달할 json내용
+                        .header("Authorization", jwtToken)// 발급받은 JWT 토큰 추가
 
-                    )
-                    .andExpect(status().is2xxSuccessful())// 공통 response여서 200확인
+                )
+                .andExpect(status().isOk())// 공통 response여서 200확인
                 .andExpect(jsonPath("$.data.foodType").value("후식")) //생성값과 비교
-                    .andDo(document("category-update",
-                            preprocessRequest(prettyPrint()),
-                            preprocessResponse(prettyPrint()),
-                            requestHeaders(
-                                    headerWithName("Authorization").description("JWT 토큰")),
-                            pathParameters(
-                                    parameterWithName("id").description("음식 카테고리 ID")
-                            ),
-                            getRequestFieldSnippet(),
-                            getResponseFieldsSnippet()));
+                .andDo(document("category-update",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization").description("JWT 토큰")),
+                        pathParameters(
+                                parameterWithName("id").description("음식 카테고리 ID")
+                        ),
+                        getRequestFieldSnippet(),
+                        getResponseFieldsSnippet()));
 
-        } else {
+        }else{
             System.out.println("JWT Token is missing or empty.");
         }
     }
@@ -155,12 +155,12 @@ class CategoryControllerTest {
     void testDeleteCategory() throws Exception {
         String jwtToken = getJwtToken();
         if (jwtToken != null && !jwtToken.trim().isEmpty()) {
-            mockMvc.perform(delete("/api/categories/{id}", CATEGORY_ID) //url타입,매핑
+            mockMvc.perform(delete("/api/categories/{id}",CATEGORY_ID) //url타입,매핑
                             .contentType(MediaType.APPLICATION_JSON) //받는 요청의 타입
                             .header("Authorization", jwtToken)// 발급받은 JWT 토큰 추가
                     )
-                    .andExpect(status().is2xxSuccessful())// 공통 response여서 200확인
-//                    .andExpect(jsonPath("$.data.deleted").value(true)) //생성값과 비교
+                    .andExpect(status().isOk())// 공통 response여서 200확인
+                    .andExpect(jsonPath("$.data.deleted").value(true)) //생성값과 비교
                     .andDo(document("category-delete",
                             preprocessRequest(prettyPrint()),
                             preprocessResponse(prettyPrint()),
@@ -170,7 +170,7 @@ class CategoryControllerTest {
                                     parameterWithName("id").description("음식 카테고리 ID")
                             ),
                             getResponseFieldsSnippet()));
-        } else {
+        }else{
 
             System.out.println("JWT Token is missing or empty.");
         }
@@ -183,7 +183,7 @@ class CategoryControllerTest {
     void testSearchCategory() throws Exception {
         String jwtToken = getJwtToken();
         if (jwtToken != null && !jwtToken.trim().isEmpty()) {
-            mockMvc.perform(get("/api/categories/search?foodType=한식")
+            mockMvc.perform(get("/api/categories/search")
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("Authorization", jwtToken)
                     )

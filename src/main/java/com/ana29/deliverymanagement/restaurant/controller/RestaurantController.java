@@ -3,12 +3,10 @@ package com.ana29.deliverymanagement.restaurant.controller;
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
 import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
-import com.ana29.deliverymanagement.restaurant.dto.RestaurantWithRatingDto;
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
 import com.ana29.deliverymanagement.restaurant.service.RestaurantService;
 import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -62,7 +60,7 @@ public class RestaurantController {
 
     //search
     @GetMapping("/search")
-    public ResponseDto<List<Object>> searchRestaurants(
+    public ResponseDto<List<Object>> searchRestaurants( //검색기능에 평점도 함께 조회
             @RequestParam(required = false) String name,
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) String legalCode,
@@ -102,15 +100,5 @@ public class RestaurantController {
             throw new AccessDeniedException("관리자 접근이 필요합니다.");
         }
     };
-
-    //가게 목록과 평점을 조회 및 페이징 처리
-    @GetMapping
-    public ResponseDto<Page<RestaurantWithRatingDto>> getRestaurantsWithAverageRating(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        // 서비스 메서드 호출하여 가게 목록과 평균 평점 조회
-        return restaurantService.getRestaurantsWithAverageRating(page, size);
-    }
 
 }
