@@ -3,6 +3,7 @@ package com.ana29.deliverymanagement.restaurant.entity;
 import com.ana29.deliverymanagement.global.entity.Timestamped;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
 import com.ana29.deliverymanagement.review.entity.Review;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,6 +42,7 @@ public class Restaurant extends Timestamped {
     @Builder.Default
     private boolean isDeleted =false;
 
+    @JsonIgnore
     private Double ratingAverage;
 
     public void update(RestaurantRequestDto restaurantRequestDto) {
