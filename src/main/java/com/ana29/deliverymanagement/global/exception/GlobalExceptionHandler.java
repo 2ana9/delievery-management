@@ -171,6 +171,14 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(ResponseDto.failure(HttpStatus.BAD_REQUEST, e.getMessage()));
 	}
+
+	@ExceptionHandler(CustomConflictException.class)
+	@ResponseBody
+	public ResponseEntity<ResponseDto> handleCustomConflictExceptionException(
+			CustomConflictException e) {
+		return ResponseEntity.status(HttpStatus.CONFLICT)
+				.body(ResponseDto.failure(HttpStatus.CONFLICT, e.getMessage()));
+	}
 }
 
 

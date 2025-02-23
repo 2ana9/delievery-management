@@ -1,6 +1,7 @@
 package com.ana29.deliverymanagement.user.service;
 
 import com.ana29.deliverymanagement.security.UserDetailsImpl;
+import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
 import com.ana29.deliverymanagement.user.dto.*;
 import com.ana29.deliverymanagement.user.entity.User;
 import com.ana29.deliverymanagement.user.entity.UserAddress;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -133,7 +135,9 @@ public class UserAddressService {
 
     public UpdateUserAddressResponseDto setDefaultAddress(UUID id, UserDetailsImpl userDetails) {
         // 로그인한 유저 정보 가져오기
-        User user = userDetails.getUser();
+        User user = User.builder()
+                .Id(userDetails.getId())
+                .build();
 
         // 전달 받은 id로 배송지 정보가 있는지 체크
         UserAddress findUserAddress = userAddressRepository.findById(id).orElseThrow(UserAddressNotFoundException::new);

@@ -1,4 +1,4 @@
-package com.ana29.deliverymanagement.menu.dto;
+package com.ana29.deliverymanagement.restaurant.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -11,9 +11,10 @@ import java.util.UUID;
 @Builder
 public class MenuDto {
 
+    @NotNull
     private UUID id;
 
-    @NotBlank(message = "메뉴 이름은 필수입니다.")
+    @NotNull(message = "메뉴 이름은 필수입니다.")
     @Pattern(regexp = "^[a-zA-Z0-9가-힣\\s]{1,20}$", message = "메뉴 이름은 특수문자를 제외한 20자 이하여야 합니다.")
     private String name;
 
