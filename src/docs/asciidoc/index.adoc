@@ -10,6 +10,76 @@ API 문서 개요
 
 ***
 
+
+== 회원
+
+=== 회원가입
+
+.http-request
+include::{snippets}/user-signup/http-request.adoc[]
+
+.request-field
+include::{snippets}/user-signup/request-fields.adoc[]
+
+.http-response
+include::{snippets}/user-signup/http-response.adoc[]
+
+=== 로그아웃
+
+.http-request
+include::{snippets}/user-signout/http-request.adoc[]
+
+.request-header
+include::{snippets}/user-signout/request-headers.adoc[]
+
+.http-response
+include::{snippets}/user-signout/http-response.adoc[]
+
+=== 내 정보 조회
+
+.http-request
+include::{snippets}/user-get-info/http-request.adoc[]
+
+.request-header
+include::{snippets}/user-get-info/request-headers.adoc[]
+
+.query-parameters
+include::{snippets}/user-get-info/query-parameters.adoc[]
+
+.http-response
+include::{snippets}/user-get-info/http-response.adoc[]
+
+.response-field
+include::{snippets}/user-get-info/response-fields.adoc[]
+
+=== 회원 정보 수정
+
+.http-request
+include::{snippets}/user-modify-info/http-request.adoc[]
+
+.request-header
+include::{snippets}/user-modify-info/request-headers.adoc[]
+
+.request-field
+include::{snippets}/user-modify-info/request-fields.adoc[]
+
+.http-response
+include::{snippets}/user-modify-info/http-response.adoc[]
+
+.response-field
+include::{snippets}/user-modify-info/response-fields.adoc[]
+
+=== 회원 탈퇴
+
+.http-request
+include::{snippets}/user-delete/http-request.adoc[]
+
+.request-header
+include::{snippets}/user-delete/request-headers.adoc[]
+
+.http-response
+include::{snippets}/user-delete/http-response.adoc[]
+
 == 주문
 
 === 주문 생성

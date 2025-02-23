@@ -2,6 +2,7 @@ package com.ana29.deliverymanagement.global.exception;
 
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import com.ana29.deliverymanagement.order.exception.MissingUserAddressException;
+import com.ana29.deliverymanagement.order.exception.OrderCancelTimeoutException;
 import com.ana29.deliverymanagement.order.exception.PaymentFailException;
 import com.ana29.deliverymanagement.review.exception.AlreadyReviewedException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -164,6 +165,12 @@ public class GlobalExceptionHandler {
 			.body(ResponseDto.failure(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."));
 	}
 
+	@ExceptionHandler(OrderCancelTimeoutException.class)
+	@ResponseBody
+	public ResponseEntity<ResponseDto> handleOrderCancelTimeoutException(OrderCancelTimeoutException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(ResponseDto.failure(HttpStatus.BAD_REQUEST, e.getMessage()));
+	}
 }
 
 

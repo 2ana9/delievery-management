@@ -9,6 +9,7 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode
 @Builder
+@AllArgsConstructor
 public class SignupRequestDto {
 
     @NotBlank
@@ -33,10 +34,6 @@ public class SignupRequestDto {
     @NotBlank(message = "전화번호는 필수 입력값입니다.")
     @Pattern(regexp = "^010-?\\d{4}-?\\d{4}$", message = "유효한 전화번호를 입력하세요.")
     private String phone;
-
-    private String currentAddress;
-
-    private boolean admin;
 
     private String tokenValue;
 }
