@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -133,18 +134,18 @@ public class UserAddressService {
 
     public UpdateUserAddressResponseDto setDefaultAddress(UUID id, UserDetailsImpl userDetails) {
         // 로그인한 유저 정보 가져오기
-        User user = userDetails.getUser();
+        String userId = userDetails.getId();
 
         // 전달 받은 id로 배송지 정보가 있는지 체크
         UserAddress findUserAddress = userAddressRepository.findById(id).orElseThrow(UserAddressNotFoundException::new);
 
         // 전달 받은 id가 자신이 등록한 주소인지 검증
-        if (!findUserAddress.getUser().getId().equals(user.getId())) {
+        if (!findUserAddress.getUser().getId().equals(userId)) {
             throw new UserAddressForbiddenException();
         }
-
+        Optional<User> user = userRepository.findById(userId);
         // 전달 받은 id로 배송지 정보가 있는지 체크
-        Optional<UserAddress> defaultUserAddressOpt = userAddressRepository.findByUserAndDefaultAddressTrue(user);
+        Optional<UserAddress> defaultUserAddressOpt = userAddressRepository.findByUserIdAndDefaultAddressTrue(user);
 
         // 대표 배송지가 존재하면 defaultAddress를 해제
         defaultUserAddressOpt.ifPresent(userAddress -> {

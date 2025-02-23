@@ -147,19 +147,19 @@ public class DatabaseInitializer implements ApplicationRunner {
 				UUID menuId = UUID.randomUUID();
 				String name = "메뉴 " + j + " - 레스토랑 " + i;
 				int price = 5000 + (j * 1000);
-				String content = "맛있는 " + name;
+				String description = "맛있는 " + name;
 
 				entityManager.createNativeQuery(
-						"INSERT INTO p_menus (menu_id, name, price, content, restaurant_id, "
+						"INSERT INTO p_menu (menu_id, name, price, description, restaurant_id, "
                             + "is_deleted) "
 							+
-							"SELECT :menuId, :name, :price, :content, :restaurantId , :isDeleted " +
-							"WHERE NOT EXISTS (SELECT 1 FROM p_menus WHERE menu_id = :menuId)"
+							"SELECT :menuId, :name, :price, :description, :restaurantId , :isDeleted " +
+							"WHERE NOT EXISTS (SELECT 1 FROM p_menu WHERE menu_id = :menuId)"
 					)
 					.setParameter("menuId", menuId) // 🔹 UUID 사용
 					.setParameter("name", name)
 					.setParameter("price", price)
-					.setParameter("content", content)
+					.setParameter("description", description)
 					.setParameter("restaurantId", restaurantId) // 🔹 UUID 사용
 					.setParameter("isDeleted", false)
 					.executeUpdate();
