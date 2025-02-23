@@ -70,8 +70,11 @@ public class WebSecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
                         .requestMatchers("/api/users/**").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
+                        .requestMatchers("/api/v2/**").permitAll()
+
                         .requestMatchers("/api/gemini/**").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
                         .requestMatchers("/api/menus/**").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
+                        .requestMatchers("/api/orders/**").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
 
                         .requestMatchers("/redis/**").permitAll()
 //                        .requestMatchers("/api/admin/**").hasRole("ADMIN")  // 관리자 전용 API 보호

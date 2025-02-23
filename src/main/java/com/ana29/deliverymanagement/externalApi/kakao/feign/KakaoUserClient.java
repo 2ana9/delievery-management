@@ -1,6 +1,6 @@
 package com.ana29.deliverymanagement.externalApi.kakao.feign;
 
-import com.ana29.deliverymanagement.externalApi.kakao.KakaoUserInfoDto;
+import com.ana29.deliverymanagement.externalApi.kakao.dto.KakaoUserInfoDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
