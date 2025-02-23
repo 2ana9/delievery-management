@@ -24,11 +24,9 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -114,7 +112,7 @@ class RestaurantControllerTest {
                 fieldWithPath("content").type(JsonFieldType.STRING).description("음식점 소개내용"),
                 fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리 ID"),
                 fieldWithPath("legalCode").type(JsonFieldType.STRING).description("음식점 지역코드")
-                );
+        );
     }
 
 
@@ -243,7 +241,7 @@ class RestaurantControllerTest {
                 fieldWithPath("data.category.deletedBy").description("음식점 삭제자"),
                 fieldWithPath("data.category.deleted").type(JsonFieldType.BOOLEAN).description("음식점 삭제 여부")
 
-                );
+        );
     }
 
     private RequestFieldsSnippet getRequestFieldsSnippet() {
