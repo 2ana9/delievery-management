@@ -7,6 +7,7 @@ import com.ana29.deliverymanagement.security.jwt.JwtAuthorizationFilter;
 import com.ana29.deliverymanagement.security.jwt.JwtUtil;
 import com.ana29.deliverymanagement.security.jwt.RedisTokenBlacklist;
 import com.ana29.deliverymanagement.security.service.CachedUserDetailsService;
+import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -71,6 +72,7 @@ public class WebSecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/users/sign-in", "/api/users/sign-up", "/api/users/kakao/**", "/api/v2/**").permitAll()
+                        .requestMatchers("/api/gemini/**").hasAuthority(UserRoleEnum.OWNER.getAuthority())
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         ).exceptionHandling(ex -> ex
             .accessDeniedHandler(new CustomAccessDeniedHandler())

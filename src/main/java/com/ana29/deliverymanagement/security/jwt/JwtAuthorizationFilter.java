@@ -78,6 +78,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             setAuthentication(info);
             log.info("인증된 토큰을 가지고 있는 사용자입니다.");
             log.info("SecurityContextHolder content : " + SecurityContextHolder.getContext().toString());
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            List<String> authStrings = authentication.getAuthorities()
+                    .stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+            log.info("현재 사용자 권한: {}", authStrings);
+
+
+
         }else {
             // 토큰이 존재하지 않는 경우
             log.info("인증된 토큰이 없습니다.");
