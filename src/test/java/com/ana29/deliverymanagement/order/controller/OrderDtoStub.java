@@ -46,7 +46,8 @@ public class OrderDtoStub {
 		GetUserAddressesResponseDto addressInfo = new GetUserAddressesResponseDto(
 			TEST_USER_ADDRESS_ID,
 			"서울시 강남구 테헤란로 123",
-			"101동 1001호"
+			"101동 1001호",
+				false
 		);
 
 		return OrderDetailResponseDto.builder()
