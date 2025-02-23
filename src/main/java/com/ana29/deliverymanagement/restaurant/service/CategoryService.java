@@ -26,18 +26,18 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional
-    public ResponseDto<Category> createCategory(CategoryRequestDto requestDto){
+    public Category createCategory(CategoryRequestDto requestDto){
        Category category = categoryRepository.save(
                Category.builder()
                        .foodType(requestDto.getFoodType())
                        .build()
        );
 
-        return ResponseDto.success(HttpStatus.CREATED, category);
+        return category;
     }
 
     @Transactional
-    public ResponseDto<Category> updateCategory(UUID id, CategoryRequestDto requestDto,String userId) {
+    public Category updateCategory(UUID id, CategoryRequestDto requestDto,String userId) {
         Category category = categoryRepository.findById(id).orElseThrow(()->
                 new IllegalArgumentException("Category not found"));
         category.update(requestDto);
@@ -45,7 +45,7 @@ public class CategoryService {
         category.setUpdatedBy(userId);
         categoryRepository.save(category);
 
-        return ResponseDto.success(category);
+        return category;
     }
 
     //음식 카테고리 전체조회

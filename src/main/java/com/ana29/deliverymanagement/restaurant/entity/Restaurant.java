@@ -62,6 +62,7 @@ public class Restaurant extends Timestamped {
     }
 
     //카테고리 외래키
+    @Setter
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "category_id", nullable = false)

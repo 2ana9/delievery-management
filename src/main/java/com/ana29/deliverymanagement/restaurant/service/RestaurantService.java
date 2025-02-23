@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -56,6 +57,9 @@ public class RestaurantService {
     public ResponseDto<Restaurant> updateRestaurant(UUID id, RestaurantRequestDto requestDto,String userId) {
         Restaurant restaurant =  restaurantRepository.findById(id).orElseThrow(()->
                 new IllegalArgumentException("Restaurant not found")); //고유id값으로 가게정보 찾기
+        Optional<Category> categoryOptional = categoryRepository.findById(requestDto.getCategory());
+        Category category = categoryOptional.get();
+        restaurant.setCategory(category);
         restaurant.update(requestDto);
         restaurant.setUpdatedAt(LocalDateTime.now());
         restaurant.setUpdatedBy(userId);
