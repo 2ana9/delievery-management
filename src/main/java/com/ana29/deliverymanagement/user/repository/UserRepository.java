@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByIdAndIsDeletedFalse(String id);
+
     @Query("select u from User u where (u.Id = :id or u.email = :email or u.nickname = :nickname or u.phone = :phone) and u.isDeleted = false")
     Optional<User> findAnyDuplicate(@Param("id") String id,
                                     @Param("email") String email,
