@@ -296,8 +296,7 @@ class OrderControllerTest {
 			fieldWithPath("status").type(JsonFieldType.STRING).description("응답 상태"),
 			fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
 			fieldWithPath("data.content[]").type(JsonFieldType.ARRAY).description("주문 목록"),
-			fieldWithPath("data.content[].orderId").type(JsonFieldType.STRING).description("주문 "
-				+ "ID"),
+			fieldWithPath("data.content[].orderId").type(JsonFieldType.STRING).description("주문 ID"),
 			fieldWithPath("data.content[].restaurantId").type(JsonFieldType.STRING)
 				.description("음식점 ID"),
 			fieldWithPath("data.content[].restaurantName").type(JsonFieldType.STRING)
@@ -382,11 +381,10 @@ class OrderControllerTest {
 			fieldWithPath("data.quantity").type(JsonFieldType.NUMBER).description("주문 수량"),
 			fieldWithPath("data.orderRequest").type(JsonFieldType.STRING).description("주문 요청사항"),
 			fieldWithPath("data.orderType").type(JsonFieldType.STRING).description("주문 타입"),
-			fieldWithPath("data.addressInfo.userAddressId").type(JsonFieldType.STRING)
-				.description("주소 ID"),
+			fieldWithPath("data.addressInfo.userAddressId").type(JsonFieldType.STRING).description("주소 ID"),
 			fieldWithPath("data.addressInfo.address").type(JsonFieldType.STRING).description("주소"),
-			fieldWithPath("data.addressInfo.detail").type(JsonFieldType.STRING)
-				.description("상세 주소"),
+			fieldWithPath("data.addressInfo.detail").type(JsonFieldType.STRING).description("상세 주소"),
+			fieldWithPath("data.addressInfo.defaultAddress").type(JsonFieldType.BOOLEAN).description("기본 배송지 여부"),
 			fieldWithPath("data.orderedAt").type(JsonFieldType.STRING).description("주문 시간"),
 			fieldWithPath("data.updatedAt").type(JsonFieldType.STRING).description("주문 업데이트 시간"),
 			fieldWithPath("data.restaurantId").type(JsonFieldType.STRING).description("음식점 ID"),
