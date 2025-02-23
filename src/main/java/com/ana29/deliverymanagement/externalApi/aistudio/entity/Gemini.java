@@ -20,10 +20,8 @@ public class Gemini extends Timestamped {
     @Column(name = "gemini_id", columnDefinition = "uuid")
     private UUID id;
 
-
     @Column(length = 255)
     private String question; // 요청한 질문(프롬프트)
-
 
     @Column(length = 500)
     private String answer;
@@ -31,5 +29,4 @@ public class Gemini extends Timestamped {
     @Column(nullable = false)
     @Builder.Default
     private boolean isDeleted = false;
-
 }
