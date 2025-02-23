@@ -29,9 +29,9 @@ public class RestaurantController {
     public ResponseDto<Restaurant> createRestaurant(@RequestBody RestaurantRequestDto requestDto,
                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         UserRoleEnum userRole = userDetails.getRole();
-//        if (userRole != UserRoleEnum.MASTER && userRole != UserRoleEnum.MANAGER) {
-//            throw new AccessDeniedException("관리자 접근이 필요합니다.");
-//        }
+        if (userRole != UserRoleEnum.MASTER && userRole != UserRoleEnum.MANAGER) {
+            throw new AccessDeniedException("관리자 접근이 필요합니다.");
+        }
 
         return restaurantService.createRestaurant(requestDto);
     };
