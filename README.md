@@ -157,7 +157,8 @@ $ docker run -p 8080:8080 order-management
 
 ## 📜 ERD
 
-(ERD 이미지 삽입)
+![image](https://github.com/user-attachments/assets/ccb8ea17-4ac2-42e3-9fc4-d2dd2f89f054)
+
 
 ---
 
