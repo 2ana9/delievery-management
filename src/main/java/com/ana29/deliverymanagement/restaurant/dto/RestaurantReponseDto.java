@@ -12,6 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RestaurantReponseDto {
+    private UUID id;
     private String name;
     private String ownerId; //관리자가 입력하는 가게주인id
     private UUID category;
