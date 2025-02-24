@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -13,6 +14,7 @@ public class GeminiResponseDto {
     private List<Candidate> candidates;
     private UsageMetadata usageMetadata;
     private String modelVersion;
+    private UUID id;
 
     @Data
     @NoArgsConstructor

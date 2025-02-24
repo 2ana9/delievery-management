@@ -1,3 +1,5 @@
+import java.util.UUID;
+
 //package com.ana29.deliverymanagement.data;
 //
 //import com.ana29.deliverymanagement.user.constant.UserRoleEnum;
