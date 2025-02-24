@@ -62,11 +62,12 @@ public class Userservice {
 
 
     public List<UserInfoDto> getUserInfo(UserDetailsImpl userDetails, int page, int size, String sortBy, boolean isAsc) {
-        boolean isAdmin = (userDetails.getRole() == UserRoleEnum.MASTER || userDetails.getRole() == UserRoleEnum.MANAGER);
+        boolean isAdmin = (userDetails.getRole().equals(UserRoleEnum.MASTER) || userDetails.getRole().equals(UserRoleEnum.MANAGER));
         List<UserInfoDto> userInfoDtoList = new ArrayList<>();
 
         if (isAdmin) {
             List<User> userList = userInfoPaging(page, size, sortBy, isAsc);
+            log.info(userList.toString());
             userInfoDtoList = userList.stream()
                     .map(u -> new UserInfoDto(u.getId(), u.getNickname(), u.getEmail(), u.getPhone(), u.getRole()))
                     .collect(Collectors.toList());
@@ -178,14 +179,28 @@ public class Userservice {
     }
 
     private List<User> userInfoPaging(int page, int size, String sortBy, boolean isAsc) {
+        // 10, 30, 50 외의 size는 기본 10으로 설정
         if (size != 10 && size != 30 && size != 50) {
             size = 10;
         }
+
+        // 전체 사용자 수 조회
+        long totalUsers = userRepository.count();
+        // 전체 페이지 수 계산 (0페이지부터 시작하므로)
+        int totalPages = (int) Math.ceil((double) totalUsers / size);
+
+        // 요청한 페이지 번호가 전체 페이지 수 이상이면 예외 처리
+        if (page >= totalPages && totalUsers > 0) {
+            throw new IllegalArgumentException("요청한 페이지 번호(" + page + ")가 전체 페이지 수(" + totalPages + ")를 초과합니다.");
+        }
+
         Sort sort = Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC,
                 sortBy.equals("updatedAt") ? "updatedAt" : "createdAt");
         Pageable pageable = PageRequest.of(page, size, sort);
+        log.info(pageable.toString());
         return userRepository.findAll(pageable).getContent();
     }
+
 
     private User modifyUser(UserDetailsImpl userDetails, UpdateRequestDto updateDto) {
         User user = userRepository.findByIdAndIsDeletedFalse(userDetails.getId())

@@ -79,6 +79,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             log.info("인증된 토큰을 가지고 있는 사용자입니다.");
             log.info("SecurityContextHolder content : " + SecurityContextHolder.getContext().toString());
 
+            // Redis에서 불러오는 권한이 제대로 String으로 변환 되었는지 확인.
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             List<String> authStrings = authentication.getAuthorities()
                     .stream()

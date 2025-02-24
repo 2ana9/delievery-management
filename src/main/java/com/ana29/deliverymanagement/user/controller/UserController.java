@@ -65,11 +65,10 @@ public class UserController {
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestParam(value = "page", defaultValue = "0") int page,
 		@RequestParam(value = "size", defaultValue = "10") int size,
-		@RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
+			@RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
 		@RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
 
 		List<UserInfoDto> response = userService.getUserInfo(userDetails, page, size, sortBy, isAsc);
-
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(ResponseDto.success(HttpStatus.OK, response));
 	}

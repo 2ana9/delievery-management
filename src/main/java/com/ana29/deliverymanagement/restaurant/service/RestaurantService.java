@@ -3,6 +3,7 @@ package com.ana29.deliverymanagement.restaurant.service;
 import com.ana29.deliverymanagement.area.repository.AreaRepository;
 import com.ana29.deliverymanagement.global.dto.ResponseDto;
 import com.ana29.deliverymanagement.restaurant.dto.PaginationDto;
+import com.ana29.deliverymanagement.restaurant.dto.RestaurantReponseDto;
 import com.ana29.deliverymanagement.restaurant.dto.RestaurantRequestDto;
 import com.ana29.deliverymanagement.restaurant.entity.Category;
 import com.ana29.deliverymanagement.restaurant.entity.Restaurant;
@@ -17,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -90,6 +88,7 @@ public class RestaurantService {
 
         // 조건에 맞는 데이터를 페이징 처리하여 가져오기
         Page<Restaurant> restaurantPage = restaurantRepository.findAll(spec, pageable);
+        List<RestaurantReponseDto> restaurantResponseList = new ArrayList<>();
 
         // 각 Restaurant에 대해 평균 평점 계산
         for (Restaurant restaurant : restaurantPage) {
@@ -98,8 +97,18 @@ public class RestaurantService {
             if (averageRating == null){
                 averageRating = 0.0;
             }
-            // DTO 생성하여 추가
-            restaurant.setRatingAverage(averageRating);
+            RestaurantReponseDto responseDto = new RestaurantReponseDto();
+            responseDto.setId(restaurant.getId());
+            responseDto.setName(restaurant.getName());
+            responseDto.setOwnerId(restaurant.getOwnerId());
+            responseDto.setContent(restaurant.getContent());
+            responseDto.setCategory(restaurant.getCategory().getId());
+            responseDto.setLegalCode(restaurant.getLegalCode());
+            responseDto.setOperatingHours(restaurant.getOperatingHours());
+            responseDto.setDeleted(restaurant.isDeleted());
+            responseDto.setRatingAverage(averageRating);
+
+            restaurantResponseList.add(responseDto);
         }
 
 
@@ -116,7 +125,7 @@ public class RestaurantService {
         );
 
         // Restaurant 리스트와 PaginationDto를 하나의 리스트에 담기
-        List<Object> responseData = new ArrayList<>(restaurantPage.getContent());
+        List<Object> responseData = new ArrayList<>(restaurantResponseList);
         responseData.add(pagination);
 
         return ResponseDto.success(responseData);
