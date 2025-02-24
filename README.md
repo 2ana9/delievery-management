@@ -110,12 +110,12 @@
 - **Spring Boot 3.x**
 - **Gradle**
 - **Docker** (선택)
-- **AWS 또는 Oracle Cloud 프리 티어** (배포 환경)
+- **AWS 프리 티어** (배포 환경)
 
 ### 2. 실행 방법
 ```sh
 # 프로젝트 클론
-git clone https://github.com/example/delivery-management.git
+git clone https://github.com/2ana9/delievery-management.git
 cd delivery-management
 
 # 환경변수 설정
@@ -131,7 +131,7 @@ $ java -jar build/libs/app.jar
 
 ### 2. API 문서 확인
 
-- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- restDocs UI: ``
 
 ### 3. Docker 컨테이너 실행
 
