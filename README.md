@@ -146,7 +146,7 @@ $ docker run -p 8080:8080 order-management
 
 | 분야           | 기술                                          |
 | ------------ | ------------------------------------------- |
-| **Backend**  | Spring Boot, Spring Security, JPA, QueryDSL |
+| **Backend**  | Spring Boot, Spring Security, JPA, QueryDSL, Specification |
 | **Database** | PostgreSQL, Redis (캐싱)                      |
 | **Cloud**    | AWS EC2, Oracle Cloud (프리티어)                |
 | **CI/CD**    | GitHub Actions, Docker                      |
@@ -163,13 +163,16 @@ $ docker run -p 8080:8080 order-management
 
 ## 🎯 팀원 역할분담
 
-| 역할             | 담당자      |
+| 역할             | 담당자 |
 | -------------- | -------- |
-| **백엔드 개발**     | 김개발, 이엔지 |
-| **프론트엔드 개발**   | 박디자인     |
-| **DB 설계 및 관리** | 정DB      |
-| **AI API 연동**  | 최AI      |
-| **클라우드 배포**    | 유클라우드    |
+| **리뷰**     | 한석규 |
+| **주문(온라인,오프라인)**     | 강혜주 |
+| **지역주소,회원주소**     | 문준영 |
+| **가게,음식 카테고리**     | 신다은 |
+| **로그인 및 회원가입,음식메뉴**     | 유남규 |
+| **DB 설계 및 관리** | 모두 |
+| **AI API 연동**  | 유남규 |
+| **클라우드 배포**    | 한석규 |
 
 ---
 
@@ -178,4 +181,5 @@ $ docker run -p 8080:8080 order-management
 - [Google AI API 문서](https://aistudio.google.com/)
 - [Spring Security 공식 문서](https://spring.io/projects/spring-security)
 - [QueryDSL 공식 문서](https://querydsl.com/)
+- [Specification 공식 문서](https://docs.spring.io/spring-data/jpa/reference/jpa/specifications.html)
 
