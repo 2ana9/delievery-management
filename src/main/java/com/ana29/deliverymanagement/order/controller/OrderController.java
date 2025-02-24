@@ -106,7 +106,7 @@ public class OrderController {
 
 		orderService.deleteOrder(id, userDetails.getUsername());
 
-		return ResponseEntity.status(HttpStatus.NO_CONTENT)
-			.body(ResponseDto.success(HttpStatus.NO_CONTENT, null));
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(ResponseDto.success(HttpStatus.OK, null));
 	}
 }

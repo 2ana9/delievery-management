@@ -250,7 +250,7 @@ class OrderControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/orders/{id}", TEST_ORDER_ID)
 				.header("Authorization", MOCK_JWT_TOKEN)
 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails)))
-			.andExpect(status().isNoContent())
+			.andExpect(status().isOk())
 			.andDo(document("order-delete",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),

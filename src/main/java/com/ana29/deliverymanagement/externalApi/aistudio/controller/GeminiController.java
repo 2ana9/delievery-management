@@ -52,8 +52,8 @@ public class GeminiController {
                                              @AuthenticationPrincipal UserDetails userDetails) {
         geminiService.softDeleteGemini(id, userDetails);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
-            .body(ResponseDto.success(HttpStatus.NO_CONTENT, null));
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(ResponseDto.success(HttpStatus.OK, null));
     }
 
 }

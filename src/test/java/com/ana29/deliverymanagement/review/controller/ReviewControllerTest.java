@@ -256,7 +256,7 @@ public class ReviewControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/reviews/{id}", TEST_REVIEW_ID)
                         .header("Authorization", MOCK_JWT_TOKEN)
                         .with(SecurityMockMvcRequestPostProcessors.user(userDetails)))
-                .andExpect(status().isNoContent())
+                .andExpect(status().isOk())
                 .andDo(document("review-delete",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
