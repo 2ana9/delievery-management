@@ -124,8 +124,7 @@ public class RestaurantService {
         );
 
         // Restaurant 리스트와 PaginationDto를 하나의 리스트에 담기
-        List<Object> responseData = new ArrayList<>();
-        responseData.add(restaurantResponseList);
+        List<Object> responseData = new ArrayList<>(restaurantResponseList);
         responseData.add(pagination);
 
         return ResponseDto.success(responseData);
