@@ -113,6 +113,8 @@
 - **AWS 프리 티어** (배포 환경)
 
 ### 2. 실행 방법
+
+#### 2-1. 로컬 환경에서의 실행방법
 ```sh
 # 프로젝트 클론
 git clone https://github.com/2ana9/delievery-management.git
@@ -126,19 +128,14 @@ cp .env.example .env
 
 # 빌드 및 실행
 $ ./gradlew build
-$ java -jar build/libs/app.jar
+$ java -jar build/libs/delivery-management-0.0.1-SNAPSHOT.jar
 ```
 
-### 2. API 문서 확인
+#### 2-2. 배포환경(AWS EC2)에서의 실행방법
+
+### 3. API 문서 확인
 
 - restDocs UI: ``
-
-### 3. Docker 컨테이너 실행
-
-```bash
-$ docker build -t order-management .
-$ docker run -p 8080:8080 order-management
-```
 
 ---
 
