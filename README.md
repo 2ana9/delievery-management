@@ -154,7 +154,7 @@ $ docker run -p 8080:8080 order-management
 | **CI/CD**    | Docker (컨테이너화 및 배포 자동화)|
 | **API Docs** | RestDocs (API 문서화도구) |
 | **AI 연동**    | Google Generative Language API (Gemini-1.5) |
-| **Test**    | Spring Boot Test, Spring Security Test, JUnit |
+| **Test**    | Spring Boot Test, Spring Security Test, JUnit, Mockito |
 
 ---
 
