@@ -135,7 +135,7 @@ $ java -jar build/libs/delivery-management-0.0.1-SNAPSHOT.jar
 
 ### 3. API 문서 확인
 
-- postman UI: [postman](https://documenter.getpostman.com/view/42556921/2sAYdcsXnB#e51b4364-01d9-4538-b26a-11061abbdf9c)
+- postman UI: [postman](https://documenter.getpostman.com/view/42556921/2sAYdcsXnB)
 
 ---
 
