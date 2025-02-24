@@ -123,19 +123,6 @@ cp .env.example .env
 
 # 빌드 및 실행
 ./gradlew bootRun
-```
-
----
-
-### 1. 환경 설정
-
-```bash
-# 프로젝트 클론
-$ git clone https://github.com/example/repository.git
-$ cd repository
-
-# 환경 변수 설정 (.env 사용 가능)
-$ touch .env
 
 # 빌드 및 실행
 $ ./gradlew build
