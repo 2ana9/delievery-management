@@ -290,3 +290,74 @@ include::{snippets}/review-delete/http-response.adoc[]
 
 .response-field
 include::{snippets}/review-delete/response-fields.adoc[]
+
+
+== 배송
+
+=== 유저 배송지 생성
+
+.http-request
+include::{snippets}/user-address/http-request.adoc[]
+
+.request-header
+include::{snippets}/user-address/request-headers.adoc[]
+
+.request-field
+include::{snippets}/user-address/request-fields.adoc[]
+
+.http-response
+include::{snippets}/user-address/http-response.adoc[]
+
+.response-field
+include::{snippets}/user-address/response-fields.adoc[]
+
+=== 유저 배송지 조회
+
+.http-request
+include::{snippets}/user-address-get/http-request.adoc[]
+
+.request-header
+include::{snippets}/user-address-get/request-headers.adoc[]
+
+.request-field
+include::{snippets}/user-address-get/request-fields.adoc[]
+
+.http-response
+include::{snippets}/user-address-get/http-response.adoc[]
+
+.response-field
+include::{snippets}/user-address-get/response-fields.adoc[]
+
+=== 유저 배송지 수정
+
+.http-request
+include::{snippets}/user-address-update/http-request.adoc[]
+
+.request-header
+include::{snippets}/user-address-update/request-headers.adoc[]
+
+.request-field
+include::{snippets}/user-address-update/request-fields.adoc[]
+
+.http-response
+include::{snippets}/user-address-update/http-response.adoc[]
+
+.response-field
+include::{snippets}/user-address-update/response-fields.adoc[]
+
+=== 유저 배송지 삭제
+
+.http-request
+include::{snippets}/user-address-delete/http-request.adoc[]
+
+.request-header
+include::{snippets}/user-address-delete/request-headers.adoc[]
+
+.request-field
+include::{snippets}/user-address-delete/request-fields.adoc[]
+
+.http-response
+include::{snippets}/user-address-delete/http-response.adoc[]
+
+.response-field
+include::{snippets}/user-address-delete/response-fields.adoc[]

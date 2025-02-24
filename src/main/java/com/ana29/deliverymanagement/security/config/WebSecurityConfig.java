@@ -86,10 +86,6 @@ public class WebSecurityConfig {
 				).permitAll()
 				.requestMatchers("/api/gemini/**").hasAuthority(UserRoleEnum.OWNER.getAuthority())
 				.requestMatchers("/api/redis/**").hasAuthority(UserRoleEnum.MASTER.getAuthority())
-				.requestMatchers(HttpMethod.DELETE, "api/orders/**")
-				.hasAnyAuthority(UserRoleEnum.MANAGER.getAuthority(), UserRoleEnum.MASTER.getAuthority())
-				.requestMatchers(HttpMethod.GET, "api/orders/restaurant")
-				.hasAnyAuthority(UserRoleEnum.MANAGER.getAuthority(), UserRoleEnum.MASTER.getAuthority(), UserRoleEnum.OWNER.getAuthority())
 				.anyRequest().authenticated() // 그 외 모든 요청 인증처리
 		).exceptionHandling(ex -> ex
 			.accessDeniedHandler(new CustomAccessDeniedHandler())
