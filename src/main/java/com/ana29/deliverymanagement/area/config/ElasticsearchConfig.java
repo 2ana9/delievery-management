@@ -16,7 +16,7 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
     @Override
     public ClientConfiguration clientConfiguration() {
         return ClientConfiguration.builder()
-                .connectedTo("192.168.0.16:9200")
+                .connectedTo("39.112.24.48:9200")
                 .withBasicAuth("elastic", "junyoung")
                 .build();
     }
