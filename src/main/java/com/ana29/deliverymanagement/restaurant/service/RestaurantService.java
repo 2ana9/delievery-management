@@ -98,6 +98,7 @@ public class RestaurantService {
                 averageRating = 0.0;
             }
             RestaurantReponseDto responseDto = new RestaurantReponseDto();
+            responseDto.setId(restaurant.getId());
             responseDto.setName(restaurant.getName());
             responseDto.setOwnerId(restaurant.getOwnerId());
             responseDto.setContent(restaurant.getContent());
