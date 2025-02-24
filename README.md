@@ -6,118 +6,155 @@
 
 ---
 
-## 🤩 기능 설명
-플랫폼은 음식점들이 배달 및 포장 주문을 효율적으로 관리할 수 있도록 다음과 같은 기능을 제공합니다:
+## 🤝 팀원 역할분담
+- **PM/백엔드 개발**: [이름] - 프로젝트 기획 및 백엔드 개발 총괄
+- **백엔드 개발**: [이름] - 주문 및 결제 기능 개발
+- **프론트엔드 개발**: [이름] - UI/UX 및 프론트엔드 개발
+- **데브옵스**: [이름] - 클라우드 배포 및 서버 관리
 
-1. **주문 관리**  
-   - 음식점에서 음식 정보를 등록하고, 고객은 원하는 음식을 주문합니다.  
-   - 주문 내역 및 결제 정보가 관리되며, 주문 취소는 주문 생성 후 5분 이내에만 가능하도록 제한합니다.
-   - 주문 유형은 온라인 주문과 대면 주문(가게에서 직접 주문)을 모두 지원합니다.
+---
 
-2. **결제 시스템**  
-   - 카드 결제만 지원하며, PG사와 연동된 결제 내역을 별도의 결제 테이블에 저장합니다.
+## 🚀 서비스 구성 및 실행 방법
+### 1. 환경 설정
+- **Java 17**
+- **Spring Boot 3.x**
+- **Gradle**
+- **Docker** (선택)
+- **AWS 또는 Oracle Cloud 프리 티어** (배포 환경)
 
-3. **데이터 관리**  
-   - 모든 데이터는 완전 삭제 대신 숨김 처리 방식으로 보존됩니다.
-   - 각 도메인(사용자, 가게, 상품, 주문, 결제 등)마다 생성일, 생성 아이디, 수정일, 수정 아이디, 삭제일, 삭제 아이디를 기록하는 감사 로그 기능을 포함합니다.
-   
-4. **접근 권한 관리**  
+### 2. 실행 방법
+```sh
+# 프로젝트 클론
+git clone https://github.com/example/delivery-management.git
+cd delivery-management
+
+# 환경변수 설정
+cp .env.example .env
+
+# 빌드 및 실행
+./gradlew bootRun
+```
+
+---
+
+## 🎯 프로젝트 목적/상세
+### 1. 주요 기능
+1. **주문 관리**
+   - 음식점에서 음식 정보를 등록하고, 고객은 원하는 음식을 주문
+   - 주문 내역 및 결제 정보 관리, 주문 취소는 5분 이내 가능
+   - 온라인 주문 및 대면 주문(매장 주문) 지원
+
+2. **결제 시스템**
+   - 카드 결제 지원, PG사와 연동된 결제 내역 관리
+
+3. **데이터 관리**
+   - 모든 데이터는 완전 삭제 대신 숨김 처리
+   - 생성일, 생성자, 수정일, 수정자, 삭제일, 삭제자 기록
+
+4. **접근 권한 관리**
    - 고객: 자신의 주문 내역만 조회
-   - 가게 주인: 자신의 가게 주문 내역, 가게 정보, 주문 처리 및 메뉴 수정 가능
-   - 관리자: 모든 가게 및 주문에 대해 전체 권한 보유
+   - 가게 주인: 자신의 가게 주문 및 메뉴 관리 가능
+   - 관리자: 모든 가게 및 주문 관리 가능
 
-5. **배송지 정보 관리**  
-   - 주문 및 배달과 관련된 배송지 정보(주소지, 요청 사항)는 필수 입력 사항입니다.
+5. **배송지 정보 관리**
+   - 주문 및 배달 시 필수 입력 사항
 
-6. **AI API 연동**  
-   - **상품 설명 자동 생성**: Google Cloud의 Generative Language API(예: Gemini-1.5 Flash Latest 모델)를 연동하여, 음식점 사장님이 상품 설명을 쉽게 작성할 수 있도록 지원합니다.
-   - **AI 요청 기록**: AI API 요청과 그에 대한 응답 문장을 모두 데이터베이스에 저장합니다.
-   - **사용량 최적화**:  
-     - 입력 텍스트의 글자 수를 제한하고, 요청 텍스트 끝에 “답변을 최대한 간결하게 50자 이하로”라는 문구를 삽입하여 API 호출량을 줄입니다.
+6. **AI API 연동**
+   - **상품 설명 자동 생성** (Google Cloud Generative Language API 활용)
+   - **AI 요청 기록** 및 데이터 저장
+   - **사용량 최적화**: 입력 텍스트 제한 및 간결한 응답 요청
 
-7. **클라우드 서비스 배포**  
-   - AWS 또는 Oracle Cloud 프리 티어를 활용하여 실제 서비스 배포를 시도합니다.
-   - 배포 방법은 파일 업로드, Docker 컨테이너 등 환경에 맞춰 자유롭게 선택합니다.
+7. **클라우드 서비스 배포**
+   - AWS 또는 Oracle Cloud 프리 티어 사용
+   - 배포 방식: Docker 컨테이너 및 CI/CD 구축
 
-8. **Spring Security 고도화**  
-   - 가게 추가 시 “관리자” 권한의 사용자만 추가할 수 있도록 제어합니다.
+8. **Spring Security 고도화**
+   - 관리자만 가게 추가 가능하도록 접근 제어
 
-9. **리뷰 및 평점 기능**  
-   - 주문을 통해 음식점의 리뷰 및 평점을 저장하고, 주문 검색 시 음식점 고유값을 기반으로 리뷰 리스트를 노출합니다.
-   - 평점은 1~5점으로 계산하며, 대량 데이터 조회 시 N+1 문제를 고려한 최적화가 필요합니다.
-
----
-
-## 🍒 세부 기능
-
-### 1. 모든 도메인 CRUD 및 Search 기능
-- **각 도메인 (사용자, 가게, 상품, 주문, 결제, 리뷰/평점, AI 요청 로그)**
-  - CRUD 구현
-  - 검색:  
-    - 기본 검색 조건 및 정렬 기능 (생성일, 수정일 순)
-    - 페이지당 노출 건수: 기본 10건, 옵션으로 30건, 50건 선택 (그 외는 기본 10건으로 고정)
-
-### 2. 사용자 인증 기능
-- **회원가입**  
-  - 요청 DTO: `UserSignupRequestDto`  
-    - 필수: username (최소 4자, 최대 10자; 소문자와 숫자), password (최소 8자, 최대 15자; 알파벳, 숫자, 특수문자), 사용자 권한 (`CUSTOMER`, `OWNER`, `MANAGER`, `MASTER`)
-  - 서비스: 중복 체크, 비밀번호 암호화, 데이터베이스 저장
-  - 응답 DTO: `UserSignupResponseDto`
-  - API 엔드포인트: `POST /api/auth/signup`
-  
-- **로그인**  
-  - 요청 DTO: `UserLoginRequestDto`
-  - 인증 및 JWT 토큰 발급 (Access Token, Refresh Token)  
-  - 응답 DTO: `UserLoginResponseDto`
-  - API 엔드포인트: `POST /api/auth/login`
-  
-- **로그아웃**  
-  - 요청 헤더에서 Access Token 추출, Refresh Token 삭제, Access Token을 블랙리스트에 등록
-  - API 엔드포인트: `POST /api/auth/logout`
-
-### 3. AI API 연동
-- **API 키 발급 및 테스트**  
-  - https://aistudio.google.com/ 에서 API 키 발급
-  - API 테스터(예: curl)를 통해 호출 테스트 (예시 제공)
-  
-- **실제 연동 및 데이터 저장**  
-  - 사용자 입력을 받아 AI API에 요청
-  - 응답 JSON에서 생성된 콘텐츠 중 핵심 문장을 추출하여 데이터베이스에 저장
-  - 입력 텍스트 길이 제한 및 "답변을 최대한 간결하게 50자 이하로"라는 문구 추가 처리
-
-### 4. 클라우드 서비스 배포
-- **AWS/Oracle Cloud 프리 티어 사용**  
-  - 배포 방법: 파일 업로드, Docker 컨테이너 등
-
-### 5. Spring Security 고도화
-- **접근 권한 관리**  
-  - 도메인별 접근 권한 제어 (예: 가게 추가는 관리자만)
-  
-### 6. 리뷰 및 평점 기능
-- **리뷰 저장 및 조회**  
-  - 주문을 통해 가게의 리뷰 및 평점 저장
-  - 음식점 고유값을 통해 리뷰 리스트 조회
-  - 평점 계산 (1~5점), N+1 문제 고려
-
-### 도전 기능 (Optional)
-- **API 문서화:** Swagger 또는 RestDoc을 이용해 API 명세서 작성
-- **테스트 코드 작성:** 각 도메인 주요 API에 대해 통합 테스트 작성 (성공/실패 케이스 포함)
-- **QueryDSL 구현:**  
-  - 지점 검색 시 카테고리, 지점 이름 복합 필터링  
-    - 카테고리만 입력 시 해당 카테고리 모든 지점 노출  
-    - 카테고리 + 지점 이름 입력 시 해당 조건에 맞는 지점 노출
+9. **리뷰 및 평점 기능**
+   - 주문을 기반으로 음식점 리뷰 및 평점 저장
+   - 음식점 검색 시 리뷰 노출 및 평점 1~5점 계산
 
 ---
 
-## 📖 참고 사항
-- **PG사 연동**은 외주 개발로 진행되며, 결제 관련 정보만 DB에 저장됩니다.
-- **데이터 보존 및 삭제:**  
-  - 데이터는 완전 삭제 대신 숨김 처리로 관리하고, 감사 로그(생성일, 수정일, 삭제일 등)를 기록합니다.
-- **비용 최적화:**  
-  - AI API 연동 시 잦은 호출로 인한 비용 발생에 유의합니다.
-- **보안:**  
-  - Spring Security를 통해 각 도메인에 맞는 접근 권한을 관리합니다.
-- **확장성 고려:**  
-  - 지역, 카테고리 등의 확장성을 염두에 둔 데이터 구조 설계
+## 📊 ERD (데이터베이스 설계)
+```txt
+[사용자]
+- id (PK)
+- username
+- password
+- role (CUSTOMER, OWNER, MANAGER, MASTER)
+- created_at, updated_at
+
+[가게]
+- id (PK)
+- name
+- owner_id (FK - 사용자)
+- category_id (FK - 카테고리)
+- legal_code
+- content
+- operating_hours
+- created_at, updated_at, deleted_at
+
+[상품]
+- id (PK)
+- restaurant_id (FK - 가게)
+- name
+- price
+- description
+- created_at, updated_at
+
+[주문]
+- id (PK)
+- customer_id (FK - 사용자)
+- restaurant_id (FK - 가게)
+- status (PENDING, CONFIRMED, CANCELLED)
+- created_at, updated_at
+
+[결제]
+- id (PK)
+- order_id (FK - 주문)
+- amount
+- payment_method
+- transaction_id
+- created_at, updated_at
+
+[리뷰]
+- id (PK)
+- order_id (FK - 주문)
+- rating (1~5)
+- comment
+- created_at, updated_at
+
+[AI 요청 로그]
+- id (PK)
+- request_text
+- response_text
+- created_at
+```
 
 ---
+
+## 🛠 기술 스택
+- **백엔드**: Java 17, Spring Boot 3.x, Spring Security, JPA, QueryDSL
+- **데이터베이스**: PostgreSQL, Redis (세션 관리 및 캐싱)
+- **클라우드**: AWS / Oracle Cloud (배포)
+- **API 문서화**: Swagger, Spring RestDocs
+- **CI/CD**: GitHub Actions, Docker, Kubernetes (선택 사항)
+- **테스트**: JUnit5, Mockito, RestAssured
+
+---
+
+## 📌 API 문서
+API 명세서는 Swagger 및 RestDocs를 통해 제공됩니다.
+- **Swagger URL:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- **RestDocs:** `docs/api-guide.html`
+
+---
+
+## 🔍 추가 고려 사항
+- **PG사 연동**: 결제 관련 정보는 외부 PG사 API와 연동하여 관리
+- **데이터 보존 정책**: 데이터는 숨김 처리, 삭제일/삭제자 기록 유지
+- **보안**: JWT 기반 인증, Spring Security 활용한 권한 관리
+- **확장성 고려**: 지점 추가, 지역 카테고리 확장 가능하도록 설계
+
