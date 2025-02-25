@@ -29,7 +29,7 @@ public class OpenSearchConfig {
                 new UsernamePasswordCredentials("elastic", "junyoung")
         );
 
-        return RestClient.builder(new HttpHost("192.168.0.16", 9200, "http"))
+        return RestClient.builder(new HttpHost("39.112.24.48", 9200, "http"))
                 .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
                         .setDefaultCredentialsProvider(credentialsProvider)
                 )
