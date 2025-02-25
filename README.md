@@ -151,6 +151,7 @@ $ java -jar build/libs/delivery-management-0.0.1-SNAPSHOT.jar
 | **Security** | Spring Security, JWT (토큰 기반 인증) |
 | **Database** | PostgreSQL, Redis (캐싱 및 세션 관리), Elasticsearch (분산검색 및 분석엔진), OpenSearch(실시간 검색 및 로그 분석도구) |
 | **Cloud**    | AWS EC2 (가상 서버 호스팅) |
+| **Chache** | Spring chache(Spring의 캐싱 추상화), Jedis(Redis의 클라이언트 라이브러리)
 | **API Docs** | RestDocs (API 문서화도구) |
 | **AI 연동**    | Google Generative Language API (Gemini-1.5) |
 | **Test**    | Spring Boot Test, Spring Security Test, JUnit, Mockito |
