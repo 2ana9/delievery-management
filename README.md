@@ -147,7 +147,7 @@ $ java -jar build/libs/delivery-management-0.0.1-SNAPSHOT.jar
 
 | 분야           | 기술                                          |
 | :------------: | ------------------------------------------- |
-| **Backend**  | Spring Boot, JPA (ORM 프레임워크), OpenFeign, QueryDSL (동적 쿼리 생성), Specification (JPA에서 제공하는 동적쿼리 생성 인터페이스) |
+| **Backend**  | Spring Boot, JPA (ORM 프레임워크), OpenFeign, QueryDSL (동적 쿼리 생성), Specification (JPA에서 제공하는 동적쿼리 생성 인터페이스) Kibana(Elasticsearch 데이터 시각화 도구) |
 | **Security** | Spring Security, JWT (토큰 기반 인증) |
 | **Database** | PostgreSQL, Elasticsearch (분산검색 및 분석엔진), OpenSearch(실시간 검색 및 로그 분석도구) |
 | **Cloud**    | AWS EC2 (가상 서버 호스팅) |
