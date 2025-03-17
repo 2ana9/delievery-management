@@ -20,6 +20,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -48,7 +49,9 @@ public class RedisConfig {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
+//        redisTemplate.setKeySerializer(RedisSerializer.string());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
+//        redisTemplate.setValueSerializer(RedisSerializer.json());
         return redisTemplate;
     }
 
@@ -65,7 +68,8 @@ public class RedisConfig {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());  // Time API 지원
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);  // 알려지지 않은 프로퍼티(필드)가 있을 때 실패하지 않고 무시
-        objectMapper.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL); // 기본 타이핑 활성화 및 다형성 타입 검증 설정
+//        objectMapper.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL); // 기본 타이핑 활성화 및 다형성 타입 검증 설정
+//        objectMapper.deactivateDefaultTyping();// 기본 타이핑 비활성화: 타입 정보가 포함되지 않음.
         objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);  // enum을 문자열로 쓰기
         objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);  // 문자열을 enum으로 읽기
         GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer(objectMapper);  // 직렬화에 사용할 Serializer
